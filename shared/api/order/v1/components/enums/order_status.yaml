@@ -1,0 +1,7 @@
+type: string
+description: Статус заказа
+#oneOf:
+#  - "PENDING_PAYMENT"
+#  - "PAID"
+#  - "CANCELLED"
+example: "PAID"

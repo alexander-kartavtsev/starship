@@ -1,0 +1,13 @@
+type: object
+required:
+  - user_uuid
+  - part_uuids
+properties:
+  user_uuid:
+    $ref: ./props/user_uuid.yaml
+
+  part_uuids:
+    description: Список идентификаторов запчастей
+    type: array
+    items:
+      $ref: ./props/part_uuid.yaml

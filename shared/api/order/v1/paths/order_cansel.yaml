@@ -1,0 +1,44 @@
+post:
+  summary: Отмена заказа
+  operationId: canselOrderById
+  tags:
+    - Order
+  parameters:
+    - $ref: ../params/order_uuid.yaml
+  responses:
+    '204':
+      description: Заказ успешно отменен
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: integer
+                description: HTTP-код ответа
+                example: 204
+              message:
+                type: string
+                description: Описание результата
+                example: "Заказ успешно отменен"
+    '404':
+      description: Заказ не найден
+      content:
+        application/json:
+          schema:
+            $ref: ../components/errors/not_found_error.yaml
+    '409':
+      description: Конфликт
+      content:
+        application/json:
+          schema:
+            $ref: ../components/errors/conflict_error.yaml
+    default:
+      description: Системная ошибка
+      content:
+        application/json:
+          schema:
+            $ref: ../components/errors/generic_error.yaml

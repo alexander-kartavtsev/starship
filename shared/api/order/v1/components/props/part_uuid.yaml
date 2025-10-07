@@ -1,0 +1,6 @@
+description: Идентификатор запчасти
+type: string
+#format: uuid
+pattern:
+  $ref: ./uuid_pattern.yaml
+example: "bc838184-47b8-8086-1e05-3060f2c0ada1"
