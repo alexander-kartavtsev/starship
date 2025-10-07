@@ -1,0 +1,6 @@
+description: Идентификатор пользователя
+type: string
+#format: uuid
+pattern:
+  $ref: ./uuid_pattern.yaml
+example: "c3159c64-4ee9-24e7-3e05-3060f2c0a021"
