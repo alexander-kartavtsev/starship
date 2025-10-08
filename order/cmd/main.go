@@ -2,6 +2,7 @@ package main
 
 import (
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
+	"github.com/google/uuid"
 	"golang.org/x/net/context"
 	"net/http"
 	"sync"
@@ -67,7 +68,23 @@ func (h *OrderHandler) CanselOrderById(ctx context.Context, params orderV1.Canse
 
 }
 
+const (
+	unknown       orderV1.PaymentMethod = "UNKNOWN"
+	card          orderV1.PaymentMethod = "CARD"
+	sbp           orderV1.PaymentMethod = "SBP"
+	creditCard    orderV1.PaymentMethod = "CREDIT_CARD"
+	investorMoney orderV1.PaymentMethod = "INVESTOR_MONEY"
+)
+
 func (h *OrderHandler) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
+	order := &orderV1.GetOrderResponse{
+		OrderUUID:       uuid.NewString(),
+		UserUUID:        req.UserUUID,
+		PartUuids:       req.PartUuids,
+		TotalPrice:      1000,
+		TransactionUUID: "",
+		PaymentMethod:   "CARD",
+	}
 }
 
 func (h *OrderHandler) GetOrderByUuid(_ context.Context, params orderV1.GetOrderByUuidParams) (orderV1.GetOrderByUuidRes, error) {
@@ -82,9 +99,6 @@ func (h *OrderHandler) GetOrderByUuid(_ context.Context, params orderV1.GetOrder
 }
 
 func (h *OrderHandler) PayOrderByUuid(ctx context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderByUuidParams) (orderV1.PayOrderByUuidRes, error) {
-	order := &orderV1.GetOrderResponse{
-		OrderUUID:
-	}
 }
 
 func (h *OrderHandler) NewError(_ context.Context, err error) *orderV1.GenericErrorStatusCode {

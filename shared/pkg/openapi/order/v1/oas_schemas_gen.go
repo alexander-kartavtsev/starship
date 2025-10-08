@@ -223,10 +223,9 @@ type GetOrderResponse struct {
 	// Сумма заказа.
 	TotalPrice float32 `json:"total_price"`
 	// Идентификатор транзакции.
-	TransactionUUID string `json:"transaction_uuid"`
-	// Код способа оплаты.
-	PaymentMethod NilString   `json:"payment_method"`
-	Status        OrderStatus `json:"status"`
+	TransactionUUID string        `json:"transaction_uuid"`
+	PaymentMethod   PaymentMethod `json:"payment_method"`
+	Status          OrderStatus   `json:"status"`
 }
 
 // GetOrderUUID returns the value of OrderUUID.
@@ -255,7 +254,7 @@ func (s *GetOrderResponse) GetTransactionUUID() string {
 }
 
 // GetPaymentMethod returns the value of PaymentMethod.
-func (s *GetOrderResponse) GetPaymentMethod() NilString {
+func (s *GetOrderResponse) GetPaymentMethod() PaymentMethod {
 	return s.PaymentMethod
 }
 
@@ -290,7 +289,7 @@ func (s *GetOrderResponse) SetTransactionUUID(val string) {
 }
 
 // SetPaymentMethod sets the value of PaymentMethod.
-func (s *GetOrderResponse) SetPaymentMethod(val NilString) {
+func (s *GetOrderResponse) SetPaymentMethod(val PaymentMethod) {
 	s.PaymentMethod = val
 }
 
@@ -332,51 +331,6 @@ func (s *InternalServerError) SetMessage(val string) {
 func (*InternalServerError) createOrderRes()    {}
 func (*InternalServerError) getOrderByUuidRes() {}
 func (*InternalServerError) payOrderByUuidRes() {}
-
-// NewNilString returns new NilString with value set to v.
-func NewNilString(v string) NilString {
-	return NilString{
-		Value: v,
-	}
-}
-
-// NilString is nullable string.
-type NilString struct {
-	Value string
-	Null  bool
-}
-
-// SetTo sets value to v.
-func (o *NilString) SetTo(v string) {
-	o.Null = false
-	o.Value = v
-}
-
-// IsNull returns true if value is Null.
-func (o NilString) IsNull() bool { return o.Null }
-
-// SetToNull sets value to null.
-func (o *NilString) SetToNull() {
-	o.Null = true
-	var v string
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o NilString) Get() (v string, ok bool) {
-	if o.Null {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o NilString) Or(d string) string {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
 
 // Ref: #/components/schemas/not_found_error
 type NotFoundError struct {
