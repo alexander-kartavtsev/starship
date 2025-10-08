@@ -1,7 +1,7 @@
 package main
 
 import (
-	orderV1 "github.com/alexander-kartavtsev/starship/internal/middleware"
+	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -180,5 +180,5 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(10 * time.Second))
-
+	r.Use(customMiddleware.RequestLogger)
 }
