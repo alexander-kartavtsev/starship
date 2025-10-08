@@ -3,10 +3,12 @@ module github.com/alexander-kartavtsev/starship/order
 go 1.24.0
 
 require (
-	github.com/alexander-kartavtsev/starship v0.0.0-20251008163635-7fb85b966557
+	github.com/alexander-kartavtsev/starship v0.0.1
+	github.com/go-chi/chi/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	golang.org/x/net v0.44.0
 )
+
 //replace github.com/alexander-kartavtsev/starship => ../order
 
 require (
