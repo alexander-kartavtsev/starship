@@ -1,13 +1,8 @@
 type: object
-required:
-  - code
-  - message
 properties:
   code:
     type: integer
     description: HTTP-код ошибки
-    example: 502
   message:
     type: string
     description: Описание ошибки
-    example: Системная ошибка

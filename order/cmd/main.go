@@ -1,7 +1,9 @@
 package main
 
 import (
-	order_v1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
+	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
+	"golang.org/x/net/context"
+	"net/http"
 	"sync"
 	"time"
 )
@@ -21,29 +23,18 @@ const (
 	OrderStatusCancelled      OrderStatus = "CANCELLED"
 )
 
-type Order struct {
-	// Идентификатор заказа uuid
-	Id          string      `json:"order_uuid"`
-	User        string      `json:"user_uuid"`
-	Parts       []string    `json:"part_uuids"`
-	Total       float64     `json:"total_price"`
-	Transaction *string     `json:"transaction_uuid,omitempty"`
-	Payment     *string     `json:"payment_method,omitempty"`
-	Status      OrderStatus `json:"status"`
-}
-
 type OrderStorage struct {
 	mu     sync.RWMutex
-	orders map[string]*Order
+	orders map[string]*orderV1.GetOrderResponse
 }
 
 func NewOrderStorage() *OrderStorage {
 	return &OrderStorage{
-		orders: make(map[string]*Order),
+		orders: make(map[string]*orderV1.GetOrderResponse),
 	}
 }
 
-func (s *OrderStorage) getOrder(orderUuid string) *Order {
+func (s *OrderStorage) getOrder(orderUuid string) *orderV1.GetOrderResponse {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -55,7 +46,7 @@ func (s *OrderStorage) getOrder(orderUuid string) *Order {
 	return order
 }
 
-func (s *OrderStorage) updateOrder(order *Order) {
+func (s *OrderStorage) updateOrder(order *orderV1.GetOrderResponse) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -72,10 +63,42 @@ func NewOrderHandler(storage *OrderStorage) *OrderHandler {
 	}
 }
 
+func (h *OrderHandler) CanselOrderById(ctx context.Context, params orderV1.CanselOrderByIdParams) (orderV1.CanselOrderByIdRes, error) {
+
+}
+
+func (h *OrderHandler) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
+
+}
+
+func (h *OrderHandler) GetOrderByUuid(_ context.Context, params orderV1.GetOrderByUuidParams) (orderV1.GetOrderByUuidRes, error) {
+	order := h.storage.getOrder(params.OrderUUID.String())
+	if order == nil {
+		return &orderV1.NotFoundError{
+			Code:    404,
+			Message: "Заказ с id = '" + params.OrderUUID.String() + "' не найден",
+		}, nil
+	}
+	return order, nil
+}
+
+func (h *OrderHandler) PayOrderByUuid(ctx context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderByUuidParams) (orderV1.PayOrderByUuidRes, error) {
+
+}
+
+func (h *OrderHandler) NewError(_ context.Context, err error) *orderV1.GenericErrorStatusCode {
+	return &orderV1.GenericErrorStatusCode{
+		StatusCode: http.StatusBadGateway,
+		Response: orderV1.GenericError{
+			Code: orderV1.
+		}
+	}
+}
+
 func main() {
 	storage := NewOrderStorage()
 
 	OrderHandler := NewOrderHandler(storage)
 
-	orderServer, err := order_v1.NewServer()
+	orderServer, err := orderV1.NewServer(OrderHandler)
 }

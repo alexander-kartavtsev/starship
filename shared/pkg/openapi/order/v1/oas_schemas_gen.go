@@ -159,28 +159,28 @@ func (*CreateOrderResponse) createOrderRes() {}
 // Ref: #/components/schemas/generic_error
 type GenericError struct {
 	// HTTP-код ошибки.
-	Code int `json:"code"`
+	Code OptInt `json:"code"`
 	// Описание ошибки.
-	Message string `json:"message"`
+	Message OptString `json:"message"`
 }
 
 // GetCode returns the value of Code.
-func (s *GenericError) GetCode() int {
+func (s *GenericError) GetCode() OptInt {
 	return s.Code
 }
 
 // GetMessage returns the value of Message.
-func (s *GenericError) GetMessage() string {
+func (s *GenericError) GetMessage() OptString {
 	return s.Message
 }
 
 // SetCode sets the value of Code.
-func (s *GenericError) SetCode(val int) {
+func (s *GenericError) SetCode(val OptInt) {
 	s.Code = val
 }
 
 // SetMessage sets the value of Message.
-func (s *GenericError) SetMessage(val string) {
+func (s *GenericError) SetMessage(val OptString) {
 	s.Message = val
 }
 
@@ -405,6 +405,98 @@ func (*NotFoundError) canselOrderByIdRes() {}
 func (*NotFoundError) createOrderRes()     {}
 func (*NotFoundError) getOrderByUuidRes()  {}
 func (*NotFoundError) payOrderByUuidRes()  {}
+
+// NewOptInt returns new OptInt with value set to v.
+func NewOptInt(v int) OptInt {
+	return OptInt{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptInt is optional int.
+type OptInt struct {
+	Value int
+	Set   bool
+}
+
+// IsSet returns true if OptInt was set.
+func (o OptInt) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptInt) Reset() {
+	var v int
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptInt) SetTo(v int) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptInt) Get() (v int, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptInt) Or(d int) int {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptString returns new OptString with value set to v.
+func NewOptString(v string) OptString {
+	return OptString{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptString is optional string.
+type OptString struct {
+	Value string
+	Set   bool
+}
+
+// IsSet returns true if OptString was set.
+func (o OptString) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptString) Reset() {
+	var v string
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptString) SetTo(v string) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptString) Get() (v string, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptString) Or(d string) string {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
 
 type OrderStatus string
 
