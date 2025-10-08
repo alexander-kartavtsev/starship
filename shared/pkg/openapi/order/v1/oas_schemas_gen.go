@@ -212,94 +212,6 @@ func (s *GenericErrorStatusCode) SetResponse(val GenericError) {
 	s.Response = val
 }
 
-// Ref: #/components/schemas/get_order_response
-type GetOrderResponse struct {
-	// Идентификатор заказа.
-	OrderUUID string `json:"order_uuid"`
-	// Идентификатор пользователя.
-	UserUUID string `json:"user_uuid"`
-	// Список идентификаторов запчастей.
-	PartUuids []string `json:"part_uuids"`
-	// Сумма заказа.
-	TotalPrice float32 `json:"total_price"`
-	// Идентификатор транзакции.
-	TransactionUUID string        `json:"transaction_uuid"`
-	PaymentMethod   PaymentMethod `json:"payment_method"`
-	Status          OrderStatus   `json:"status"`
-}
-
-// GetOrderUUID returns the value of OrderUUID.
-func (s *GetOrderResponse) GetOrderUUID() string {
-	return s.OrderUUID
-}
-
-// GetUserUUID returns the value of UserUUID.
-func (s *GetOrderResponse) GetUserUUID() string {
-	return s.UserUUID
-}
-
-// GetPartUuids returns the value of PartUuids.
-func (s *GetOrderResponse) GetPartUuids() []string {
-	return s.PartUuids
-}
-
-// GetTotalPrice returns the value of TotalPrice.
-func (s *GetOrderResponse) GetTotalPrice() float32 {
-	return s.TotalPrice
-}
-
-// GetTransactionUUID returns the value of TransactionUUID.
-func (s *GetOrderResponse) GetTransactionUUID() string {
-	return s.TransactionUUID
-}
-
-// GetPaymentMethod returns the value of PaymentMethod.
-func (s *GetOrderResponse) GetPaymentMethod() PaymentMethod {
-	return s.PaymentMethod
-}
-
-// GetStatus returns the value of Status.
-func (s *GetOrderResponse) GetStatus() OrderStatus {
-	return s.Status
-}
-
-// SetOrderUUID sets the value of OrderUUID.
-func (s *GetOrderResponse) SetOrderUUID(val string) {
-	s.OrderUUID = val
-}
-
-// SetUserUUID sets the value of UserUUID.
-func (s *GetOrderResponse) SetUserUUID(val string) {
-	s.UserUUID = val
-}
-
-// SetPartUuids sets the value of PartUuids.
-func (s *GetOrderResponse) SetPartUuids(val []string) {
-	s.PartUuids = val
-}
-
-// SetTotalPrice sets the value of TotalPrice.
-func (s *GetOrderResponse) SetTotalPrice(val float32) {
-	s.TotalPrice = val
-}
-
-// SetTransactionUUID sets the value of TransactionUUID.
-func (s *GetOrderResponse) SetTransactionUUID(val string) {
-	s.TransactionUUID = val
-}
-
-// SetPaymentMethod sets the value of PaymentMethod.
-func (s *GetOrderResponse) SetPaymentMethod(val PaymentMethod) {
-	s.PaymentMethod = val
-}
-
-// SetStatus sets the value of Status.
-func (s *GetOrderResponse) SetStatus(val OrderStatus) {
-	s.Status = val
-}
-
-func (*GetOrderResponse) getOrderByUuidRes() {}
-
 // Ref: #/components/schemas/internal_server_error
 type InternalServerError struct {
 	// HTTP-код ошибки.
@@ -456,6 +368,94 @@ func (o OptString) Or(d string) string {
 	}
 	return d
 }
+
+// Ref: #/components/schemas/order_dto
+type OrderDto struct {
+	// Идентификатор заказа.
+	OrderUUID string `json:"order_uuid"`
+	// Идентификатор пользователя.
+	UserUUID string `json:"user_uuid"`
+	// Список идентификаторов запчастей.
+	PartUuids []string `json:"part_uuids"`
+	// Сумма заказа.
+	TotalPrice float32 `json:"total_price"`
+	// Идентификатор транзакции.
+	TransactionUUID string        `json:"transaction_uuid"`
+	PaymentMethod   PaymentMethod `json:"payment_method"`
+	Status          OrderStatus   `json:"status"`
+}
+
+// GetOrderUUID returns the value of OrderUUID.
+func (s *OrderDto) GetOrderUUID() string {
+	return s.OrderUUID
+}
+
+// GetUserUUID returns the value of UserUUID.
+func (s *OrderDto) GetUserUUID() string {
+	return s.UserUUID
+}
+
+// GetPartUuids returns the value of PartUuids.
+func (s *OrderDto) GetPartUuids() []string {
+	return s.PartUuids
+}
+
+// GetTotalPrice returns the value of TotalPrice.
+func (s *OrderDto) GetTotalPrice() float32 {
+	return s.TotalPrice
+}
+
+// GetTransactionUUID returns the value of TransactionUUID.
+func (s *OrderDto) GetTransactionUUID() string {
+	return s.TransactionUUID
+}
+
+// GetPaymentMethod returns the value of PaymentMethod.
+func (s *OrderDto) GetPaymentMethod() PaymentMethod {
+	return s.PaymentMethod
+}
+
+// GetStatus returns the value of Status.
+func (s *OrderDto) GetStatus() OrderStatus {
+	return s.Status
+}
+
+// SetOrderUUID sets the value of OrderUUID.
+func (s *OrderDto) SetOrderUUID(val string) {
+	s.OrderUUID = val
+}
+
+// SetUserUUID sets the value of UserUUID.
+func (s *OrderDto) SetUserUUID(val string) {
+	s.UserUUID = val
+}
+
+// SetPartUuids sets the value of PartUuids.
+func (s *OrderDto) SetPartUuids(val []string) {
+	s.PartUuids = val
+}
+
+// SetTotalPrice sets the value of TotalPrice.
+func (s *OrderDto) SetTotalPrice(val float32) {
+	s.TotalPrice = val
+}
+
+// SetTransactionUUID sets the value of TransactionUUID.
+func (s *OrderDto) SetTransactionUUID(val string) {
+	s.TransactionUUID = val
+}
+
+// SetPaymentMethod sets the value of PaymentMethod.
+func (s *OrderDto) SetPaymentMethod(val PaymentMethod) {
+	s.PaymentMethod = val
+}
+
+// SetStatus sets the value of Status.
+func (s *OrderDto) SetStatus(val OrderStatus) {
+	s.Status = val
+}
+
+func (*OrderDto) getOrderByUuidRes() {}
 
 type OrderStatus string
 

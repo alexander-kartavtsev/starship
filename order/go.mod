@@ -3,10 +3,11 @@ module github.com/alexander-kartavtsev/starship/order
 go 1.24.0
 
 require (
-	github.com/alexander-kartavtsev/starship v0.0.0-20251008054217-5ed8c34204c2
+	github.com/alexander-kartavtsev/starship v0.0.0-20251008163635-7fb85b966557
 	github.com/google/uuid v1.6.0
-	golang.org/x/net v0.45.0
+	golang.org/x/net v0.44.0
 )
+//replace github.com/alexander-kartavtsev/starship => ../order
 
 require (
 	github.com/dlclark/regexp2 v1.11.5 // indirect

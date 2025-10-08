@@ -19,9 +19,16 @@ const (
 type OrderStatus string
 
 const (
-	OrderStatusPendingPayment OrderStatus = "PENDING_PAYMENT"
-	OrderStatusPaid           OrderStatus = "PAID"
-	OrderStatusCancelled      OrderStatus = "CANCELLED"
+	OrderStatusPendingPayment orderV1.OrderStatus = "PENDING_PAYMENT"
+	OrderStatusPaid           orderV1.OrderStatus = "PAID"
+	OrderStatusCancelled      orderV1.OrderStatus = "CANCELLED"
+)
+const (
+	unknown       orderV1.PaymentMethod = "UNKNOWN"
+	card          orderV1.PaymentMethod = "CARD"
+	sbp           orderV1.PaymentMethod = "SBP"
+	creditCard    orderV1.PaymentMethod = "CREDIT_CARD"
+	investorMoney orderV1.PaymentMethod = "INVESTOR_MONEY"
 )
 
 type OrderStorage struct {
@@ -51,7 +58,7 @@ func (s *OrderStorage) updateOrder(order *orderV1.GetOrderResponse) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.orders[order.Id] = order
+	s.orders[order.OrderUUID] = order
 }
 
 type OrderHandler struct {
@@ -68,13 +75,9 @@ func (h *OrderHandler) CanselOrderById(ctx context.Context, params orderV1.Canse
 
 }
 
-const (
-	unknown       orderV1.PaymentMethod = "UNKNOWN"
-	card          orderV1.PaymentMethod = "CARD"
-	sbp           orderV1.PaymentMethod = "SBP"
-	creditCard    orderV1.PaymentMethod = "CREDIT_CARD"
-	investorMoney orderV1.PaymentMethod = "INVESTOR_MONEY"
-)
+func (o *orderV1.CreateOrderResponse)  {
+
+}
 
 func (h *OrderHandler) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
 	order := &orderV1.GetOrderResponse{
@@ -83,8 +86,13 @@ func (h *OrderHandler) CreateOrder(ctx context.Context, req *orderV1.CreateOrder
 		PartUuids:       req.PartUuids,
 		TotalPrice:      1000,
 		TransactionUUID: "",
-		PaymentMethod:   "CARD",
+		PaymentMethod:   unknown,
+		Status:          OrderStatusPendingPayment,
 	}
+
+	h.storage.updateOrder(order)
+
+	return order, nil
 }
 
 func (h *OrderHandler) GetOrderByUuid(_ context.Context, params orderV1.GetOrderByUuidParams) (orderV1.GetOrderByUuidRes, error) {
