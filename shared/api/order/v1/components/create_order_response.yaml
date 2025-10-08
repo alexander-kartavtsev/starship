@@ -4,7 +4,9 @@ required:
   - total_price
 properties:
   order_uuid:
-    $ref: ./props/order_uuid.yaml
+    description: Идентификатор заказа
+    type: string
+    example: "123e4567-e89b-12d3-a456-426614174000"
   total_price:
     type: number
     format: float

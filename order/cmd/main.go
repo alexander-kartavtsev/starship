@@ -68,7 +68,6 @@ func (h *OrderHandler) CanselOrderById(ctx context.Context, params orderV1.Canse
 }
 
 func (h *OrderHandler) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
-
 }
 
 func (h *OrderHandler) GetOrderByUuid(_ context.Context, params orderV1.GetOrderByUuidParams) (orderV1.GetOrderByUuidRes, error) {
@@ -83,15 +82,18 @@ func (h *OrderHandler) GetOrderByUuid(_ context.Context, params orderV1.GetOrder
 }
 
 func (h *OrderHandler) PayOrderByUuid(ctx context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderByUuidParams) (orderV1.PayOrderByUuidRes, error) {
-
+	order := &orderV1.GetOrderResponse{
+		OrderUUID:
+	}
 }
 
 func (h *OrderHandler) NewError(_ context.Context, err error) *orderV1.GenericErrorStatusCode {
 	return &orderV1.GenericErrorStatusCode{
 		StatusCode: http.StatusBadGateway,
 		Response: orderV1.GenericError{
-			Code: orderV1.
-		}
+			Code:    orderV1.NewOptInt(http.StatusBadGateway),
+			Message: orderV1.NewOptString(err.Error()),
+		},
 	}
 }
 

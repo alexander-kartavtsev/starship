@@ -362,13 +362,13 @@ func (s *CreateOrderRequest) Encode(e *jx.Encoder) {
 func (s *CreateOrderRequest) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("user_uuid")
-		s.UserUUID.Encode(e)
+		e.Str(s.UserUUID)
 	}
 	{
 		e.FieldStart("part_uuids")
 		e.ArrStart()
 		for _, elem := range s.PartUuids {
-			elem.Encode(e)
+			e.Str(elem)
 		}
 		e.ArrEnd()
 	}
@@ -391,7 +391,9 @@ func (s *CreateOrderRequest) Decode(d *jx.Decoder) error {
 		case "user_uuid":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				if err := s.UserUUID.Decode(d); err != nil {
+				v, err := d.Str()
+				s.UserUUID = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -401,10 +403,12 @@ func (s *CreateOrderRequest) Decode(d *jx.Decoder) error {
 		case "part_uuids":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				s.PartUuids = make([]PartUUID, 0)
+				s.PartUuids = make([]string, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem PartUUID
-					if err := elem.Decode(d); err != nil {
+					var elem string
+					v, err := d.Str()
+					elem = string(v)
+					if err != nil {
 						return err
 					}
 					s.PartUuids = append(s.PartUuids, elem)
@@ -483,7 +487,7 @@ func (s *CreateOrderResponse) Encode(e *jx.Encoder) {
 func (s *CreateOrderResponse) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("order_uuid")
-		s.OrderUUID.Encode(e)
+		e.Str(s.OrderUUID)
 	}
 	{
 		e.FieldStart("total_price")
@@ -508,7 +512,9 @@ func (s *CreateOrderResponse) Decode(d *jx.Decoder) error {
 		case "order_uuid":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				if err := s.OrderUUID.Decode(d); err != nil {
+				v, err := d.Str()
+				s.OrderUUID = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -674,17 +680,17 @@ func (s *GetOrderResponse) Encode(e *jx.Encoder) {
 func (s *GetOrderResponse) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("order_uuid")
-		s.OrderUUID.Encode(e)
+		e.Str(s.OrderUUID)
 	}
 	{
 		e.FieldStart("user_uuid")
-		s.UserUUID.Encode(e)
+		e.Str(s.UserUUID)
 	}
 	{
 		e.FieldStart("part_uuids")
 		e.ArrStart()
 		for _, elem := range s.PartUuids {
-			elem.Encode(e)
+			e.Str(elem)
 		}
 		e.ArrEnd()
 	}
@@ -694,7 +700,7 @@ func (s *GetOrderResponse) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("transaction_uuid")
-		s.TransactionUUID.Encode(e)
+		e.Str(s.TransactionUUID)
 	}
 	{
 		e.FieldStart("payment_method")
@@ -728,7 +734,9 @@ func (s *GetOrderResponse) Decode(d *jx.Decoder) error {
 		case "order_uuid":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				if err := s.OrderUUID.Decode(d); err != nil {
+				v, err := d.Str()
+				s.OrderUUID = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -738,7 +746,9 @@ func (s *GetOrderResponse) Decode(d *jx.Decoder) error {
 		case "user_uuid":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				if err := s.UserUUID.Decode(d); err != nil {
+				v, err := d.Str()
+				s.UserUUID = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -748,10 +758,12 @@ func (s *GetOrderResponse) Decode(d *jx.Decoder) error {
 		case "part_uuids":
 			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
-				s.PartUuids = make([]PartUUID, 0)
+				s.PartUuids = make([]string, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem PartUUID
-					if err := elem.Decode(d); err != nil {
+					var elem string
+					v, err := d.Str()
+					elem = string(v)
+					if err != nil {
 						return err
 					}
 					s.PartUuids = append(s.PartUuids, elem)
@@ -778,7 +790,9 @@ func (s *GetOrderResponse) Decode(d *jx.Decoder) error {
 		case "transaction_uuid":
 			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
-				if err := s.TransactionUUID.Decode(d); err != nil {
+				v, err := d.Str()
+				s.TransactionUUID = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -1243,86 +1257,6 @@ func (s *OrderStatus) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes OrderUUID as json.
-func (s OrderUUID) Encode(e *jx.Encoder) {
-	unwrapped := string(s)
-
-	e.Str(unwrapped)
-}
-
-// Decode decodes OrderUUID from json.
-func (s *OrderUUID) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode OrderUUID to nil")
-	}
-	var unwrapped string
-	if err := func() error {
-		v, err := d.Str()
-		unwrapped = string(v)
-		if err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "alias")
-	}
-	*s = OrderUUID(unwrapped)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OrderUUID) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OrderUUID) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes PartUUID as json.
-func (s PartUUID) Encode(e *jx.Encoder) {
-	unwrapped := string(s)
-
-	e.Str(unwrapped)
-}
-
-// Decode decodes PartUUID from json.
-func (s *PartUUID) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode PartUUID to nil")
-	}
-	var unwrapped string
-	if err := func() error {
-		v, err := d.Str()
-		unwrapped = string(v)
-		if err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "alias")
-	}
-	*s = PartUUID(unwrapped)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s PartUUID) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *PartUUID) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
 // Encode implements json.Marshaler.
 func (s *PayOrderRequest) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -1428,7 +1362,7 @@ func (s *PayOrderResponse) Encode(e *jx.Encoder) {
 func (s *PayOrderResponse) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("transaction_uuid")
-		s.TransactionUUID.Encode(e)
+		e.Str(s.TransactionUUID)
 	}
 }
 
@@ -1448,7 +1382,9 @@ func (s *PayOrderResponse) Decode(d *jx.Decoder) error {
 		case "transaction_uuid":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				if err := s.TransactionUUID.Decode(d); err != nil {
+				v, err := d.Str()
+				s.TransactionUUID = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -1547,86 +1483,6 @@ func (s PaymentMethod) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *PaymentMethod) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes TransactionUUID as json.
-func (s TransactionUUID) Encode(e *jx.Encoder) {
-	unwrapped := string(s)
-
-	e.Str(unwrapped)
-}
-
-// Decode decodes TransactionUUID from json.
-func (s *TransactionUUID) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode TransactionUUID to nil")
-	}
-	var unwrapped string
-	if err := func() error {
-		v, err := d.Str()
-		unwrapped = string(v)
-		if err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "alias")
-	}
-	*s = TransactionUUID(unwrapped)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s TransactionUUID) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *TransactionUUID) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes UserUUID as json.
-func (s UserUUID) Encode(e *jx.Encoder) {
-	unwrapped := string(s)
-
-	e.Str(unwrapped)
-}
-
-// Decode decodes UserUUID from json.
-func (s *UserUUID) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode UserUUID to nil")
-	}
-	var unwrapped string
-	if err := func() error {
-		v, err := d.Str()
-		unwrapped = string(v)
-		if err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "alias")
-	}
-	*s = UserUUID(unwrapped)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s UserUUID) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *UserUUID) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

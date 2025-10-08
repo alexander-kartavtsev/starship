@@ -3,4 +3,6 @@ required:
   - transaction_uuid
 properties:
   transaction_uuid:
-    $ref: ./props/transaction_uuid.yaml
+    description: Идентификатор транзакции
+    type: string
+    example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
