@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package inventory.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1;inventoryV1";
+
+service InventoryService {
+  // Возвращает информацию о детали по её UUID.
+  rpc GetPart(GetPartRequest) returns (GetPartResponse);
+  // Возвращает список деталей с возможностью фильтрации.
+  rpc ListPart(ListPartRequest) returns (ListPartResponse);
+}
+
+// Идентификатор детали
+message GetPartRequest {
+  string uuid = 1;
+}
+
+// Информация о детали
+message GetPartResponse {
+  Part info = 1;
+}
+
+// Возвращает список деталей с возможностью фильтрации.
+message ListPartRequest {
+  PartsFilter filter = 1;
+}
+
+/*
+Параметры для фильтрации поиска
+uuids: Список UUID'ов. Пусто — не фильтруем по UUID
+names: Список имён. Пусто — не фильтруем по имени
+categories: Список категорий. Пусто — не фильтруем по категории
+manufacturer_countries: Список стран производителей. Пусто — не фильтруем по стране
+tags: Список тегов. Пусто — не фильтруем по тегам
+*/
+message PartsFilter {
+  repeated string uuids = 1;
+  repeated string names = 2;
+  repeated Category categories = 3;
+  repeated string manufacturer_countries = 4;
+  repeated string tags = 5;
+}
+
+// Список найденных деталей
+message ListPartResponse {
+  map<string,Part> parts = 1;
+}
+
+// Спецификация детали
+message Part {
+  string uuid = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  int64 stock_quantity = 5;
+  Category category = 6;
+  Dimensions dimensions = 7;
+  Manufacturer manufacturer = 8;
+  repeated string tags = 9;
+  map<string,Value> metadata = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+}
+
+// Параметры
+message Dimensions {
+  double length = 1;
+  double width = 2;
+  double height = 3;
+  double weight	 = 4;
+}
+
+// Данные производителя
+message Manufacturer {
+  string name = 1;
+  string country = 2;
+  string website = 3;
+}
+
+// Допустимые типы данных
+message Value {
+  oneof value {
+    string string_value = 1;
+    int64 int64_value = 2;
+    double double_value = 3;
+    bool bool_value = 4;
+  }
+}
+
+// Список категорий
+enum Category {
+  CATEGORY_UNKNOWN_UNSPECIFIED = 0;
+  CATEGORY_ENGINE = 1;
+  CATEGORY_FUEL = 2;
+  CATEGORY_PORTHOLE = 3;
+  CATEGORY_WING = 4;
+}

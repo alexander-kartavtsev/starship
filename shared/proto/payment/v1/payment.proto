@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package payment.v1;
+
+option go_package = "github.com/alexander-kartavtsev/starship/shared/pkg/proto/payment/v1;paymentV1";
+
+service PaymentService {
+  // Обрабатывает команду на оплату и возвращает transaction_uuid
+  rpc PayOrder(PayOrderRequest) returns (PayOrderResponse);
+}
+
+// Данные, необходимые для оплаты
+message PayOrderRequest {
+  string order_uuid = 1;
+  string user_uuid = 2;
+  PaymentMethod payment_method = 3;
+}
+
+// Идентификатор транзакции
+message PayOrderResponse {
+  string transaction_uuid = 1;
+}
+
+// Доступные способы оплаты
+enum PaymentMethod {
+  PAYMENT_METHOD_UNKNOWN_UNSPECIFIED = 0;
+  PAYMENT_METHOD_CARD = 1;
+  PAYMENT_METHOD_SBP = 2;
+  PAYMENT_METHOD_CREDIT_CARD = 3;
+  PAYMENT_METHOD_INVESTOR_MONEY = 4;
+}

@@ -8,6 +8,9 @@ vars:
   GOFUMPT_VERSION: 'v0.8.0'
   OGEN_VERSION: 'v1.14.0'
   YQ_VERSION: 'v4.45.2'
+  BUF_VERSION: '1.53.0'
+  PROTOC_GEN_GO_VERSION: 'v1.36.6'
+  PROTOC_GEN_GO_GRPC_VERSION: 'v1.5.1'
 
   BIN_DIR: '{{.ROOT_DIR}}/bin'
   GOLANGCI_LINT: '{{.BIN_DIR}}/golangci-lint'
@@ -15,6 +18,9 @@ vars:
   GOFUMPT: '{{.BIN_DIR}}/gofumpt'
   OGEN: '{{.BIN_DIR}}/ogen'
   YQ: '{{.BIN_DIR}}/yq'
+  BUF: '{{.BIN_DIR}}/buf'
+  PROTOC_GEN_GO: '{{.BIN_DIR}}/protoc-gen-go'
+  PROTOC_GEN_GO_GRPC: '{{.BIN_DIR}}/protoc-gen-go-grpc'
 
   NODE_MODULES_DIR: '{{.ROOT_DIR}}/node_modules/.bin'
   REDOCLY: '{{.NODE_MODULES_DIR}}/redocly'
@@ -112,6 +118,46 @@ tasks:
         done
         exit $ERR
 
+
+  install-buf:
+    desc: "Устанавливает Buf в каталог bin"
+    cmds:
+      - |
+        mkdir -p {{.BIN_DIR}}
+        [ -f {{.BUF}} ] || {
+          echo '📦 Устанавливаем buf {{.BUF_VERSION}}...'
+          GOBIN={{.BIN_DIR}} go install github.com/bufbuild/buf/cmd/buf@v{{.BUF_VERSION}}
+        }
+    status:
+      - test -x {{.BUF}}
+
+  proto:install-plugins:
+    desc: "Устанавливает protoc плагины в каталог bin"
+    cmds:
+      - |
+        [ -f {{.PROTOC_GEN_GO}} ] || {
+          echo '📦 Installing protoc-gen-go...'
+          GOBIN={{.BIN_DIR}} go install google.golang.org/protobuf/cmd/protoc-gen-go@{{.PROTOC_GEN_GO_VERSION}}
+        }
+        [ -f {{.PROTOC_GEN_GO_GRPC}} ] || {
+          echo '📦 Installing protoc-gen-go-grpc...'
+          GOBIN={{.BIN_DIR}} go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@{{.PROTOC_GEN_GO_GRPC_VERSION}}
+        }
+
+  proto:lint:
+    deps: [ install-buf, proto:install-plugins ]
+    desc: Проверка .proto-файлов на соответствие стилю
+    dir: shared/proto
+    cmds:
+      - '{{.BUF}} lint'
+
+  proto:gen:
+    deps: [ install-buf, proto:install-plugins, proto:lint ]
+    desc: Генерация Go-кода из .proto
+    dir: shared/proto
+    cmds:
+      - '{{.BUF}} generate'
+
   redocly-cli:install:
     desc: Установить локально Redocly CLI
     cmds:
@@ -165,7 +211,7 @@ tasks:
   gen:
     desc: "Генерация всех proto и OpenAPI деклараций"
     cmds:
-#      - task: proto:gen
+      - task: proto:gen
       - task: ogen:gen
 
   deps:update:
