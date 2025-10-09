@@ -2,8 +2,6 @@ module github.com/alexander-kartavtsev/starship/shared
 
 go 1.24.0
 
-toolchain go1.24.6
-
 require (
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0

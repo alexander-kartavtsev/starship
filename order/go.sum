@@ -1,5 +1,5 @@
-github.com/alexander-kartavtsev/starship v0.0.3 h1:Mah8tiwpNHQ4z6qEe/fgQrCIHgC1A7Tk1X0IbzjqBhw=
-github.com/alexander-kartavtsev/starship v0.0.3/go.mod h1:MhMSF/JJwN2wX/kdn3EQ7UzgbBQSYQR1qYaqNGFHKbg=
+github.com/alexander-kartavtsev/starship/shared v0.0.0-20251009035331-672f9d3abd8c h1:vaGltHF5VuUskQQPfeQzlpH42Ljf7vYd7pHtpFSB3iE=
+github.com/alexander-kartavtsev/starship/shared v0.0.0-20251009035331-672f9d3abd8c/go.mod h1:pqWjEJu/j5ORfPXZhf3wBH2fYNXlrIpzK5QTem3FuB4=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dlclark/regexp2 v1.11.5 h1:Q/sSnsKerHeCkc/jSTNq1oCm7KiVgUMZRDUoRu0JQZQ=

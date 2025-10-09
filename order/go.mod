@@ -2,10 +2,8 @@ module github.com/alexander-kartavtsev/starship/order
 
 go 1.24.0
 
-toolchain go1.24.6
-
 require (
-	github.com/alexander-kartavtsev/starship v0.0.3
+	github.com/alexander-kartavtsev/starship/shared v0.0.0-20251009035331-672f9d3abd8c
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	golang.org/x/net v0.44.0
