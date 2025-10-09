@@ -1,16 +1,23 @@
 package main
 
 import (
-	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
-	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
+	"errors"
+	"log"
+	"net"
+	"net/http"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
-	"log"
-	"net/http"
-	"sync"
-	"time"
+
+	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
+	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
 )
 
 const (
@@ -20,13 +27,12 @@ const (
 	shutdownTimeout   = 10 * time.Second
 )
 
-type OrderStatus string
-
 const (
 	OrderStatusPendingPayment orderV1.OrderStatus = "PENDING_PAYMENT"
 	OrderStatusPaid           orderV1.OrderStatus = "PAID"
 	OrderStatusCancelled      orderV1.OrderStatus = "CANCELLED"
 )
+
 const (
 	unknown       orderV1.PaymentMethod = "UNKNOWN"
 	card          orderV1.PaymentMethod = "CARD"
@@ -77,14 +83,15 @@ func NewOrderHandler(storage *OrderStorage) *OrderHandler {
 
 func (h *OrderHandler) CanselOrderById(_ context.Context, params orderV1.CanselOrderByIdParams) (orderV1.CanselOrderByIdRes, error) {
 	order := h.storage.getOrder(params.OrderUUID.String())
+	println(params.OrderUUID.String())
 	if nil == order {
-		return &orderV1.CanselOrderByIdNoContent{
+		return &orderV1.NotFoundError{
 			Code:    http.StatusNotFound,
 			Message: "Заказ с uuid = '" + params.OrderUUID.String() + "' не найден",
 		}, nil
 	}
 	if order.Status == OrderStatusPaid {
-		return &orderV1.CanselOrderByIdNoContent{
+		return &orderV1.ConflictError{
 			Code:    http.StatusConflict,
 			Message: "Заказ с uuid = '" + params.OrderUUID.String() + "' уже оплачен. Отменить нельзя.",
 		}, nil
@@ -131,7 +138,7 @@ func (h *OrderHandler) GetOrderByUuid(_ context.Context, params orderV1.GetOrder
 	return order, nil
 }
 
-func (h *OrderHandler) PayOrderByUuid(ctx context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderByUuidParams) (orderV1.PayOrderByUuidRes, error) {
+func (h *OrderHandler) PayOrderByUuid(_ context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderByUuidParams) (orderV1.PayOrderByUuidRes, error) {
 	order := h.storage.getOrder(params.OrderUUID.String())
 
 	if order == nil {
@@ -181,4 +188,42 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(10 * time.Second))
 	r.Use(customMiddleware.RequestLogger)
+
+	r.Mount("/", orderServer)
+
+	server := &http.Server{
+		Addr:              net.JoinHostPort("localhost", httpPort),
+		Handler:           r,
+		ReadHeaderTimeout: readHeaderTimeout, // Защита от Slowloris атак - тип DDoS-атаки, при которой
+		// атакующий умышленно медленно отправляет HTTP-заголовки, удерживая соединения открытыми и истощая
+		// пул доступных соединений на сервере. ReadHeaderTimeout принудительно закрывает соединение,
+		// если клиент не успел отправить все заголовки за отведенное время.
+	}
+
+	// Запускаем сервер в отдельной горутине
+	go func() {
+		log.Printf("🚀 HTTP-сервер запущен на порту %s\n", httpPort)
+		err = server.ListenAndServe()
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Printf("❌ Ошибка запуска сервера: %v\n", err)
+		}
+	}()
+
+	// Graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("🛑 Завершение работы сервера...")
+
+	// Создаем контекст с таймаутом для остановки сервера
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer cancel()
+
+	err = server.Shutdown(ctx)
+	if err != nil {
+		log.Printf("❌ Ошибка при остановке сервера: %v\n", err)
+	}
+
+	log.Println("✅ Сервер остановлен")
 }
