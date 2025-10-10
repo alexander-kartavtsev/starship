@@ -1,12 +1,12 @@
 module github.com/alexander-kartavtsev/starship/order
 
-go 1.24.0
+go 1.24.6
 
 require (
 	github.com/alexander-kartavtsev/starship/shared v0.0.0-20251009035331-672f9d3abd8c
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/google/uuid v1.6.0
-	golang.org/x/net v0.44.0
+	golang.org/x/net v0.46.1-0.20251009175946-9f2f0b95b65d
 )
 
 //replace github.com/alexander-kartavtsev/starship => ../order
@@ -33,7 +33,7 @@ require (
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/exp v0.0.0-20230725093048-515e97ebf090 // indirect
 	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/text v0.30.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

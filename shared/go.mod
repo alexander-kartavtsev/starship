@@ -1,6 +1,6 @@
 module github.com/alexander-kartavtsev/starship/shared
 
-go 1.24.0
+go 1.24.6
 
 require (
 	github.com/go-faster/errors v0.7.1
@@ -29,10 +29,10 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/exp v0.0.0-20230725093048-515e97ebf090 // indirect
-	golang.org/x/net v0.44.0 // indirect
+	golang.org/x/net v0.46.1-0.20251009175946-9f2f0b95b65d // indirect
 	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/text v0.30.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250804133106-a7a43d27e69b // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

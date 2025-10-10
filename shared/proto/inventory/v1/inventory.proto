@@ -9,6 +9,7 @@ option go_package = "github.com/alexander-kartavtsev/starship/shared/pkg/proto/i
 service InventoryService {
   // Возвращает информацию о детали по её UUID.
   rpc GetPart(GetPartRequest) returns (GetPartResponse);
+
   // Возвращает список деталей с возможностью фильтрации.
   rpc ListPart(ListPartRequest) returns (ListPartResponse);
 }
