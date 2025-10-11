@@ -13,9 +13,9 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 )
 
-func encodeCanselOrderByIdResponse(response CanselOrderByIdRes, w http.ResponseWriter, span trace.Span) error {
+func encodeCancelOrderByIdResponse(response CancelOrderByIdRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *CanselOrderByIdNoContent:
+	case *CancelOrderByIdNoContent:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(204)
 		span.SetStatus(codes.Ok, http.StatusText(204))

@@ -14,7 +14,7 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func decodeCanselOrderByIdResponse(resp *http.Response) (res CanselOrderByIdRes, _ error) {
+func decodeCancelOrderByIdResponse(resp *http.Response) (res CancelOrderByIdRes, _ error) {
 	switch resp.StatusCode {
 	case 204:
 		// Code 204.
@@ -30,7 +30,7 @@ func decodeCanselOrderByIdResponse(resp *http.Response) (res CanselOrderByIdRes,
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response CanselOrderByIdNoContent
+			var response CancelOrderByIdNoContent
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err

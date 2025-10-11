@@ -11,7 +11,7 @@ service InventoryService {
   rpc GetPart(GetPartRequest) returns (GetPartResponse);
 
   // Возвращает список деталей с возможностью фильтрации.
-  rpc ListPart(ListPartRequest) returns (ListPartResponse);
+  rpc ListParts(ListPartsRequest) returns (ListPartsResponse);
 }
 
 // Идентификатор детали
@@ -25,7 +25,7 @@ message GetPartResponse {
 }
 
 // Возвращает список деталей с возможностью фильтрации.
-message ListPartRequest {
+message ListPartsRequest {
   PartsFilter filter = 1;
 }
 
@@ -46,7 +46,7 @@ message PartsFilter {
 }
 
 // Список найденных деталей
-message ListPartResponse {
+message ListPartsResponse {
   map<string,Part> parts = 1;
 }
 

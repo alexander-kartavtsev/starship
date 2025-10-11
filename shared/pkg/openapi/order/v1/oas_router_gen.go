@@ -110,9 +110,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 					switch elem[0] {
-					case 'c': // Prefix: "cansel"
+					case 'c': // Prefix: "cancel"
 
-						if l := len("cansel"); len(elem) >= l && elem[0:l] == "cansel" {
+						if l := len("cancel"); len(elem) >= l && elem[0:l] == "cancel" {
 							elem = elem[l:]
 						} else {
 							break
@@ -122,7 +122,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							// Leaf node.
 							switch r.Method {
 							case "POST":
-								s.handleCanselOrderByIdRequest([1]string{
+								s.handleCancelOrderByIdRequest([1]string{
 									args[0],
 								}, elemIsEscaped, w, r)
 							default:
@@ -307,9 +307,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						break
 					}
 					switch elem[0] {
-					case 'c': // Prefix: "cansel"
+					case 'c': // Prefix: "cancel"
 
-						if l := len("cansel"); len(elem) >= l && elem[0:l] == "cansel" {
+						if l := len("cancel"); len(elem) >= l && elem[0:l] == "cancel" {
 							elem = elem[l:]
 						} else {
 							break
@@ -319,10 +319,10 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							// Leaf node.
 							switch method {
 							case "POST":
-								r.name = CanselOrderByIdOperation
+								r.name = CancelOrderByIdOperation
 								r.summary = "Отмена заказа"
-								r.operationID = "canselOrderById"
-								r.pathPattern = "/api/v1/orders/{order_uuid}/cansel"
+								r.operationID = "cancelOrderById"
+								r.pathPattern = "/api/v1/orders/{order_uuid}/cancel"
 								r.args = args
 								r.count = 1
 								return r, true

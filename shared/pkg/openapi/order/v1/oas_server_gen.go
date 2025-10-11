@@ -8,12 +8,12 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// CanselOrderById implements canselOrderById operation.
+	// CancelOrderById implements cancelOrderById operation.
 	//
 	// Отмена заказа.
 	//
-	// POST /api/v1/orders/{order_uuid}/cansel
-	CanselOrderById(ctx context.Context, params CanselOrderByIdParams) (CanselOrderByIdRes, error)
+	// POST /api/v1/orders/{order_uuid}/cancel
+	CancelOrderById(ctx context.Context, params CancelOrderByIdParams) (CancelOrderByIdRes, error)
 	// CreateOrder implements createOrder operation.
 	//
 	// Создаёт новый заказ на основе выбранных

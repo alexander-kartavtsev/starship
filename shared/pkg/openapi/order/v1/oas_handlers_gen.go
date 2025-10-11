@@ -30,22 +30,22 @@ func (c *codeRecorder) WriteHeader(status int) {
 	c.ResponseWriter.WriteHeader(status)
 }
 
-// handleCanselOrderByIdRequest handles canselOrderById operation.
+// handleCancelOrderByIdRequest handles cancelOrderById operation.
 //
 // Отмена заказа.
 //
-// POST /api/v1/orders/{order_uuid}/cansel
-func (s *Server) handleCanselOrderByIdRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// POST /api/v1/orders/{order_uuid}/cancel
+func (s *Server) handleCancelOrderByIdRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("canselOrderById"),
+		otelogen.OperationID("cancelOrderById"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}/cansel"),
+		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}/cancel"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), CanselOrderByIdOperation,
+	ctx, span := s.cfg.Tracer.Start(r.Context(), CancelOrderByIdOperation,
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -100,11 +100,11 @@ func (s *Server) handleCanselOrderByIdRequest(args [1]string, argsEscaped bool, 
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: CanselOrderByIdOperation,
-			ID:   "canselOrderById",
+			Name: CancelOrderByIdOperation,
+			ID:   "cancelOrderById",
 		}
 	)
-	params, err := decodeCanselOrderByIdParams(args, argsEscaped, r)
+	params, err := decodeCancelOrderByIdParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -115,13 +115,13 @@ func (s *Server) handleCanselOrderByIdRequest(args [1]string, argsEscaped bool, 
 		return
 	}
 
-	var response CanselOrderByIdRes
+	var response CancelOrderByIdRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
-			OperationName:    CanselOrderByIdOperation,
+			OperationName:    CancelOrderByIdOperation,
 			OperationSummary: "Отмена заказа",
-			OperationID:      "canselOrderById",
+			OperationID:      "cancelOrderById",
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
@@ -134,8 +134,8 @@ func (s *Server) handleCanselOrderByIdRequest(args [1]string, argsEscaped bool, 
 
 		type (
 			Request  = struct{}
-			Params   = CanselOrderByIdParams
-			Response = CanselOrderByIdRes
+			Params   = CancelOrderByIdParams
+			Response = CancelOrderByIdRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -144,14 +144,14 @@ func (s *Server) handleCanselOrderByIdRequest(args [1]string, argsEscaped bool, 
 		](
 			m,
 			mreq,
-			unpackCanselOrderByIdParams,
+			unpackCancelOrderByIdParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.CanselOrderById(ctx, params)
+				response, err = s.h.CancelOrderById(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.CanselOrderById(ctx, params)
+		response, err = s.h.CancelOrderById(ctx, params)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*GenericErrorStatusCode](err); ok {
@@ -170,7 +170,7 @@ func (s *Server) handleCanselOrderByIdRequest(args [1]string, argsEscaped bool, 
 		return
 	}
 
-	if err := encodeCanselOrderByIdResponse(response, w, span); err != nil {
+	if err := encodeCancelOrderByIdResponse(response, w, span); err != nil {
 		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)

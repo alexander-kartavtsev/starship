@@ -126,14 +126,14 @@ func (s *BadRequestError) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *CanselOrderByIdNoContent) Encode(e *jx.Encoder) {
+func (s *CancelOrderByIdNoContent) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *CanselOrderByIdNoContent) encodeFields(e *jx.Encoder) {
+func (s *CancelOrderByIdNoContent) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("code")
 		e.Int(s.Code)
@@ -144,15 +144,15 @@ func (s *CanselOrderByIdNoContent) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfCanselOrderByIdNoContent = [2]string{
+var jsonFieldsNameOfCancelOrderByIdNoContent = [2]string{
 	0: "code",
 	1: "message",
 }
 
-// Decode decodes CanselOrderByIdNoContent from json.
-func (s *CanselOrderByIdNoContent) Decode(d *jx.Decoder) error {
+// Decode decodes CancelOrderByIdNoContent from json.
+func (s *CancelOrderByIdNoContent) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode CanselOrderByIdNoContent to nil")
+		return errors.New("invalid: unable to decode CancelOrderByIdNoContent to nil")
 	}
 	var requiredBitSet [1]uint8
 
@@ -187,7 +187,7 @@ func (s *CanselOrderByIdNoContent) Decode(d *jx.Decoder) error {
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode CanselOrderByIdNoContent")
+		return errors.Wrap(err, "decode CancelOrderByIdNoContent")
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
@@ -204,8 +204,8 @@ func (s *CanselOrderByIdNoContent) Decode(d *jx.Decoder) error {
 				bitIdx := bits.TrailingZeros8(result)
 				fieldIdx := i*8 + bitIdx
 				var name string
-				if fieldIdx < len(jsonFieldsNameOfCanselOrderByIdNoContent) {
-					name = jsonFieldsNameOfCanselOrderByIdNoContent[fieldIdx]
+				if fieldIdx < len(jsonFieldsNameOfCancelOrderByIdNoContent) {
+					name = jsonFieldsNameOfCancelOrderByIdNoContent[fieldIdx]
 				} else {
 					name = strconv.Itoa(fieldIdx)
 				}
@@ -226,14 +226,14 @@ func (s *CanselOrderByIdNoContent) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *CanselOrderByIdNoContent) MarshalJSON() ([]byte, error) {
+func (s *CancelOrderByIdNoContent) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *CanselOrderByIdNoContent) UnmarshalJSON(data []byte) error {
+func (s *CancelOrderByIdNoContent) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

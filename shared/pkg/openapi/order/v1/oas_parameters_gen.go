@@ -16,13 +16,13 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-// CanselOrderByIdParams is parameters of canselOrderById operation.
-type CanselOrderByIdParams struct {
+// CancelOrderByIdParams is parameters of cancelOrderById operation.
+type CancelOrderByIdParams struct {
 	// Идентификатор заказа (uuid).
 	OrderUUID uuid.UUID
 }
 
-func unpackCanselOrderByIdParams(packed middleware.Parameters) (params CanselOrderByIdParams) {
+func unpackCancelOrderByIdParams(packed middleware.Parameters) (params CancelOrderByIdParams) {
 	{
 		key := middleware.ParameterKey{
 			Name: "order_uuid",
@@ -33,7 +33,7 @@ func unpackCanselOrderByIdParams(packed middleware.Parameters) (params CanselOrd
 	return params
 }
 
-func decodeCanselOrderByIdParams(args [1]string, argsEscaped bool, r *http.Request) (params CanselOrderByIdParams, _ error) {
+func decodeCancelOrderByIdParams(args [1]string, argsEscaped bool, r *http.Request) (params CancelOrderByIdParams, _ error) {
 	// Decode path: order_uuid.
 	if err := func() error {
 		param := args[0]

@@ -28,12 +28,12 @@ func trimTrailingSlashes(u *url.URL) {
 
 // Invoker invokes operations described by OpenAPI v3 specification.
 type Invoker interface {
-	// CanselOrderById invokes canselOrderById operation.
+	// CancelOrderById invokes cancelOrderById operation.
 	//
 	// Отмена заказа.
 	//
-	// POST /api/v1/orders/{order_uuid}/cansel
-	CanselOrderById(ctx context.Context, params CanselOrderByIdParams) (CanselOrderByIdRes, error)
+	// POST /api/v1/orders/{order_uuid}/cancel
+	CancelOrderById(ctx context.Context, params CancelOrderByIdParams) (CancelOrderByIdRes, error)
 	// CreateOrder invokes createOrder operation.
 	//
 	// Создаёт новый заказ на основе выбранных
@@ -102,21 +102,21 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 	return u
 }
 
-// CanselOrderById invokes canselOrderById operation.
+// CancelOrderById invokes cancelOrderById operation.
 //
 // Отмена заказа.
 //
-// POST /api/v1/orders/{order_uuid}/cansel
-func (c *Client) CanselOrderById(ctx context.Context, params CanselOrderByIdParams) (CanselOrderByIdRes, error) {
-	res, err := c.sendCanselOrderById(ctx, params)
+// POST /api/v1/orders/{order_uuid}/cancel
+func (c *Client) CancelOrderById(ctx context.Context, params CancelOrderByIdParams) (CancelOrderByIdRes, error) {
+	res, err := c.sendCancelOrderById(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendCanselOrderById(ctx context.Context, params CanselOrderByIdParams) (res CanselOrderByIdRes, err error) {
+func (c *Client) sendCancelOrderById(ctx context.Context, params CancelOrderByIdParams) (res CancelOrderByIdRes, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("canselOrderById"),
+		otelogen.OperationID("cancelOrderById"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}/cansel"),
+		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}/cancel"),
 	}
 
 	// Run stopwatch.
@@ -131,7 +131,7 @@ func (c *Client) sendCanselOrderById(ctx context.Context, params CanselOrderById
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, CanselOrderByIdOperation,
+	ctx, span := c.cfg.Tracer.Start(ctx, CancelOrderByIdOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -168,7 +168,7 @@ func (c *Client) sendCanselOrderById(ctx context.Context, params CanselOrderById
 		}
 		pathParts[1] = encoded
 	}
-	pathParts[2] = "/cansel"
+	pathParts[2] = "/cancel"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -185,7 +185,7 @@ func (c *Client) sendCanselOrderById(ctx context.Context, params CanselOrderById
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeCanselOrderByIdResponse(resp)
+	result, err := decodeCancelOrderByIdResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

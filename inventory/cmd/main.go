@@ -50,7 +50,13 @@ func (s *inventoryService) GetPart(_ context.Context, req *inventoryV1.GetPartRe
 		UpdatedAt: timestamppb.New(time.Now()),
 	}
 
-	part, ok := s.parts[req.GetUuid()]
+	partsFilter := inventoryV1.PartsFilter{
+		Uuids: []string{req.GetUuid()},
+	}
+	res := GetPartsByFilter(&partsFilter)
+
+	part, ok := res[req.GetUuid()]
+	//part, ok := s.parts[req.GetUuid()]
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "Запчасть с UUID %s не найдена", req.GetUuid())
 	}
@@ -59,11 +65,16 @@ func (s *inventoryService) GetPart(_ context.Context, req *inventoryV1.GetPartRe
 	}, nil
 }
 
-//func (s *inventoryService) ListParts(_ context.Context, req *inventoryV1.ListPartRequest) (*inventoryV1.ListPartResponse, error) {
-//partFilter := req.GetFilter()
-//}
+func (s *inventoryService) ListParts(_ context.Context, req *inventoryV1.ListPartsRequest) (*inventoryV1.ListPartsResponse, error) {
+	reqFilter := req.GetFilter()
+	partsFilter := &inventoryV1.PartsFilter{
+		Uuids: reqFilter.GetUuids(),
+		Names: reqFilter.GetNames(),
+	}
 
-//******************* client
+	res := GetPartsByFilter(partsFilter)
+	return &inventoryV1.ListPartsResponse{Parts: res}, nil
+}
 
 const serverAddress = "localhost:50051"
 

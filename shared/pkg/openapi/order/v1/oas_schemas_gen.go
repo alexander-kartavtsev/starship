@@ -41,7 +41,7 @@ func (s *BadRequestError) SetMessage(val string) {
 func (*BadRequestError) createOrderRes()    {}
 func (*BadRequestError) payOrderByUuidRes() {}
 
-type CanselOrderByIdNoContent struct {
+type CancelOrderByIdNoContent struct {
 	// HTTP-код ответа.
 	Code int `json:"code"`
 	// Описание результата.
@@ -49,26 +49,26 @@ type CanselOrderByIdNoContent struct {
 }
 
 // GetCode returns the value of Code.
-func (s *CanselOrderByIdNoContent) GetCode() int {
+func (s *CancelOrderByIdNoContent) GetCode() int {
 	return s.Code
 }
 
 // GetMessage returns the value of Message.
-func (s *CanselOrderByIdNoContent) GetMessage() string {
+func (s *CancelOrderByIdNoContent) GetMessage() string {
 	return s.Message
 }
 
 // SetCode sets the value of Code.
-func (s *CanselOrderByIdNoContent) SetCode(val int) {
+func (s *CancelOrderByIdNoContent) SetCode(val int) {
 	s.Code = val
 }
 
 // SetMessage sets the value of Message.
-func (s *CanselOrderByIdNoContent) SetMessage(val string) {
+func (s *CancelOrderByIdNoContent) SetMessage(val string) {
 	s.Message = val
 }
 
-func (*CanselOrderByIdNoContent) canselOrderByIdRes() {}
+func (*CancelOrderByIdNoContent) cancelOrderByIdRes() {}
 
 // Ref: #/components/schemas/conflict_error
 type ConflictError struct {
@@ -98,7 +98,7 @@ func (s *ConflictError) SetMessage(val string) {
 	s.Message = val
 }
 
-func (*ConflictError) canselOrderByIdRes() {}
+func (*ConflictError) cancelOrderByIdRes() {}
 
 // Ref: #/components/schemas/create_order_request
 type CreateOrderRequest struct {
@@ -272,7 +272,7 @@ func (s *NotFoundError) SetMessage(val string) {
 	s.Message = val
 }
 
-func (*NotFoundError) canselOrderByIdRes() {}
+func (*NotFoundError) cancelOrderByIdRes() {}
 func (*NotFoundError) createOrderRes()     {}
 func (*NotFoundError) getOrderByUuidRes()  {}
 func (*NotFoundError) payOrderByUuidRes()  {}

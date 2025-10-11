@@ -81,7 +81,7 @@ func NewOrderHandler(storage *OrderStorage) *OrderHandler {
 	}
 }
 
-func (h *OrderHandler) CanselOrderById(_ context.Context, params orderV1.CanselOrderByIdParams) (orderV1.CanselOrderByIdRes, error) {
+func (h *OrderHandler) CancelOrderById(_ context.Context, params orderV1.CancelOrderByIdParams) (orderV1.CancelOrderByIdRes, error) {
 	order := h.storage.getOrder(params.OrderUUID.String())
 	println(params.OrderUUID.String())
 	if nil == order {
@@ -100,7 +100,7 @@ func (h *OrderHandler) CanselOrderById(_ context.Context, params orderV1.CanselO
 		order.Status = OrderStatusCancelled
 		h.storage.updateOrder(order)
 	}
-	return &orderV1.CanselOrderByIdNoContent{
+	return &orderV1.CancelOrderByIdNoContent{
 		Code:    http.StatusNoContent,
 		Message: "Заказ отменен",
 	}, nil

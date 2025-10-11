@@ -9,7 +9,7 @@ require (
 	golang.org/x/net v0.46.1-0.20251009175946-9f2f0b95b65d
 )
 
-//replace github.com/alexander-kartavtsev/starship => ../order
+replace github.com/alexander-kartavtsev/starship/shared => ../shared
 
 require (
 	github.com/dlclark/regexp2 v1.11.5 // indirect
@@ -37,3 +37,7 @@ require (
 	golang.org/x/text v0.30.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
+replace github.com/alexander-kartavtsev/starship/inventory => ../inventory
+
+replace github.com/alexander-kartavtsev/starship/payment => ../payment
