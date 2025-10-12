@@ -42,7 +42,8 @@ message PartsFilter {
   repeated string names = 2;
   repeated Category categories = 3;
   repeated string manufacturer_countries = 4;
-  repeated string tags = 5;
+  repeated string manufacturer_names = 5;
+  repeated string tags = 6;
 }
 
 // Список найденных деталей
