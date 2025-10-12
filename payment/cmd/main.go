@@ -11,7 +11,9 @@ import (
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 
 	paymentV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/payment/v1"
 )
@@ -20,10 +22,13 @@ const grpcPort = 50052
 
 type paymentService struct {
 	paymentV1.UnimplementedPaymentServiceServer
-	// После реальной реализации добавить мьютекс
 }
 
 func (s *paymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
+	paymentMethod := req.GetPaymentMethod()
+	if paymentMethod == paymentV1.PaymentMethod_PAYMENT_METHOD_UNKNOWN_UNSPECIFIED {
+		return nil, status.Errorf(codes.InvalidArgument, "Способ оплаты не поддерживается")
+	}
 	return &paymentV1.PayOrderResponse{
 		TransactionUuid: uuid.NewString(),
 	}, nil
