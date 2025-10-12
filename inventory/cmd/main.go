@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	"google.golang.org/grpc"
@@ -22,10 +23,14 @@ const grpcPort = 50051
 
 type inventoryService struct {
 	inventoryV1.UnimplementedInventoryServiceServer
+	mu    sync.RWMutex
 	parts map[string]*inventoryV1.Part
 }
 
 func (s *inventoryService) GetPart(_ context.Context, req *inventoryV1.GetPartRequest) (*inventoryV1.GetPartResponse, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	part, ok := s.parts[req.GetUuid()]
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "Запчасть с UUID %s не найдена", req.GetUuid())
@@ -36,6 +41,9 @@ func (s *inventoryService) GetPart(_ context.Context, req *inventoryV1.GetPartRe
 }
 
 func (s *inventoryService) ListParts(_ context.Context, req *inventoryV1.ListPartsRequest) (*inventoryV1.ListPartsResponse, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	reqFilter := req.GetFilter()
 	partsFilter := &inventoryV1.PartsFilter{
 		Uuids:                 reqFilter.GetUuids(),

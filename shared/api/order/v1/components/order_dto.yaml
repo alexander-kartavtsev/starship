@@ -26,7 +26,7 @@ properties:
   total_price:
     description: Сумма заказа
     type: number
-    format: float
+    format: double
     example: 520000.00
   transaction_uuid:
     description: Идентификатор транзакции

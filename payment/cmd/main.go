@@ -20,6 +20,7 @@ const grpcPort = 50052
 
 type paymentService struct {
 	paymentV1.UnimplementedPaymentServiceServer
+	// После реальной реализации добавить мьютекс
 }
 
 func (s *paymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {

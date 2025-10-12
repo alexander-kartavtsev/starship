@@ -15,16 +15,21 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
+	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 )
 
 const (
 	httpPort = "8080"
 	// Таймауты для HTTP-сервера
-	readHeaderTimeout = 5 * time.Second
-	shutdownTimeout   = 10 * time.Second
+	readHeaderTimeout      = 5 * time.Second
+	shutdownTimeout        = 10 * time.Second
+	inventoryServerAddress = "localhost:50051"
+	paymentServerAddress   = "localhost:50052"
 )
 
 const (
@@ -83,7 +88,7 @@ func NewOrderHandler(storage *OrderStorage) *OrderHandler {
 
 func (h *OrderHandler) CancelOrderById(_ context.Context, params orderV1.CancelOrderByIdParams) (orderV1.CancelOrderByIdRes, error) {
 	order := h.storage.getOrder(params.OrderUUID.String())
-	println(params.OrderUUID.String())
+
 	if nil == order {
 		return &orderV1.NotFoundError{
 			Code:    http.StatusNotFound,
@@ -106,15 +111,36 @@ func (h *OrderHandler) CancelOrderById(_ context.Context, params orderV1.CancelO
 	}, nil
 }
 
-func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
+func (h *OrderHandler) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
+	parts, err := getParts(ctx, req.GetPartUuids())
+	if err != nil {
+		return &orderV1.BadRequestError{
+			Code:    http.StatusFailedDependency,
+			Message: "При получении данных о запчастях произошла ошибка",
+		}, err
+	}
+
+	var partUuids []string
+	var total float64
+
+	for _, partUuid := range req.GetPartUuids() {
+		part, ok := parts[partUuid]
+		if !ok {
+			return &orderV1.NotFoundError{
+				Code:    http.StatusNotFound,
+				Message: "Деталь с uuid = '" + partUuid + "' не найдена! Уточните заказ",
+			}, err
+		}
+		partUuids = append(partUuids, part.Uuid)
+		total += part.Price
+	}
+
 	order := &orderV1.OrderDto{
-		OrderUUID:       uuid.NewString(),
-		UserUUID:        req.UserUUID,
-		PartUuids:       req.PartUuids,
-		TotalPrice:      1000,
-		TransactionUUID: "",
-		PaymentMethod:   unknown,
-		Status:          OrderStatusPendingPayment,
+		OrderUUID:  uuid.NewString(),
+		UserUUID:   req.UserUUID,
+		PartUuids:  partUuids,
+		TotalPrice: total,
+		Status:     OrderStatusPendingPayment,
 	}
 
 	h.storage.updateOrder(order)
@@ -226,4 +252,38 @@ func main() {
 	}
 
 	log.Println("✅ Сервер остановлен")
+}
+
+func getParts(ctx context.Context, partUuids []string) (map[string]*inventoryV1.Part, error) {
+	conn, err := grpc.NewClient(
+		inventoryServerAddress,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Printf("failed to connect: %v\n", err)
+		return nil, err
+	}
+	defer func() {
+		if cerr := conn.Close(); cerr != nil {
+			log.Printf("failed to close connect: %v", cerr)
+		}
+	}()
+
+	client := inventoryV1.NewInventoryServiceClient(conn)
+
+	inventoryServResp, err := client.ListParts(
+		ctx,
+		&inventoryV1.ListPartsRequest{
+			Filter: &inventoryV1.PartsFilter{
+				Uuids: partUuids,
+			},
+		},
+	)
+	if err != nil {
+		log.Printf("%s\n", err)
+		return nil, err
+	}
+	log.Printf("%v\n", inventoryServResp)
+
+	return inventoryServResp.GetParts(), nil
 }
