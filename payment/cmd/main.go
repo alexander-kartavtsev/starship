@@ -9,10 +9,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
 	paymentV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/payment/v1"
 )
 
@@ -20,11 +20,12 @@ const grpcPort = 50052
 
 type paymentService struct {
 	paymentV1.UnimplementedPaymentServiceServer
-	orders map[string]*orderV1.OrderDto
 }
 
 func (s *paymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
-	return &paymentV1.PayOrderResponse{}, nil
+	return &paymentV1.PayOrderResponse{
+		TransactionUuid: uuid.NewString(),
+	}, nil
 }
 
 func main() {
@@ -41,9 +42,7 @@ func main() {
 
 	s := grpc.NewServer()
 
-	service := &paymentService{
-		orders: GetAllOrders(),
-	}
+	service := &paymentService{}
 
 	paymentV1.RegisterPaymentServiceServer(s, service)
 
