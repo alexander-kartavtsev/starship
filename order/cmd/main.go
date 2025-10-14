@@ -100,7 +100,7 @@ func (h *OrderHandler) CancelOrderById(_ context.Context, params orderV1.CancelO
 		return &orderV1.ConflictError{
 			Code:    http.StatusConflict,
 			Message: "Заказ с uuid = '" + params.OrderUUID.String() + "' уже оплачен. Отменить нельзя.",
-		}, nil
+		}, errors.New("заказ уже оплачен")
 	}
 	if order.Status == OrderStatusPendingPayment {
 		order.Status = OrderStatusCancelled
