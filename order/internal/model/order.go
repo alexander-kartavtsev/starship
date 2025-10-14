@@ -1,17 +1,32 @@
 package model
 
 type OrderInfo struct {
+	UserUuid  string
+	PartUuids []string
+}
+
+func (i *OrderInfo) GetUserUuid() string {
+	return i.UserUuid
+}
+
+func (i *OrderInfo) GetPartUuids() []string {
+	return i.PartUuids
 }
 
 type OrderUpdateInfo struct {
-	Status OrderStatus
+	TransactionUuid *string
+	PartUuids       *[]string
+	PaymentMethod   *PaymentMethod
+	Status          *OrderStatus
 }
 
 type Order struct {
 	OrderUuid       string
+	UserUuid        string
+	PartUuids       []string
 	TotalPrice      float64
-	PaymentMethod   PaymentMethod
 	TransactionUuid string
+	PaymentMethod   PaymentMethod
 	Status          OrderStatus
 }
 
@@ -23,7 +38,7 @@ type OrderCreateRes struct {
 type PaymentMethod string
 
 const (
-	unknown       PaymentMethod = "UNKNOWN"
+	Unknown       PaymentMethod = "UNKNOWN"
 	card          PaymentMethod = "CARD"
 	sbp           PaymentMethod = "SBP"
 	creditCard    PaymentMethod = "CREDIT_CARD"

@@ -2,9 +2,10 @@ package v1
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/alexander-kartavtsev/starship/order/internal/converter"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
-	"net/http"
 )
 
 func (a *api) GetOrderByUuid(ctx context.Context, params orderV1.GetOrderByUuidParams) (orderV1.GetOrderByUuidRes, error) {

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
 )
 

@@ -6,5 +6,13 @@ import (
 )
 
 func OrderToApi(order model.Order) *orderV1.OrderDto {
-	return &orderV1.OrderDto{}
+	return &orderV1.OrderDto{
+		OrderUUID:       order.OrderUuid,
+		UserUUID:        order.UserUuid,
+		PartUuids:       order.PartUuids,
+		TotalPrice:      order.TotalPrice,
+		TransactionUUID: order.TransactionUuid,
+		PaymentMethod:   orderV1.PaymentMethod(order.PaymentMethod),
+		Status:          orderV1.OrderStatus(order.Status),
+	}
 }

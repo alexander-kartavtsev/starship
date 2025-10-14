@@ -2,14 +2,18 @@ package v1
 
 import (
 	"context"
-	"github.com/alexander-kartavtsev/starship/order/internal/repository/converter"
+
+	"github.com/alexander-kartavtsev/starship/order/internal/model"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
 )
 
 func (a *api) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
 	res, err := a.orderService.Create(
 		ctx,
-		converter.OrderInfoToModel(req.GetUserUUID(), req.GetPartUuids()),
+		model.OrderInfo{
+			UserUuid:  req.GetUserUUID(),
+			PartUuids: req.GetPartUuids(),
+		},
 	)
 	if err != nil {
 		return nil, err

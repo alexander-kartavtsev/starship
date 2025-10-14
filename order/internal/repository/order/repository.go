@@ -1,7 +1,10 @@
 package order
 
-import "sync"
-import repoModel "github.com/alexander-kartavtsev/starship/order/internal/repository/model"
+import (
+	"sync"
+
+	repoModel "github.com/alexander-kartavtsev/starship/order/internal/repository/model"
+)
 
 type repository struct {
 	mu   sync.RWMutex
