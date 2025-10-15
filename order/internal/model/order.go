@@ -52,3 +52,28 @@ const (
 	Paid           OrderStatus = "PAID"
 	Cancelled      OrderStatus = "CANCELLED"
 )
+
+type PartsFilter struct {
+	Uuids                 []string
+	Names                 []string
+	Categories            []Category
+	ManufacturerCountries []string
+	ManufacturerNames     []string
+	Tags                  []string
+}
+
+type Part struct {
+	Uuid          string
+	Price         float64
+	StockQuantity int64
+}
+
+type Category int
+
+const (
+	CATEGORY_UNKNOWN Category = iota
+	CATEGORY_ENGINE
+	CATEGORY_FUEL
+	CATEGORY_PORTHOLE
+	CATEGORY_WING
+)

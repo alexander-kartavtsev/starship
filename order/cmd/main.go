@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	gRPC_inventoryV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/inventory/v1"
 	"log"
 	"net"
 	"net/http"
@@ -13,12 +14,15 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	v1 "github.com/alexander-kartavtsev/starship/order/internal/api/order/v1"
 	orderRepo "github.com/alexander-kartavtsev/starship/order/internal/repository/order"
 	orderService "github.com/alexander-kartavtsev/starship/order/internal/service/order"
 	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
+	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 )
 
 const (
@@ -31,13 +35,16 @@ const (
 )
 
 func main() {
-	repository := orderRepo.NewRepository()
-	service := orderService.NewService(repository)
+	service := orderService.NewService(
+		orderRepo.NewRepository(),
+		gRPC_inventoryV1.NewClient(gRPCclient(inventoryServerAddress)),
+	)
 	api := v1.NewApi(service)
 	orderServer, err := orderV1.NewServer(api)
 	if err != nil {
 		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
 	}
+
 	// Инициализируем роутер Chi
 	r := chi.NewRouter()
 
@@ -86,90 +93,18 @@ func main() {
 	log.Println("✅ Сервер остановлен")
 }
 
-// getParts - получает из inventory список запчастей по списку partUuids
-//func getParts(ctx context.Context, partUuids []string) (map[string]*inventoryV1.Part, error) {
-//	conn, err := grpc.NewClient(
-//		inventoryServerAddress,
-//		grpc.WithTransportCredentials(insecure.NewCredentials()),
-//	)
-//	if err != nil {
-//		log.Printf("failed to connect: %v\n", err)
-//		return nil, err
-//	}
-//	defer func() {
-//		if cerr := conn.Close(); cerr != nil {
-//			log.Printf("failed to close connect: %v", cerr)
-//		}
-//	}()
-//
-//	client := inventoryV1.NewInventoryServiceClient(conn)
-//
-//	inventoryServResp, err := client.ListParts(
-//		ctx,
-//		&inventoryV1.ListPartsRequest{
-//			Filter: &inventoryV1.PartsFilter{
-//				Uuids: partUuids,
-//			},
-//		},
-//	)
-//	if err != nil {
-//		log.Printf("%s\n", err)
-//		return nil, err
-//	}
-//	log.Printf("%v\n", inventoryServResp)
-//
-//	return inventoryServResp.GetParts(), nil
-//}
-//
-//func getTransactionUuid(ctx context.Context, orderUuid, userUuid string, paymentMethod paymentV1.PaymentMethod) (string, error) {
-//	conn, err := grpc.NewClient(
-//		paymentServerAddress,
-//		grpc.WithTransportCredentials(insecure.NewCredentials()),
-//	)
-//	if err != nil {
-//		log.Printf("failed to connect: %v\n", err)
-//		return "", err
-//	}
-//	defer func() {
-//		if cerr := conn.Close(); cerr != nil {
-//			log.Printf("failed to close connect: %v", cerr)
-//		}
-//	}()
-//
-//	client := paymentV1.NewPaymentServiceClient(conn)
-//
-//	paymentServResp, err := client.PayOrder(
-//		ctx,
-//		&paymentV1.PayOrderRequest{
-//			OrderUuid:     orderUuid,
-//			UserUuid:      userUuid,
-//			PaymentMethod: paymentMethod,
-//		},
-//	)
-//	if err != nil {
-//		log.Printf("%s\n", err)
-//		return "", err
-//	}
-//	log.Printf("%v\n", paymentServResp)
-//
-//	return paymentServResp.GetTransactionUuid(), nil
-//}
-//
-//func convertPaymentMethod(method orderV1.PaymentMethod) paymentV1.PaymentMethod {
-//	var paymentMethod paymentV1.PaymentMethod
-//	log.Printf("Способ оплаты: %v\n", method)
-//	switch method {
-//	case card:
-//		paymentMethod = paymentV1.PaymentMethod_PAYMENT_METHOD_CARD
-//	case sbp:
-//		paymentMethod = paymentV1.PaymentMethod_PAYMENT_METHOD_SBP
-//	case creditCard:
-//		paymentMethod = paymentV1.PaymentMethod_PAYMENT_METHOD_CREDIT_CARD
-//	case investorMoney:
-//		paymentMethod = paymentV1.PaymentMethod_PAYMENT_METHOD_INVESTOR_MONEY
-//	default:
-//		paymentMethod = paymentV1.PaymentMethod_PAYMENT_METHOD_UNKNOWN_UNSPECIFIED
-//	}
-//	log.Printf("Вернулся способ оплаты: %v\n", paymentMethod)
-//	return paymentMethod
-//}
+func gRPCclient(address string) inventoryV1.InventoryServiceClient {
+	conn, err := grpc.NewClient(
+		address,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Printf("failed to connect: %v\n", err)
+	}
+	defer func() {
+		if cerr := conn.Close(); cerr != nil {
+			log.Printf("failed to close connect: %v", cerr)
+		}
+	}()
+	return inventoryV1.NewInventoryServiceClient(conn)
+}

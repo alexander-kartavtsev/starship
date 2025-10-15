@@ -12,5 +12,4 @@ type OrderRepository interface {
 	Update(ctx context.Context, uuid string, updateInfo model.OrderUpdateInfo) error
 }
 
-type InventoryRepository interface {
-}
+type InventoryRepository interface{}

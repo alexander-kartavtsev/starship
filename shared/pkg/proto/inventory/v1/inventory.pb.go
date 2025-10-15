@@ -833,6 +833,7 @@ var (
 		(*timestamppb.Timestamp)(nil), // 12: google.protobuf.Timestamp
 	}
 )
+
 var file_inventory_v1_inventory_proto_depIdxs = []int32{
 	6,  // 0: inventory.v1.GetPartResponse.info:type_name -> inventory.v1.Part
 	4,  // 1: inventory.v1.ListPartsRequest.filter:type_name -> inventory.v1.PartsFilter

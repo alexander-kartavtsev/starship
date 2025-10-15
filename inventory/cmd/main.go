@@ -3,9 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	v1 "github.com/alexander-kartavtsev/starship/inventory/internal/api/inventory/v1"
-	partRepo "github.com/alexander-kartavtsev/starship/inventory/internal/repository/part"
-	partService "github.com/alexander-kartavtsev/starship/inventory/internal/service/part"
 	"log"
 	"net"
 	"os"
@@ -18,6 +15,9 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
+	v1 "github.com/alexander-kartavtsev/starship/inventory/internal/api/inventory/v1"
+	partRepo "github.com/alexander-kartavtsev/starship/inventory/internal/repository/part"
+	partService "github.com/alexander-kartavtsev/starship/inventory/internal/service/part"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 )
 
@@ -83,7 +83,7 @@ func main() {
 	//	parts: GetAllParts(),
 	//}
 
-	//inventoryV1.RegisterInventoryServiceServer(s, service)
+	// inventoryV1.RegisterInventoryServiceServer(s, service)
 	inventoryV1.RegisterInventoryServiceServer(s, api)
 
 	// Включаем рефлексию для отладки
