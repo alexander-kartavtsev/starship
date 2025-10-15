@@ -15,8 +15,8 @@ import (
 	"golang.org/x/net/context"
 
 	v1 "github.com/alexander-kartavtsev/starship/order/internal/api/order/v1"
-	"github.com/alexander-kartavtsev/starship/order/internal/repository/order"
-	order2 "github.com/alexander-kartavtsev/starship/order/internal/service/order"
+	orderRepo "github.com/alexander-kartavtsev/starship/order/internal/repository/order"
+	orderService "github.com/alexander-kartavtsev/starship/order/internal/service/order"
 	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
 )
@@ -31,8 +31,8 @@ const (
 )
 
 func main() {
-	repository := order.NewRepository()
-	service := order2.NewService(repository)
+	repository := orderRepo.NewRepository()
+	service := orderService.NewService(repository)
 	api := v1.NewApi(service)
 	orderServer, err := orderV1.NewServer(api)
 	if err != nil {

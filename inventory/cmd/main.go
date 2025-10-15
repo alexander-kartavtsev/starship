@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	v1 "github.com/alexander-kartavtsev/starship/inventory/internal/api/inventory/v1"
+	partRepo "github.com/alexander-kartavtsev/starship/inventory/internal/repository/part"
+	partService "github.com/alexander-kartavtsev/starship/inventory/internal/service/part"
 	"log"
 	"net"
 	"os"
@@ -72,11 +75,16 @@ func main() {
 
 	s := grpc.NewServer()
 
-	service := &inventoryService{
-		parts: GetAllParts(),
-	}
+	repo := partRepo.NewRepository()
+	service := partService.NewService(repo)
+	api := v1.NewApi(service)
 
-	inventoryV1.RegisterInventoryServiceServer(s, service)
+	//service := &inventoryService{
+	//	parts: GetAllParts(),
+	//}
+
+	//inventoryV1.RegisterInventoryServiceServer(s, service)
+	inventoryV1.RegisterInventoryServiceServer(s, api)
 
 	// Включаем рефлексию для отладки
 	reflection.Register(s)

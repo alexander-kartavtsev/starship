@@ -11,3 +11,6 @@ type OrderRepository interface {
 	Get(ctx context.Context, uuid string) (model.Order, error)
 	Update(ctx context.Context, uuid string, updateInfo model.OrderUpdateInfo) error
 }
+
+type InventoryRepository interface {
+}
