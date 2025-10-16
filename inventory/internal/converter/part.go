@@ -8,12 +8,12 @@ import (
 func PartsToProto(parts map[string]*model.Part) map[string]*inventoryV1.Part {
 	protoParts := map[string]*inventoryV1.Part{}
 	for partUuid, part := range parts {
-		protoParts[partUuid] = PartToProto(*part)
+		protoParts[partUuid] = PartToProto(part)
 	}
 	return protoParts
 }
 
-func PartToProto(part model.Part) *inventoryV1.Part {
+func PartToProto(part *model.Part) *inventoryV1.Part {
 	return &inventoryV1.Part{
 		Uuid:          part.Uuid,
 		Name:          part.Name,
@@ -22,7 +22,7 @@ func PartToProto(part model.Part) *inventoryV1.Part {
 		StockQuantity: part.StockQuantity,
 		Category:      inventoryV1.Category(part.Category),
 		Dimensions:    DimentionsToProto(part.Dimensions),
-		Manufacturer:  ManufacturerToProto(*part.Manufacturer),
+		Manufacturer:  ManufacturerToProto(part.Manufacturer),
 		Tags:          part.Tags,
 	}
 }
@@ -39,8 +39,8 @@ func DimentionsToProto(dimensions *model.Dimensions) *inventoryV1.Dimensions {
 	}
 }
 
-func ManufacturerToProto(manufacturer model.Manufacturer) *inventoryV1.Manufacturer {
-	if &manufacturer == nil {
+func ManufacturerToProto(manufacturer *model.Manufacturer) *inventoryV1.Manufacturer {
+	if manufacturer == nil {
 		return &inventoryV1.Manufacturer{}
 	}
 	return &inventoryV1.Manufacturer{

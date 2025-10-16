@@ -34,7 +34,7 @@ type Manufacturer struct {
 	Website string
 }
 
-type Category int
+type Category int32
 
 const (
 	CATEGORY_UNKNOWN Category = iota

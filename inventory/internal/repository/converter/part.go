@@ -24,7 +24,7 @@ func PartToModel(part repoModel.Part) model.Part {
 		StockQuantity: part.StockQuantity,
 		Category:      model.Category(part.Category),
 		Dimensions:    DimentionsToModel(part.Dimensions),
-		Manufacturer:  ManufacturerToModel(*part.Manufacturer),
+		Manufacturer:  ManufacturerToModel(part.Manufacturer),
 		Tags:          part.Tags,
 	}
 }
@@ -41,8 +41,8 @@ func DimentionsToModel(dimensions *repoModel.Dimensions) *model.Dimensions {
 	}
 }
 
-func ManufacturerToModel(manufacturer repoModel.Manufacturer) *model.Manufacturer {
-	if &manufacturer == nil {
+func ManufacturerToModel(manufacturer *repoModel.Manufacturer) *model.Manufacturer {
+	if manufacturer == nil {
 		return &model.Manufacturer{}
 	}
 	return &model.Manufacturer{

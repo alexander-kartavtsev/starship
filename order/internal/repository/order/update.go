@@ -25,9 +25,7 @@ func (r *repository) Update(ctx context.Context, uuid string, updateInfo model.O
 	}
 
 	if updateInfo.PartUuids != nil {
-		for _, partUuid := range *updateInfo.PartUuids {
-			order.PartUuids = append(order.PartUuids, partUuid)
-		}
+		order.PartUuids = append(order.PartUuids, []string(*updateInfo.PartUuids)...)
 	}
 
 	if updateInfo.Status != nil {

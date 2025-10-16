@@ -9,13 +9,12 @@ import (
 )
 
 func (c *client) ListParts(ctx context.Context, filter model.PartsFilter) (map[string]model.Part, error) {
-	// log.Printf("filter in order grpc ListParts: %v\n", filter)
 	response, err := c.generatedClient.ListParts(ctx, &inventoryV1.ListPartsRequest{
 		Filter: clientConverter.PartsFilterToProto(filter),
 	})
 	if err != nil {
 		return nil, err
 	}
-	// log.Printf("response in order grpc ListParts: %v\n", response)
+
 	return clientConverter.PartListToModel(response.GetParts()), nil
 }

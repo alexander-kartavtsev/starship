@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	gRPC_inventoryV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/inventory/v1"
 	"log"
 	"net"
 	"net/http"
@@ -18,11 +17,14 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	v1 "github.com/alexander-kartavtsev/starship/order/internal/api/order/v1"
+	gRPCinventoryV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/inventory/v1"
+	gRPCpaymentV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/payment/v1"
 	orderRepo "github.com/alexander-kartavtsev/starship/order/internal/repository/order"
 	orderService "github.com/alexander-kartavtsev/starship/order/internal/service/order"
 	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
+	paymentV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/payment/v1"
 )
 
 const (
@@ -35,15 +37,28 @@ const (
 )
 
 func main() {
-	service := orderService.NewService(
-		orderRepo.NewRepository(),
-		gRPC_inventoryV1.NewClient(gRPCclient(inventoryServerAddress)),
-	)
+	repo := orderRepo.NewRepository()
+
+	connInv := gRPCconn(inventoryServerAddress)
+	invClient := gRPCinventoryV1.NewClient(inventoryV1.NewInventoryServiceClient(connInv))
+	connPay := gRPCconn(paymentServerAddress)
+	payClient := gRPCpaymentV1.NewClient(paymentV1.NewPaymentServiceClient(connPay))
+
+	service := orderService.NewService(repo, invClient, payClient)
 	api := v1.NewApi(service)
 	orderServer, err := orderV1.NewServer(api)
 	if err != nil {
 		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
 	}
+
+	defer func() {
+		if cerr := connInv.Close(); cerr != nil {
+			log.Printf("failed to close connect: %v", cerr)
+		}
+		if cerr := connPay.Close(); cerr != nil {
+			log.Printf("failed to close connect: %v", cerr)
+		}
+	}()
 
 	// Инициализируем роутер Chi
 	r := chi.NewRouter()
@@ -93,7 +108,7 @@ func main() {
 	log.Println("✅ Сервер остановлен")
 }
 
-func gRPCclient(address string) inventoryV1.InventoryServiceClient {
+func gRPCconn(address string) *grpc.ClientConn {
 	conn, err := grpc.NewClient(
 		address,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -101,10 +116,5 @@ func gRPCclient(address string) inventoryV1.InventoryServiceClient {
 	if err != nil {
 		log.Printf("failed to connect: %v\n", err)
 	}
-	defer func() {
-		if cerr := conn.Close(); cerr != nil {
-			log.Printf("failed to close connect: %v", cerr)
-		}
-	}()
-	return inventoryV1.NewInventoryServiceClient(conn)
+	return conn
 }

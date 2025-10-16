@@ -39,10 +39,10 @@ type PaymentMethod string
 
 const (
 	Unknown       PaymentMethod = "UNKNOWN"
-	card          PaymentMethod = "CARD"
-	sbp           PaymentMethod = "SBP"
-	creditCard    PaymentMethod = "CREDIT_CARD"
-	investorMoney PaymentMethod = "INVESTOR_MONEY"
+	Card          PaymentMethod = "CARD"
+	Sbp           PaymentMethod = "SBP"
+	CreditCard    PaymentMethod = "CREDIT_CARD"
+	InvestorMoney PaymentMethod = "INVESTOR_MONEY"
 )
 
 type OrderStatus string
@@ -68,7 +68,7 @@ type Part struct {
 	StockQuantity int64
 }
 
-type Category int
+type Category int32
 
 const (
 	CATEGORY_UNKNOWN Category = iota
