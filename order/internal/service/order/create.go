@@ -8,17 +8,14 @@ import (
 
 func (s *service) Create(ctx context.Context, info model.OrderInfo) (*model.OrderCreateRes, error) {
 	var totalPrice float64
-	// log.Printf("info (параметр в order.service.Create): %v\n", info)
 
 	parts, err := s.inventoryClient.ListParts(ctx, model.PartsFilter{
 		Uuids: info.GetPartUuids(),
 	})
 	if err != nil {
-		// log.Printf("parts (получили из gRPC в order.service.Create): %v\n", parts)
-		// log.Printf("err (получили из gRPC в order.service.Create): %v\n", err)
 		return nil, err
 	}
-	// log.Printf("parts (получили из gRPC в order.service.Create): %v\n", parts)
+
 	var existsPartUuids []string
 	for partUuid, part := range parts {
 		totalPrice += part.Price
