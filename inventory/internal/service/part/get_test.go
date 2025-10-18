@@ -5,7 +5,9 @@ import (
 	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
 	"github.com/alexander-kartavtsev/starship/inventory/internal/repository/converter"
 	repoModel "github.com/alexander-kartavtsev/starship/inventory/internal/repository/model"
+	"github.com/stretchr/testify/assert"
 	"log"
+	"testing"
 )
 
 func (s *ServiceSuite) TestService_Get() {
@@ -84,4 +86,29 @@ func (s *ServiceSuite) TestConverter_PartToModel() {
 
 	res := converter.PartToModel(partRepo)
 	s.Assert().Equal(expected, res)
+}
+
+func TestConverter_DimensionsToModel(t *testing.T) {
+	modelDimensions := model.Dimensions{
+		Width:  123.45,
+		Length: 123.45,
+		Weight: 123.45,
+		Height: 123.45,
+	}
+
+	repoModelDimensions := repoModel.Dimensions{
+		Width:  123.45,
+		Length: 123.45,
+		Weight: 123.45,
+		Height: 123.45,
+	}
+
+	t.Run("dimensions_to_model_ok", func(t *testing.T) {
+		res := converter.DimensionsToModel(&repoModelDimensions)
+		assert.Equal(t, modelDimensions, res)
+	})
+	t.Run("dimensions_to_model_empty", func(t *testing.T) {
+		res := converter.DimensionsToModel(&repoModel.Dimensions{})
+		assert.Equal(t, model.Dimensions{}, res)
+	})
 }

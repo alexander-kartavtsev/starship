@@ -34,7 +34,7 @@ vars:
 
   OPEN_API_FILES: '{{.ROOT_DIR}}/shared/api/bundles'
   COVERAGE_DIR: '{{.ROOT_DIR}}/coverage'
-  COVERAGE_FILE: 'coverage.out'
+  COVERAGE_FILE: total.out
 
   MODULES: assembly inventory order payment platform iam notification
 
@@ -156,7 +156,7 @@ tasks:
           echo "📦 Обрабатываем модуль: $mod"
         
           TARGET_PKGS=$(go list ./$mod/... \
-            | grep -E '/(internal/(service|repository|api|converter))' \
+            | grep -E '/(internal/(service|api|converter))' \
             | grep -vE '/(mocks|testdata|pkg|proto|pb|cmd)' \
             | paste -sd "," -)
         
@@ -190,7 +190,6 @@ tasks:
         echo "📦 Склеиваем все покрытия..."
         {
           echo "mode: atomic"
-          touch {{.COVERAGE_DIR}}/{{.COVERAGE_FILE}}
           find {{.COVERAGE_DIR}} -type f -name '*.out' ! -name '{{.COVERAGE_FILE}}' \
             -exec grep -h -v "^mode:" {} +
         } > {{.COVERAGE_DIR}}/{{.COVERAGE_FILE}}

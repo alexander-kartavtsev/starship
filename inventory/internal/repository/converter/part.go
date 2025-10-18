@@ -21,13 +21,13 @@ func PartToModel(part repoModel.Part) model.Part {
 		Price:         part.Price,
 		StockQuantity: part.StockQuantity,
 		Category:      model.Category(part.Category),
-		Dimensions:    DimentionsToModel(&part.Dimensions),
+		Dimensions:    DimensionsToModel(&part.Dimensions),
 		Manufacturer:  ManufacturerToModel(&part.Manufacturer),
 		Tags:          part.Tags,
 	}
 }
 
-func DimentionsToModel(dimensions *repoModel.Dimensions) model.Dimensions {
+func DimensionsToModel(dimensions *repoModel.Dimensions) model.Dimensions {
 	if dimensions == nil {
 		return model.Dimensions{}
 	}
@@ -48,23 +48,4 @@ func ManufacturerToModel(manufacturer *repoModel.Manufacturer) model.Manufacture
 		Country: manufacturer.Country,
 		Website: manufacturer.Website,
 	}
-}
-
-func PartsFilterToRepoModel(partsFilter model.PartsFilter) repoModel.PartsFilter {
-	return repoModel.PartsFilter{
-		Uuids:                 partsFilter.Uuids,
-		Names:                 partsFilter.Names,
-		Categories:            CategoriesToRepoModel(partsFilter.Categories),
-		ManufacturerCountries: partsFilter.ManufacturerCountries,
-		ManufacturerNames:     partsFilter.ManufacturerNames,
-		Tags:                  partsFilter.Tags,
-	}
-}
-
-func CategoriesToRepoModel(categories []model.Category) []repoModel.Category {
-	var res []repoModel.Category
-	for _, category := range categories {
-		res = append(res, repoModel.Category(category))
-	}
-	return res
 }

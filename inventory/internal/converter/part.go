@@ -24,13 +24,13 @@ func PartToProto(part *model.Part) *inventoryV1.Part {
 		Price:         part.Price,
 		StockQuantity: part.StockQuantity,
 		Category:      inventoryV1.Category(part.Category),
-		Dimensions:    DimentionsToProto(&part.Dimensions),
+		Dimensions:    DimensionsToProto(&part.Dimensions),
 		Manufacturer:  ManufacturerToProto(&part.Manufacturer),
 		Tags:          part.Tags,
 	}
 }
 
-func DimentionsToProto(dimensions *model.Dimensions) *inventoryV1.Dimensions {
+func DimensionsToProto(dimensions *model.Dimensions) *inventoryV1.Dimensions {
 	if dimensions == nil {
 		return &inventoryV1.Dimensions{}
 	}
