@@ -1,226 +1,17 @@
 package part
 
 import (
-	"log"
-	"strings"
-
-	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
 	repoModel "github.com/alexander-kartavtsev/starship/inventory/internal/repository/model"
 )
 
-func GetPartsByFilter(parts map[string]*repoModel.Part, filter *repoModel.PartsFilter) (map[string]*repoModel.Part, error) {
-	if filter == nil {
-		log.Println("Значение = nil")
-		return parts, model.ErrPartNotFound
-	}
-	log.Printf("%v\n", filter)
+func GetAllParts() map[string]repoModel.Part {
+	parts := make(map[string]repoModel.Part)
 
-	filterUuids := filter.Uuids
-	if filterUuids != nil {
-		parts = getPartsByString(parts, filterUuids, "Uuid")
-		// log.Printf("%v\n", parts)
-		if parts == nil {
-			return nil, model.ErrPartNotFound
-		}
-	}
-	// log.Printf("1: %v\n", parts)
-
-	filterNames := filter.Names
-	if filterNames != nil {
-		parts = getPartsByString(parts, filterNames, "Name")
-		if parts == nil {
-			return nil, model.ErrPartNotFound
-		}
-	}
-	// log.Printf("2: %v\n", parts)
-
-	filterCategories := filter.Categories
-	if filterCategories != nil {
-		parts = getPartsByCategories(parts, filterCategories)
-		if parts == nil {
-			return nil, model.ErrPartNotFound
-		}
-	}
-	// log.Printf("3: %v\n", parts)
-
-	filterCountries := filter.ManufacturerCountries
-	if filterCountries != nil {
-		parts = getPartsByCountry(parts, filterCountries, "Country")
-		if parts == nil {
-			return nil, model.ErrPartNotFound
-		}
-	}
-	// log.Printf("4: %v\n", parts)
-
-	filterManufacturer := filter.ManufacturerNames
-	if filterManufacturer != nil {
-		parts = getPartsByCountry(parts, filterManufacturer, "Name")
-		if parts == nil {
-			return nil, model.ErrPartNotFound
-		}
-	}
-	// log.Printf("5: %v\n", parts)
-
-	filterTags := filter.Tags
-	if filterTags != nil {
-		parts = getPartsByTags(parts, filterTags) // ???
-		if parts == nil {
-			return nil, model.ErrPartNotFound
-		}
-	}
-	// log.Printf("6: %v\n", parts)
-
-	return parts, nil
-}
-
-// string start
-
-func getPartsByString(parts map[string]*repoModel.Part, filter []string, name string) map[string]*repoModel.Part {
-	res := map[string]*repoModel.Part{}
-
-	// log.Println("  Это срез строк")
-	for id, part := range parts {
-		val, ok := GetStringFieldValue(part, name)
-		// log.Printf("Получили значение поля %s: %s", name, val)
-		if ok && checkStringVal(val, filter) {
-			res[id] = part
-		}
-	}
-	return res
-}
-
-func GetStringFieldValue(part *repoModel.Part, name string) (string, bool) {
-	switch name {
-	case "Uuid":
-		return part.Uuid, true
-	case "Name":
-		return part.Name, true
-	default:
-		return "", false
-	}
-}
-
-func checkStringVal(value string, filter []string) bool {
-	if len(filter) == 0 {
-		return true
-	}
-	for _, filterValue := range filter {
-		if strings.Contains(strings.ToLower(value), strings.ToLower(filterValue)) {
-			return true
-		}
-	}
-	return false
-}
-
-// string end
-// ---
-// categories start
-
-func getPartsByCategories(parts map[string]*repoModel.Part, filter []repoModel.Category) map[string]*repoModel.Part {
-	res := map[string]*repoModel.Part{}
-
-	// log.Println("  Это срез категорий")
-	for id, part := range parts {
-		val, ok := GetCategoryFieldValue(part)
-		// log.Printf("Получили значение поля Category: %s", val)
-		if ok && checkCategoryVal(val, filter) {
-			res[id] = part
-		}
-	}
-	return res
-}
-
-func GetCategoryFieldValue(part *repoModel.Part) (repoModel.Category, bool) {
-	return part.Category, true
-}
-
-func checkCategoryVal(value repoModel.Category, filter []repoModel.Category) bool {
-	if len(filter) == 0 {
-		return true
-	}
-	for _, filterValue := range filter {
-		if value == filterValue {
-			return true
-		}
-	}
-	return false
-}
-
-// categories end
-// ---
-// country start
-
-func getPartsByCountry(parts map[string]*repoModel.Part, filter []string, field string) map[string]*repoModel.Part {
-	res := map[string]*repoModel.Part{}
-
-	// log.Println("  Это срез строк")
-	for id, part := range parts {
-		val, ok := GetCountryFieldValue(part, field)
-		log.Printf("Получили значение поля %s: %s", field, val)
-		if ok && checkStringVal(val, filter) {
-			res[id] = part
-		}
-	}
-	return res
-}
-
-func GetCountryFieldValue(part *repoModel.Part, field string) (string, bool) {
-	switch field {
-	case "Country":
-		return part.Manufacturer.Country, true
-	case "Name":
-		return part.Manufacturer.Name, true
-	default:
-		return "", false
-	}
-}
-
-// country end
-// ---
-// tags start
-
-func getPartsByTags(parts map[string]*repoModel.Part, filter []string) map[string]*repoModel.Part {
-	res := map[string]*repoModel.Part{}
-
-	// log.Println("  Это срез строк")
-	for id, part := range parts {
-		val, ok := GetTagsFieldValue(part)
-		// log.Printf("Получили значение поля %s: %s", name, val)
-		if ok && checkTagsVal(val, filter) {
-			res[id] = part
-		}
-	}
-	return res
-}
-
-func GetTagsFieldValue(part *repoModel.Part) ([]string, bool) {
-	return part.Tags, true
-}
-
-func checkTagsVal(tags, filter []string) bool {
-	if len(filter) == 0 {
-		return true
-	}
-	for _, filterValue := range filter {
-		for _, value := range tags {
-			if strings.Contains(strings.ToLower(value), strings.ToLower(filterValue)) {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-// tags end
-
-func GetAllParts() map[string]*repoModel.Part {
-	parts := make(map[string]*repoModel.Part)
-
-	part := &repoModel.Part{
+	part := repoModel.Part{
 		Uuid:     "a0ad507d-2b70-49e4-9378-3d92ebf9e405",
 		Name:     "Двигатель",
 		Category: repoModel.CATEGORY_ENGINE,
-		Manufacturer: &repoModel.Manufacturer{
+		Manufacturer: repoModel.Manufacturer{
 			Name:    "Корпорация двигателей",
 			Country: "Россия",
 		},
@@ -230,11 +21,11 @@ func GetAllParts() map[string]*repoModel.Part {
 	}
 	parts[part.Uuid] = part
 
-	part = &repoModel.Part{
+	part = repoModel.Part{
 		Uuid:     "905ed12b-3934-45e1-a9af-67f00e00ff3d",
 		Name:     "Ракетное топливо",
 		Category: repoModel.CATEGORY_FUEL,
-		Manufacturer: &repoModel.Manufacturer{
+		Manufacturer: repoModel.Manufacturer{
 			Name:    "Дизель",
 			Country: "Россия",
 		},
@@ -244,11 +35,11 @@ func GetAllParts() map[string]*repoModel.Part {
 	}
 	parts[part.Uuid] = part
 
-	part = &repoModel.Part{
+	part = repoModel.Part{
 		Uuid:     "21c03a7f-0760-4d10-86a4-3273c025a3c3",
 		Name:     "Челночное топливо",
 		Category: repoModel.CATEGORY_FUEL,
-		Manufacturer: &repoModel.Manufacturer{
+		Manufacturer: repoModel.Manufacturer{
 			Name:    "Chunga Changa",
 			Country: "Китай",
 		},
@@ -258,11 +49,11 @@ func GetAllParts() map[string]*repoModel.Part {
 	}
 	parts[part.Uuid] = part
 
-	part = &repoModel.Part{
+	part = repoModel.Part{
 		Uuid:     "b10c92a3-d630-4aa6-9432-01167f77b20e",
 		Name:     "Левое крыло",
 		Category: repoModel.CATEGORY_WING,
-		Manufacturer: &repoModel.Manufacturer{
+		Manufacturer: repoModel.Manufacturer{
 			Name:    "China wing",
 			Country: "Китай",
 		},
@@ -272,11 +63,11 @@ func GetAllParts() map[string]*repoModel.Part {
 	}
 	parts[part.Uuid] = part
 
-	part = &repoModel.Part{
+	part = repoModel.Part{
 		Uuid:     "7bfa48c8-50fa-42d8-8582-ba4d3ee410da",
 		Name:     "Левое крыло",
 		Category: repoModel.CATEGORY_WING,
-		Manufacturer: &repoModel.Manufacturer{
+		Manufacturer: repoModel.Manufacturer{
 			Name:    "Русское крыло",
 			Country: "Россия",
 		},
@@ -286,11 +77,11 @@ func GetAllParts() map[string]*repoModel.Part {
 	}
 	parts[part.Uuid] = part
 
-	part = &repoModel.Part{
+	part = repoModel.Part{
 		Uuid:     "8aa70329-dfb9-4840-8566-73522b2a0dbf",
 		Name:     "Правое крыло",
 		Category: repoModel.CATEGORY_WING,
-		Manufacturer: &repoModel.Manufacturer{
+		Manufacturer: repoModel.Manufacturer{
 			Name:    "Русское крыло",
 			Country: "Россия",
 		},
@@ -300,11 +91,11 @@ func GetAllParts() map[string]*repoModel.Part {
 	}
 	parts[part.Uuid] = part
 
-	part = &repoModel.Part{
+	part = repoModel.Part{
 		Uuid:     "4723d3ab-3650-4e30-9f0e-56cf4d1af44d",
 		Name:     "Правое крыло",
 		Category: repoModel.CATEGORY_WING,
-		Manufacturer: &repoModel.Manufacturer{
+		Manufacturer: repoModel.Manufacturer{
 			Name:    "China wing",
 			Country: "Китай",
 		},
@@ -314,11 +105,11 @@ func GetAllParts() map[string]*repoModel.Part {
 	}
 	parts[part.Uuid] = part
 
-	part = &repoModel.Part{
+	part = repoModel.Part{
 		Uuid:     "1601a086-0973-4ea7-adac-357a96b6d8fa",
 		Name:     "Иллюминатор круглый",
 		Category: repoModel.CATEGORY_PORTHOLE,
-		Manufacturer: &repoModel.Manufacturer{
+		Manufacturer: repoModel.Manufacturer{
 			Name:    "Окно в мир",
 			Country: "Россия",
 		},
@@ -328,11 +119,11 @@ func GetAllParts() map[string]*repoModel.Part {
 	}
 	parts[part.Uuid] = part
 
-	part = &repoModel.Part{
+	part = repoModel.Part{
 		Uuid:     "8e04fd86-3cca-4500-9889-a910d3a5f1f9",
 		Name:     "Иллюминатор квадратный",
 		Category: repoModel.CATEGORY_PORTHOLE,
-		Manufacturer: &repoModel.Manufacturer{
+		Manufacturer: repoModel.Manufacturer{
 			Name:    "Windows",
 			Country: "Америка",
 		},

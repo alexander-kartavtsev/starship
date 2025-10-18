@@ -1,19 +1,25 @@
 package part
 
 import (
+	"context"
 	"errors"
 	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
 	"github.com/alexander-kartavtsev/starship/inventory/internal/repository/converter"
+	repoMocks "github.com/alexander-kartavtsev/starship/inventory/internal/repository/mocks"
 	repoModel "github.com/alexander-kartavtsev/starship/inventory/internal/repository/model"
-	"log"
+	"github.com/stretchr/testify/require"
+	"testing"
 )
 
-func (s *ServiceSuite) TestService_Get() {
+func TestService_Get_old(t *testing.T) {
+	type inventoryServiceMockFunk func(t *testing.T) *repoMocks.InventoryRepository
+
 	tests := []struct {
-		name     string
-		param    string
-		err      error
-		expected model.Part
+		name                     string
+		param                    string
+		err                      error
+		expected                 model.Part
+		inventoryServiceMockFunk inventoryServiceMockFunk
 	}{
 		{
 			name:  "inventory_service_Get_correct",
@@ -22,25 +28,44 @@ func (s *ServiceSuite) TestService_Get() {
 			expected: model.Part{
 				Uuid: "part_uuid_1",
 			},
+			inventoryServiceMockFunk: func(t *testing.T) *repoMocks.InventoryRepository {
+				partUuid := "part_uuid_1"
+				mockRepo := repoMocks.NewInventoryRepository(t)
+				mockRepo.
+					On("Get", context.Background(), partUuid).
+					Return(model.Part{Uuid: partUuid}, nil).
+					Once()
+				return mockRepo
+			},
 		},
 		{
 			name:     "inventory_service_Get_not_found",
 			param:    "part_uuid_1",
 			err:      model.ErrPartNotFound,
 			expected: model.Part{},
+			inventoryServiceMockFunk: func(t *testing.T) *repoMocks.InventoryRepository {
+				partUuid := "part_uuid_1"
+				mockRepo := repoMocks.NewInventoryRepository(t)
+				mockRepo.
+					On("Get", context.Background(), partUuid).
+					Return(model.Part{}, model.ErrPartNotFound).
+					Once()
+				return mockRepo
+			},
 		},
 	}
 
 	for _, test := range tests {
-		log.Println(test.name)
-		s.inventoryRepository.On("Get", s.ctx, test.param).Return(test.expected, test.err).Once()
-		res, err := s.service.Get(s.ctx, test.param)
-		s.Assert().True(errors.Is(err, test.err))
-		s.Assert().Equal(test.expected, res)
+		t.Run(test.name, func(t *testing.T) {
+			serv := NewService(test.inventoryServiceMockFunk(t))
+			res, err := serv.Get(context.Background(), test.param)
+			require.True(t, errors.Is(err, test.err))
+			require.Equal(t, test.expected, res)
+		})
 	}
 }
 
-func (s *ServiceSuite) TestConverter_PartToModel() {
+func TestConverter_PartToModel_old(t *testing.T) {
 	partUuid := "any_part_uuid"
 	partRepo := repoModel.Part{
 		Uuid:        partUuid,
@@ -83,5 +108,5 @@ func (s *ServiceSuite) TestConverter_PartToModel() {
 	}
 
 	res := converter.PartToModel(partRepo)
-	s.Assert().Equal(expected, res)
+	require.Equal(t, expected, res)
 }

@@ -133,6 +133,14 @@ tasks:
     status:
       - test -x {{.MOCKERY}}
 
+  mockery:gen:
+    desc: "Генерирует моки интерфейсов с помощью mockery"
+    deps: [ mockery:install ]
+    cmds:
+      - |
+        echo '🧪 Генерация моков...'
+        {{.MOCKERY}}
+
   install-buf:
     desc: "Устанавливает Buf в каталог bin"
     cmds:

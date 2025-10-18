@@ -7,8 +7,8 @@ type Part struct {
 	Price         float64
 	StockQuantity int64
 	Category      Category
-	Dimensions    *Dimensions
-	Manufacturer  *Manufacturer
+	Dimensions    Dimensions
+	Manufacturer  Manufacturer
 	Tags          []string
 }
 

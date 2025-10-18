@@ -5,10 +5,10 @@ import (
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 )
 
-func PartsToProto(parts map[string]*model.Part) map[string]*inventoryV1.Part {
+func PartsToProto(parts map[string]model.Part) map[string]*inventoryV1.Part {
 	protoParts := map[string]*inventoryV1.Part{}
 	for partUuid, part := range parts {
-		protoParts[partUuid] = PartToProto(part)
+		protoParts[partUuid] = PartToProto(&part)
 	}
 	return protoParts
 }
@@ -21,8 +21,8 @@ func PartToProto(part *model.Part) *inventoryV1.Part {
 		Price:         part.Price,
 		StockQuantity: part.StockQuantity,
 		Category:      inventoryV1.Category(part.Category),
-		Dimensions:    DimentionsToProto(part.Dimensions),
-		Manufacturer:  ManufacturerToProto(part.Manufacturer),
+		Dimensions:    DimentionsToProto(&part.Dimensions),
+		Manufacturer:  ManufacturerToProto(&part.Manufacturer),
 		Tags:          part.Tags,
 	}
 }

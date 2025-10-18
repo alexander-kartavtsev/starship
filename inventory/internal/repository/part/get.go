@@ -2,8 +2,6 @@ package part
 
 import (
 	"context"
-	"errors"
-
 	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
 	"github.com/alexander-kartavtsev/starship/inventory/internal/repository/converter"
 )
@@ -14,7 +12,7 @@ func (r *repository) Get(_ context.Context, uuid string) (model.Part, error) {
 
 	part, ok := r.data[uuid]
 	if !ok {
-		return model.Part{}, errors.New("not found")
+		return model.Part{}, model.ErrPartNotFound
 	}
-	return converter.PartToModel(*part), nil
+	return converter.PartToModel(part), nil
 }

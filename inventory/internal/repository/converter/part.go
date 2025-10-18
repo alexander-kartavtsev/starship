@@ -1,16 +1,14 @@
 package converter
 
 import (
-	"github.com/samber/lo"
-
 	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
 	repoModel "github.com/alexander-kartavtsev/starship/inventory/internal/repository/model"
 )
 
-func PartsToModel(parts map[string]*repoModel.Part) map[string]*model.Part {
-	modelParts := map[string]*model.Part{}
+func PartsToModel(parts map[string]repoModel.Part) map[string]model.Part {
+	modelParts := map[string]model.Part{}
 	for partUuid, part := range parts {
-		modelParts[partUuid] = lo.ToPtr(PartToModel(*part))
+		modelParts[partUuid] = PartToModel(part)
 	}
 	return modelParts
 }
@@ -23,17 +21,17 @@ func PartToModel(part repoModel.Part) model.Part {
 		Price:         part.Price,
 		StockQuantity: part.StockQuantity,
 		Category:      model.Category(part.Category),
-		Dimensions:    DimentionsToModel(part.Dimensions),
-		Manufacturer:  ManufacturerToModel(part.Manufacturer),
+		Dimensions:    DimentionsToModel(&part.Dimensions),
+		Manufacturer:  ManufacturerToModel(&part.Manufacturer),
 		Tags:          part.Tags,
 	}
 }
 
-func DimentionsToModel(dimensions *repoModel.Dimensions) *model.Dimensions {
+func DimentionsToModel(dimensions *repoModel.Dimensions) model.Dimensions {
 	if dimensions == nil {
-		return &model.Dimensions{}
+		return model.Dimensions{}
 	}
-	return &model.Dimensions{
+	return model.Dimensions{
 		Width:  dimensions.Width,
 		Length: dimensions.Length,
 		Weight: dimensions.Weight,
@@ -41,11 +39,11 @@ func DimentionsToModel(dimensions *repoModel.Dimensions) *model.Dimensions {
 	}
 }
 
-func ManufacturerToModel(manufacturer *repoModel.Manufacturer) *model.Manufacturer {
+func ManufacturerToModel(manufacturer *repoModel.Manufacturer) model.Manufacturer {
 	if manufacturer == nil {
-		return &model.Manufacturer{}
+		return model.Manufacturer{}
 	}
-	return &model.Manufacturer{
+	return model.Manufacturer{
 		Name:    manufacturer.Name,
 		Country: manufacturer.Country,
 		Website: manufacturer.Website,

@@ -11,7 +11,7 @@ var _ def.InventoryRepository = (*repository)(nil)
 
 type repository struct {
 	mu   sync.RWMutex
-	data map[string]*repoModel.Part
+	data map[string]repoModel.Part
 }
 
 func NewRepository() *repository {
