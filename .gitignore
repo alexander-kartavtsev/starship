@@ -15,8 +15,6 @@
 *.out
 
 *.csv
-*test/.txt
-*info/.txt
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
@@ -32,4 +30,6 @@ bin/
 bundles/
 node_modules/
 coverage/
+test/
+info/
 .DS_Store

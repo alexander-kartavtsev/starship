@@ -14,6 +14,9 @@ func PartsToProto(parts map[string]model.Part) map[string]*inventoryV1.Part {
 }
 
 func PartToProto(part *model.Part) *inventoryV1.Part {
+	if part == nil {
+		return &inventoryV1.Part{}
+	}
 	return &inventoryV1.Part{
 		Uuid:          part.Uuid,
 		Name:          part.Name,
@@ -57,6 +60,7 @@ func PartsFilterToModel(filter *inventoryV1.PartsFilter) model.PartsFilter {
 		Categories:            CategoriesToModel(filter.Categories),
 		ManufacturerCountries: filter.ManufacturerCountries,
 		ManufacturerNames:     filter.ManufacturerNames,
+		Tags:                  filter.Tags,
 	}
 }
 

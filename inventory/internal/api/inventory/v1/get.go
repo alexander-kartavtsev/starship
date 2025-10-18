@@ -13,7 +13,7 @@ import (
 func (a *api) GetPart(ctx context.Context, req *inventoryV1.GetPartRequest) (*inventoryV1.GetPartResponse, error) {
 	part, err := a.inventoryService.Get(ctx, req.GetUuid())
 	if err != nil {
-		return nil, status.Errorf(codes.NotFound, "Запчасть с UUID %s не найдена", req.GetUuid())
+		return &inventoryV1.GetPartResponse{}, status.Errorf(codes.NotFound, "Запчасть с UUID %s не найдена", req.GetUuid())
 	}
 
 	return &inventoryV1.GetPartResponse{

@@ -12,7 +12,7 @@ func (a *api) ListParts(ctx context.Context, req *inventoryV1.ListPartsRequest) 
 
 	parts, err := a.inventoryService.List(ctx, converter.PartsFilterToModel(reqFilter))
 	if err != nil {
-		return nil, err
+		return &inventoryV1.ListPartsResponse{}, err
 	}
 
 	return &inventoryV1.ListPartsResponse{

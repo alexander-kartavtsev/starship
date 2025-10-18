@@ -24,6 +24,10 @@ packages:
     config:
       include-regex: ".*Repository"
 
+  github.com/alexander-kartavtsev/starship/order/internal/client/grpc:
+    config:
+      include-regex: ".*Client"
+
   github.com/alexander-kartavtsev/starship/payment/internal/service:
     config:
       include-regex: ".*Service"
