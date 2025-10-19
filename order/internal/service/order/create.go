@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"slices"
 
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
 )
@@ -18,9 +19,17 @@ func (s *service) Create(ctx context.Context, info model.OrderInfo) (*model.Orde
 
 	var existsPartUuids []string
 	for partUuid, part := range parts {
+		if part.StockQuantity <= 0 {
+			continue
+		}
 		totalPrice += part.Price
 		existsPartUuids = append(existsPartUuids, partUuid)
 	}
+	if len(existsPartUuids) == 0 {
+		return nil, model.ErrPartsNotAvailable
+	}
+
+	slices.Sort(existsPartUuids)
 
 	order := model.Order{
 		UserUuid:   info.GetUserUuid(),

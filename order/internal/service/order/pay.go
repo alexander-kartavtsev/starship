@@ -3,17 +3,23 @@ package order
 import (
 	"context"
 
-	"github.com/google/uuid"
-
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
 )
 
 func (s *service) Pay(ctx context.Context, orderUuid string, payMethod model.PaymentMethod) (string, error) {
-	_, err := s.orderRepository.Get(ctx, orderUuid)
+	order, err := s.orderRepository.Get(ctx, orderUuid)
 	if err != nil {
 		return "", err
 	}
-	transactionUuid := uuid.NewString()
+
+	transactionUuid, errPay := s.paymentClient.PayOrder(ctx, model.PayOrderRequest{
+		OrderUuid:     orderUuid,
+		UserUuid:      order.UserUuid,
+		PaymentMethod: payMethod,
+	})
+	if errPay != nil {
+		return "", model.ErrPayment
+	}
 
 	paidStatus := model.Paid
 
@@ -27,7 +33,7 @@ func (s *service) Pay(ctx context.Context, orderUuid string, payMethod model.Pay
 		},
 	)
 	if err != nil {
-		return "", err
+		return transactionUuid, err
 	}
 
 	return transactionUuid, nil
