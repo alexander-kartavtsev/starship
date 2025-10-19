@@ -112,7 +112,6 @@ tasks:
       MODULES: '{{.MODULES}}'
       GOLANGCI_LINT: '{{.GOLANGCI_LINT}}'
     cmds:
-      - task: deps:update
       - |
         set -e
         ERR=0
