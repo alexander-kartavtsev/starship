@@ -5,7 +5,6 @@ go 1.24.6
 require (
 	github.com/alexander-kartavtsev/starship/shared v0.0.0-20251010025859-18c65edb0b36
 	github.com/go-faster/errors v0.7.1
-	github.com/samber/lo v1.52.0
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/grpc v1.76.0
 )
@@ -17,6 +16,7 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.38.0 // indirect
 	golang.org/x/net v0.46.1-0.20251009175946-9f2f0b95b65d // indirect
 	golang.org/x/sys v0.37.0 // indirect

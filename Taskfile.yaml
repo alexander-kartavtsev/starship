@@ -112,6 +112,7 @@ tasks:
       MODULES: '{{.MODULES}}'
       GOLANGCI_LINT: '{{.GOLANGCI_LINT}}'
     cmds:
+      - task: deps:update
       - |
         set -e
         ERR=0
@@ -345,7 +346,7 @@ tasks:
         for mod in {{.MODULES}}; do
           if [ -d "$mod" ]; then
             echo "🔄 Обновление зависимостей в $mod"
-            (cd "{{.ROOT_DIR}}/$mod" && go mod tidy -compat=1.24) || exit 1
+            (cd "{{.ROOT_DIR}}/$mod" && go mod tidy -compat={{.GO_VERSION}}) || exit 1
           fi
         done
 
