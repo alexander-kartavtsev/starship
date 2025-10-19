@@ -2,9 +2,11 @@ package v1
 
 import (
 	"context"
-	"github.com/alexander-kartavtsev/starship/inventory/internal/service/mocks"
-	"github.com/stretchr/testify/suite"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
+
+	"github.com/alexander-kartavtsev/starship/inventory/internal/service/mocks"
 )
 
 type ApiSuite struct {

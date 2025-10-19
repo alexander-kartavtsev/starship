@@ -2,12 +2,14 @@ package part
 
 import (
 	"errors"
+	"log"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
 	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
 	"github.com/alexander-kartavtsev/starship/inventory/internal/repository/converter"
 	repoModel "github.com/alexander-kartavtsev/starship/inventory/internal/repository/model"
-	"github.com/stretchr/testify/assert"
-	"log"
-	"testing"
 )
 
 func (s *ServiceSuite) TestService_Get() {

@@ -2,10 +2,11 @@ package part
 
 import (
 	"errors"
+	"log"
+
 	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
 	"github.com/alexander-kartavtsev/starship/inventory/internal/repository/converter"
 	repoModel "github.com/alexander-kartavtsev/starship/inventory/internal/repository/model"
-	"log"
 )
 
 func (s *ServiceSuite) TestService_List() {
@@ -178,7 +179,7 @@ func (s *ServiceSuite) TestService_List() {
 func (s *ServiceSuite) TestConverter_PartsToModel() {
 	partUuid := "any_part_uuid"
 	partsRepo := map[string]repoModel.Part{
-		partUuid: repoModel.Part{
+		partUuid: {
 			Uuid:        partUuid,
 			Name:        "any_name",
 			Description: "any description",
@@ -200,7 +201,7 @@ func (s *ServiceSuite) TestConverter_PartsToModel() {
 	}
 
 	expected := map[string]model.Part{
-		partUuid: model.Part{
+		partUuid: {
 			Uuid:        partUuid,
 			Name:        "any_name",
 			Description: "any description",

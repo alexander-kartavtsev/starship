@@ -2,8 +2,9 @@ package order
 
 import (
 	"errors"
-	"github.com/alexander-kartavtsev/starship/order/internal/model"
 	"log"
+
+	"github.com/alexander-kartavtsev/starship/order/internal/model"
 )
 
 func (s *ServiceSuite) TestService_Get() {

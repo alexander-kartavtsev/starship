@@ -2,10 +2,12 @@ package v1
 
 import (
 	"errors"
-	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
-	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
+	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 )
 
 func (a *ApiSuite) TestApi_GetPartOk() {

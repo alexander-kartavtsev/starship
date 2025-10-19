@@ -2,6 +2,7 @@ package v1
 
 import (
 	"errors"
+
 	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 )
@@ -24,7 +25,7 @@ func (a *ApiSuite) TestApi_ListPartsOk() {
 		Tags:                  []string{"any_tag"},
 	}
 	modelParts := map[string]model.Part{
-		"any_uuid": model.Part{
+		"any_uuid": {
 			Uuid:          "any_uuid",
 			Name:          "any_name",
 			Description:   "any_description",
@@ -46,7 +47,7 @@ func (a *ApiSuite) TestApi_ListPartsOk() {
 		},
 	}
 	protoParts := map[string]*inventoryV1.Part{
-		"any_uuid": &inventoryV1.Part{
+		"any_uuid": {
 			Uuid:          "any_uuid",
 			Name:          "any_name",
 			Description:   "any_description",

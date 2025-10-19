@@ -1,10 +1,12 @@
 package order
 
 import (
-	"github.com/alexander-kartavtsev/starship/order/internal/model"
+	"log"
+
 	"github.com/go-faster/errors"
 	"github.com/samber/lo"
-	"log"
+
+	"github.com/alexander-kartavtsev/starship/order/internal/model"
 )
 
 func (s *ServiceSuite) TestService_Cansel() {

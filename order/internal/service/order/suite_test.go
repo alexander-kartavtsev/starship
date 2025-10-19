@@ -2,10 +2,12 @@ package order
 
 import (
 	"context"
+	"testing"
+
+	"github.com/stretchr/testify/suite"
+
 	grpcMocks "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/mocks"
 	"github.com/alexander-kartavtsev/starship/order/internal/repository/mocks"
-	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type ServiceSuite struct {

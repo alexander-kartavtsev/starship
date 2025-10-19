@@ -2,6 +2,7 @@ package order
 
 import (
 	"errors"
+
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
 )
 
@@ -14,7 +15,7 @@ func (s *ServiceSuite) TestService_CreateOk() {
 		PartUuids: partUuids,
 	}
 	testParts := map[string]model.Part{
-		"any_part_uuid": model.Part{
+		"any_part_uuid": {
 			Uuid:          "any_part_uuid",
 			Price:         price,
 			StockQuantity: 12,
@@ -55,12 +56,12 @@ func (s *ServiceSuite) TestService_CreateSemiOk() {
 		PartUuids: partUuids,
 	}
 	testParts := map[string]model.Part{
-		"any_part_uuid_01": model.Part{
+		"any_part_uuid_01": {
 			Uuid:          "any_part_uuid_01",
 			Price:         price1,
 			StockQuantity: 12,
 		},
-		"any_part_uuid_02": model.Part{
+		"any_part_uuid_02": {
 			Uuid:          "any_part_uuid_02",
 			Price:         price2,
 			StockQuantity: 12,
@@ -107,12 +108,12 @@ func (s *ServiceSuite) TestService_CreatePartsNotAvailability() {
 		},
 		{
 			parts: map[string]model.Part{
-				"any_part_uuid_01": model.Part{
+				"any_part_uuid_01": {
 					Uuid:          "any_part_uuid_01",
 					Price:         123.45,
 					StockQuantity: 0,
 				},
-				"any_part_uuid_02": model.Part{
+				"any_part_uuid_02": {
 					Uuid:          "any_part_uuid_02",
 					Price:         123.45,
 					StockQuantity: 0,
@@ -161,7 +162,7 @@ func (s *ServiceSuite) TestService_CreateErrRepository() {
 		PartUuids: partUuids,
 	}
 	testParts := map[string]model.Part{
-		"any_part_uuid": model.Part{
+		"any_part_uuid": {
 			Uuid:          "any_part_uuid",
 			Price:         price,
 			StockQuantity: 12,

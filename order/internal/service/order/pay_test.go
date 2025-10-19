@@ -2,6 +2,7 @@ package order
 
 import (
 	"errors"
+
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
 )
 
@@ -126,5 +127,4 @@ func (s *ServiceSuite) TestService_Pay_Ok() {
 	res, err := s.service.Pay(s.ctx, orderUuid, paymentMethod)
 	s.Assert().Equal(res, transactionUuid)
 	s.Assert().Nil(err)
-
 }

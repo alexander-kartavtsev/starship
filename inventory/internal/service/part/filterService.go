@@ -113,7 +113,7 @@ func checkStringValStrong(value string, filter []string) bool {
 		return true
 	}
 	for _, filterValue := range filter {
-		if strings.ToLower(value) == strings.ToLower(filterValue) {
+		if strings.EqualFold(strings.ToLower(value), strings.ToLower(filterValue)) {
 			return true
 		}
 	}
