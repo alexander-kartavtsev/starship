@@ -228,8 +228,10 @@ tasks:
         ERR=0
         for mod in {{.MODULES}}; do
           if [ -d "$mod" ]; then
+            cd $mod
             echo "🧪 Тестируем модуль $mod"
-            go test -v ./$mod/... || ERR=1
+            go test -v ./... || ERR=1
+            cd ..
           fi
         done
         exit $ERR
