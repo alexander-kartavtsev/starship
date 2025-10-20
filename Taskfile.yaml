@@ -155,16 +155,13 @@ tasks:
         
         ERR=0
         for mod in {{.MODULES}}; do
-         if [ -d "$mod" ]; then
-          cd $mod
           echo "📦 Обрабатываем модуль: $mod"
         
-          TARGET_PKGS=$(go list ./... \
+          TARGET_PKGS=$(go list ./$mod/... \
             | grep -E '/(internal/(service|api|converter))' \
             | grep -vE '/(mocks|testdata|pkg|proto|pb|cmd)' \
             | paste -sd "," -)
         
-          cd ..
         
           if [ -z "$TARGET_PKGS" ]; then
             echo "⚠️  Нет подходящих пакетов в $mod"
@@ -175,7 +172,6 @@ tasks:
             -coverprofile={{.COVERAGE_DIR}}/$mod.out \
             -covermode=atomic \
             $(echo "$TARGET_PKGS" | tr "," " ") || ERR=1
-         fi
         done
         
         if [ $ERR -ne 0 ]; then
