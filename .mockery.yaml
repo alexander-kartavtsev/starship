@@ -1,0 +1,33 @@
+with-expecter: true
+boilerplate-file: ".mockery_boilerplate_text.txt"
+dir: "{{.InterfaceDir}}/mocks"
+filename: "mock_{{.InterfaceNameSnake}}.go"
+outpkg: "mocks"
+mockname: "{{.InterfaceName}}"
+resolve-type-alias: False
+issue-845-fix: True
+
+packages:
+  github.com/alexander-kartavtsev/starship/inventory/internal/service:
+    config:
+      include-regex: ".*Service"
+
+  github.com/alexander-kartavtsev/starship/inventory/internal/repository:
+    config:
+      include-regex: ".*Repository"
+
+  github.com/alexander-kartavtsev/starship/order/internal/service:
+    config:
+      include-regex: ".*Service"
+
+  github.com/alexander-kartavtsev/starship/order/internal/repository:
+    config:
+      include-regex: ".*Repository"
+
+  github.com/alexander-kartavtsev/starship/order/internal/client/grpc:
+    config:
+      include-regex: ".*Client"
+
+  github.com/alexander-kartavtsev/starship/payment/internal/service:
+    config:
+      include-regex: ".*Service"

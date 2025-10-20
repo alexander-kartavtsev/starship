@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
@@ -9,30 +8,15 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/google/uuid"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
-	"google.golang.org/grpc/status"
 
+	paymentApiV1 "github.com/alexander-kartavtsev/starship/payment/internal/api/payment/v1"
+	paymentService "github.com/alexander-kartavtsev/starship/payment/internal/service/payment"
 	paymentV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/payment/v1"
 )
 
 const grpcPort = 50052
-
-type paymentService struct {
-	paymentV1.UnimplementedPaymentServiceServer
-}
-
-func (s *paymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
-	paymentMethod := req.GetPaymentMethod()
-	if paymentMethod == paymentV1.PaymentMethod_PAYMENT_METHOD_UNKNOWN_UNSPECIFIED {
-		return nil, status.Errorf(codes.InvalidArgument, "Способ оплаты не поддерживается")
-	}
-	return &paymentV1.PayOrderResponse{
-		TransactionUuid: uuid.NewString(),
-	}, nil
-}
 
 func main() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
@@ -48,9 +32,10 @@ func main() {
 
 	s := grpc.NewServer()
 
-	service := &paymentService{}
+	service := paymentService.NewService()
+	api := paymentApiV1.NewApi(service)
 
-	paymentV1.RegisterPaymentServiceServer(s, service)
+	paymentV1.RegisterPaymentServiceServer(s, api)
 
 	// Включаем рефлексию для отладки
 	reflection.Register(s)

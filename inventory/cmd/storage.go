@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"strings"
 
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
@@ -9,20 +8,16 @@ import (
 
 func GetPartsByFilter(parts map[string]*inventoryV1.Part, filter *inventoryV1.PartsFilter) map[string]*inventoryV1.Part {
 	if filter == nil {
-		log.Println("Значение = nil")
 		return parts
 	}
-	log.Printf("%v\n", filter)
 
 	filterUuids := filter.Uuids
 	if filterUuids != nil {
 		parts = getPartsByString(parts, filterUuids, "Uuid")
-		// log.Printf("%v\n", parts)
 		if parts == nil {
 			return nil
 		}
 	}
-	// log.Printf("1: %v\n", parts)
 
 	filterNames := filter.Names
 	if filterNames != nil {
@@ -31,7 +26,6 @@ func GetPartsByFilter(parts map[string]*inventoryV1.Part, filter *inventoryV1.Pa
 			return nil
 		}
 	}
-	// log.Printf("2: %v\n", parts)
 
 	filterCategories := filter.Categories
 	if filterCategories != nil {
@@ -40,7 +34,6 @@ func GetPartsByFilter(parts map[string]*inventoryV1.Part, filter *inventoryV1.Pa
 			return nil
 		}
 	}
-	// log.Printf("3: %v\n", parts)
 
 	filterCountries := filter.ManufacturerCountries
 	if filterCountries != nil {
@@ -49,7 +42,6 @@ func GetPartsByFilter(parts map[string]*inventoryV1.Part, filter *inventoryV1.Pa
 			return nil
 		}
 	}
-	// log.Printf("4: %v\n", parts)
 
 	filterManufacturer := filter.ManufacturerNames
 	if filterManufacturer != nil {
@@ -58,7 +50,6 @@ func GetPartsByFilter(parts map[string]*inventoryV1.Part, filter *inventoryV1.Pa
 			return nil
 		}
 	}
-	// log.Printf("5: %v\n", parts)
 
 	filterTags := filter.Tags
 	if filterTags != nil {
@@ -67,7 +58,6 @@ func GetPartsByFilter(parts map[string]*inventoryV1.Part, filter *inventoryV1.Pa
 			return nil
 		}
 	}
-	// log.Printf("6: %v\n", parts)
 
 	return parts
 }
@@ -77,10 +67,8 @@ func GetPartsByFilter(parts map[string]*inventoryV1.Part, filter *inventoryV1.Pa
 func getPartsByString(parts map[string]*inventoryV1.Part, filter []string, name string) map[string]*inventoryV1.Part {
 	res := map[string]*inventoryV1.Part{}
 
-	// log.Println("  Это срез строк")
 	for id, part := range parts {
 		val, ok := GetStringFieldValue(part, name)
-		// log.Printf("Получили значение поля %s: %s", name, val)
 		if ok && checkStringVal(val, filter) {
 			res[id] = part
 		}
@@ -118,10 +106,8 @@ func checkStringVal(value string, filter []string) bool {
 func getPartsByCategories(parts map[string]*inventoryV1.Part, filter []inventoryV1.Category) map[string]*inventoryV1.Part {
 	res := map[string]*inventoryV1.Part{}
 
-	// log.Println("  Это срез категорий")
 	for id, part := range parts {
 		val, ok := GetCategoryFieldValue(part)
-		// log.Printf("Получили значение поля Category: %s", val)
 		if ok && checkCategoryVal(val, filter) {
 			res[id] = part
 		}
@@ -152,10 +138,8 @@ func checkCategoryVal(value inventoryV1.Category, filter []inventoryV1.Category)
 func getPartsByCountry(parts map[string]*inventoryV1.Part, filter []string, field string) map[string]*inventoryV1.Part {
 	res := map[string]*inventoryV1.Part{}
 
-	// log.Println("  Это срез строк")
 	for id, part := range parts {
 		val, ok := GetCountryFieldValue(part, field)
-		log.Printf("Получили значение поля %s: %s", field, val)
 		if ok && checkStringVal(val, filter) {
 			res[id] = part
 		}
@@ -181,10 +165,8 @@ func GetCountryFieldValue(part *inventoryV1.Part, field string) (string, bool) {
 func getPartsByTags(parts map[string]*inventoryV1.Part, filter []string) map[string]*inventoryV1.Part {
 	res := map[string]*inventoryV1.Part{}
 
-	// log.Println("  Это срез строк")
 	for id, part := range parts {
 		val, ok := GetTagsFieldValue(part)
-		// log.Printf("Получили значение поля %s: %s", name, val)
 		if ok && checkTagsVal(val, filter) {
 			res[id] = part
 		}

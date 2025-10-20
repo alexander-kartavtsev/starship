@@ -15,14 +15,13 @@
 *.out
 
 *.csv
-*.txt
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
 # Go workspace file
-go.work
-go.work.sum
+#go.work
+#go.work.sum
 
 .idea
 .vscode
@@ -31,4 +30,6 @@ bin/
 bundles/
 node_modules/
 coverage/
+test/
+info/
 .DS_Store
