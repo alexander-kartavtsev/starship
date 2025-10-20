@@ -119,9 +119,7 @@ tasks:
         for mod in {{.MODULES}}; do
           if [ -d "$mod" ]; then
             echo "🔍 Линтим $mod module"
-            cd $mod
-            {{.GOLANGCI_LINT}} run ./... --config=../.golangci.yml || ERR=1
-            cd ..
+            {{.GOLANGCI_LINT}} run ./$mod/... --config=.golangci.yml || ERR=1
           fi
         done
         exit $ERR
@@ -229,10 +227,8 @@ tasks:
         ERR=0
         for mod in {{.MODULES}}; do
           if [ -d "$mod" ]; then
-            cd $mod
             echo "🧪 Тестируем модуль $mod"
-            go test -v ./... || ERR=1
-            cd ..
+            go test -v ./$mod/... || ERR=1
           fi
         done
         exit $ERR
