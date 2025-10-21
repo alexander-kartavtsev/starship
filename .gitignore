@@ -33,3 +33,4 @@ coverage/
 test/
 info/
 .DS_Store
+.env
