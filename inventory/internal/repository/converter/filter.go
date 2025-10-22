@@ -1,72 +1,52 @@
 package converter
 
 import (
-	"log"
-
 	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
 )
 
 func PartsFilterToRepo(filter model.PartsFilter) bson.M {
-	repoFilter := bson.M{}
-
 	var filters []bson.M
 
-	if len(filter.Uuids) > 0 {
-		var bUuids []bson.M
-		for _, uuid := range filter.Uuids {
-			bUuids = append(bUuids, bson.M{"uuid": uuid})
-		}
-		filters = append(filters, bson.M{"$or": bUuids})
-	}
+	filters = prepareFilterIs("uuid", filter.Uuids, filters)
+	filters = prepareFilterIs("categories", filter.Categories, filters)
+	filters = prepareFilterIn("name", filter.Names, filters)
+	filters = prepareFilterIn("manufacturer.country", filter.ManufacturerCountries, filters)
+	filters = prepareFilterIn("manufacturer.name", filter.ManufacturerNames, filters)
+	filters = prepareFilterIn("tags", filter.Tags, filters)
 
-	if len(filter.Categories) > 0 {
-		var bCat []bson.M
-		for _, cat := range filter.Categories {
-			bCat = append(bCat, bson.M{"categories": cat})
-		}
-		filters = append(filters, bson.M{"$or": bCat})
-	}
+	return bindFilters(filters)
+}
 
-	if len(filter.Names) > 0 {
-		var bNames []bson.M
-		for _, name := range filter.Names {
-			bNames = append(bNames, bson.M{"name": bson.M{"$regex": name}})
-		}
-		filters = append(filters, bson.M{"$or": bNames})
-	}
-
-	if len(filter.ManufacturerCountries) > 0 {
-		var bManCan []bson.M
-		for _, can := range filter.ManufacturerCountries {
-			bManCan = append(bManCan, bson.M{"manufacturer.country": bson.M{"$regex": can}})
-		}
-		filters = append(filters, bson.M{"$or": bManCan})
-	}
-
-	if len(filter.ManufacturerNames) > 0 {
-		var bManNam []bson.M
-		for _, name := range filter.ManufacturerNames {
-			bManNam = append(bManNam, bson.M{"manufacturer.country": bson.M{"$regex": name}})
-		}
-		filters = append(filters, bson.M{"$or": bManNam})
-	}
-
-	if len(filter.Tags) > 0 {
-		var bTags []bson.M
-		for _, tag := range filter.Tags {
-			bTags = append(bTags, bson.M{"tags": bson.M{"$regex": tag}})
-		}
-		filters = append(filters, bson.M{"$or": bTags})
-	}
-
+func bindFilters(filters []bson.M) bson.M {
+	filter := bson.M{}
 	if len(filters) > 0 {
-		repoFilter = bson.M{
+		filter = bson.M{
 			"$and": filters,
 		}
 	}
-	log.Printf("Собрали фильтр: %v\n", repoFilter)
+	return filter
+}
 
-	return repoFilter
+func prepareFilterIs[T string | model.Category](field string, values []T, filters []bson.M) []bson.M {
+	if len(values) > 0 {
+		var resFilter []bson.M
+		for _, value := range values {
+			resFilter = append(resFilter, bson.M{field: value})
+		}
+		filters = append(filters, bson.M{"$or": resFilter})
+	}
+	return filters
+}
+
+func prepareFilterIn(field string, values []string, filters []bson.M) []bson.M {
+	if len(values) > 0 {
+		var resFilter []bson.M
+		for _, value := range values {
+			resFilter = append(resFilter, bson.M{field: bson.M{"$regex": value}})
+		}
+		filters = append(filters, bson.M{"$or": resFilter})
+	}
+	return filters
 }
