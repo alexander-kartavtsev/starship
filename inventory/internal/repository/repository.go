@@ -10,5 +10,5 @@ import (
 
 type InventoryRepository interface {
 	Get(context.Context, string) (model.Part, error)
-	List(context.Context) (map[string]model.Part, error)
+	List(context.Context, model.PartsFilter) (map[string]model.Part, error)
 }

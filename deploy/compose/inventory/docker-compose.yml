@@ -12,7 +12,7 @@ services: # Здесь описываются контейнеры, необхо
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_ROOT_PASSWORD} #inventory-service-password # Пароль для root-пользователя
 
     volumes:
-      - mongo_inventory_data:/data/db
+      - ./mongo_inventory_data:/data/db
       # Подключаем локальный Docker-том к директории MongoDB, где хранятся все данные (коллекции, документы и т.д.)
       # Это нужно для сохранения данных между перезапусками контейнера
 

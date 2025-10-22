@@ -140,6 +140,7 @@ tasks:
         echo "🎯 Сортируем импорты через gci ..."
         find . -type f -name '*.go' ! -path '*/mocks/*' -exec {{.GCI}} write -s standard -s default -s "prefix(github.com/alexander-kartavtsev/starship/)" {} +
 
+
   install-golangci-lint:
     desc: "Устанавливает golangci-lint в каталог bin"
     summary: |
@@ -184,6 +185,7 @@ tasks:
         done
         exit $ERR
 
+
   mockery:install:
     desc: "Устанавливает mockery в ./bin"
     cmds:
@@ -202,6 +204,7 @@ tasks:
       - |
         echo '🧪 Генерация моков...'
         {{.MOCKERY}}
+
 
   test-coverage:
     desc: "Тесты с покрытием бизнес-логики (service/repository), отчёт по каждому модулю + общий"
@@ -259,6 +262,7 @@ tasks:
         echo "🧾 Общее покрытие по всем модулям:"
         go tool cover -func={{.COVERAGE_DIR}}/{{.COVERAGE_FILE}} | tail -n1
 
+
   coverage:html:
     desc: "Генерирует HTML-отчёт покрытия и открывает его в браузере"
     deps: [ test-coverage ]
@@ -277,6 +281,7 @@ tasks:
           echo "📂 Отчёт сохранён в $OUTPUT (открой вручную)"
         fi
 
+
   test:
     desc: "Запускает юнит-тесты для всех модулей"
     summary: |
@@ -292,6 +297,7 @@ tasks:
           fi
         done
         exit $ERR
+
 
   install-buf:
     desc: "Устанавливает Buf в каталог bin"
@@ -318,6 +324,7 @@ tasks:
           GOBIN={{.BIN_DIR}} go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@{{.PROTOC_GEN_GO_GRPC_VERSION}}
         }
 
+
   proto:update-deps:
     deps: [ install-buf ]
     desc: Обновляет зависимости protobuf из удаленных репозиториев (googleapis и т.д.)
@@ -326,6 +333,7 @@ tasks:
       - |
         echo "🔄 Обновляем зависимости buf..."
         {{.BUF}} dep update
+
 
   proto:lint:
     deps: [ install-buf, proto:install-plugins ]
@@ -349,6 +357,7 @@ tasks:
           npm ci
         }
 
+
   redocly-cli:order-v1-bundle:
     desc: Собрать OpenAPI в один файл через локальный redocly
     deps: [ redocly-cli:install ]
@@ -369,6 +378,7 @@ tasks:
           mkdir -p {{.BIN_DIR}}
           GOBIN={{.BIN_DIR}} go install github.com/ogen-go/ogen/cmd/ogen@{{.OGEN_VERSION}}
         }
+
 
   ogen:gen:
     desc: "Генерация Go-кода из всех OpenAPI-деклараций с x-ogen"
@@ -391,6 +401,7 @@ tasks:
           fi
         done
 
+
   gen:
     desc: "Генерация всех proto и OpenAPI деклараций"
     cmds:
@@ -410,6 +421,7 @@ tasks:
           fi
         done
 
+
   yq:install:
     desc: "Устанавливает yq в bin/ при необходимости"
     cmds:
@@ -418,6 +430,7 @@ tasks:
           echo '📦 Installing yq...'
           GOBIN={{.BIN_DIR}} go install github.com/mikefarah/yq/v4@{{.YQ_VERSION}}
         }
+
 
   grpcurl:install:
     desc: "Устанавливает grpcurl в каталог bin"

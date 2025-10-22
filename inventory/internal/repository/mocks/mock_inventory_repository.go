@@ -82,9 +82,9 @@ func (_c *InventoryRepository_Get_Call) RunAndReturn(run func(context.Context, s
 	return _c
 }
 
-// List provides a mock function with given fields: _a0
-func (_m *InventoryRepository) List(_a0 context.Context) (map[string]model.Part, error) {
-	ret := _m.Called(_a0)
+// List provides a mock function with given fields: _a0, _a1
+func (_m *InventoryRepository) List(_a0 context.Context, _a1 model.PartsFilter) (map[string]model.Part, error) {
+	ret := _m.Called(_a0, _a1)
 
 	if len(ret) == 0 {
 		panic("no return value specified for List")
@@ -92,19 +92,19 @@ func (_m *InventoryRepository) List(_a0 context.Context) (map[string]model.Part,
 
 	var r0 map[string]model.Part
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context) (map[string]model.Part, error)); ok {
-		return rf(_a0)
+	if rf, ok := ret.Get(0).(func(context.Context, model.PartsFilter) (map[string]model.Part, error)); ok {
+		return rf(_a0, _a1)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context) map[string]model.Part); ok {
-		r0 = rf(_a0)
+	if rf, ok := ret.Get(0).(func(context.Context, model.PartsFilter) map[string]model.Part); ok {
+		r0 = rf(_a0, _a1)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(map[string]model.Part)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
-		r1 = rf(_a0)
+	if rf, ok := ret.Get(1).(func(context.Context, model.PartsFilter) error); ok {
+		r1 = rf(_a0, _a1)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -119,13 +119,14 @@ type InventoryRepository_List_Call struct {
 
 // List is a helper method to define mock.On call
 //   - _a0 context.Context
-func (_e *InventoryRepository_Expecter) List(_a0 interface{}) *InventoryRepository_List_Call {
-	return &InventoryRepository_List_Call{Call: _e.mock.On("List", _a0)}
+//   - _a1 model.PartsFilter
+func (_e *InventoryRepository_Expecter) List(_a0 interface{}, _a1 interface{}) *InventoryRepository_List_Call {
+	return &InventoryRepository_List_Call{Call: _e.mock.On("List", _a0, _a1)}
 }
 
-func (_c *InventoryRepository_List_Call) Run(run func(_a0 context.Context)) *InventoryRepository_List_Call {
+func (_c *InventoryRepository_List_Call) Run(run func(_a0 context.Context, _a1 model.PartsFilter)) *InventoryRepository_List_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context))
+		run(args[0].(context.Context), args[1].(model.PartsFilter))
 	})
 	return _c
 }
@@ -135,7 +136,7 @@ func (_c *InventoryRepository_List_Call) Return(_a0 map[string]model.Part, _a1 e
 	return _c
 }
 
-func (_c *InventoryRepository_List_Call) RunAndReturn(run func(context.Context) (map[string]model.Part, error)) *InventoryRepository_List_Call {
+func (_c *InventoryRepository_List_Call) RunAndReturn(run func(context.Context, model.PartsFilter) (map[string]model.Part, error)) *InventoryRepository_List_Call {
 	_c.Call.Return(run)
 	return _c
 }
