@@ -9,7 +9,17 @@ import (
 )
 
 func (s *service) Cansel(ctx context.Context, uuid string) error {
-	err := s.orderRepository.Update(
+	order, err := s.orderRepository.Get(ctx, uuid)
+	if err != nil {
+		return err
+	}
+
+	status := order.Status
+	if status == model.Paid {
+		return model.ErrCancelPaidOrder
+	}
+
+	err = s.orderRepository.Update(
 		ctx,
 		uuid,
 		model.OrderUpdateInfo{

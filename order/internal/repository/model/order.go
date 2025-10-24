@@ -24,13 +24,13 @@ type Order struct {
 
 type PaymentMethod string
 
-// const (
-//	unknown       PaymentMethod = "UNKNOWN"
-//	card          PaymentMethod = "CARD"
-//	sbp           PaymentMethod = "SBP"
-//	creditCard    PaymentMethod = "CREDIT_CARD"
-//	investorMoney PaymentMethod = "INVESTOR_MONEY"
-//)
+const (
+	unknown       PaymentMethod = "UNKNOWN"
+	Card          PaymentMethod = "CARD"
+	sbp           PaymentMethod = "SBP"
+	creditCard    PaymentMethod = "CREDIT_CARD"
+	investorMoney PaymentMethod = "INVESTOR_MONEY"
+)
 
 type OrderStatus string
 

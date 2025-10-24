@@ -11,16 +11,22 @@ import (
 
 func (s *ServiceSuite) TestService_Cansel() {
 	tests := []struct {
-		name string
-		err  error
+		name   string
+		order  model.Order
+		getErr error
+		err    error
 	}{
 		{
-			name: "cancel_order_ok",
-			err:  nil,
+			name:   "cancel_order_ok",
+			order:  model.Order{Status: model.PendingPayment},
+			getErr: nil,
+			err:    nil,
 		},
 		{
-			name: "cancel_order_error",
-			err:  model.ErrCancelPaidOrder,
+			name:   "cancel_order_cansel_error",
+			order:  model.Order{Status: model.PendingPayment},
+			getErr: nil,
+			err:    model.ErrCancelPaidOrder,
 		},
 	}
 
@@ -30,8 +36,44 @@ func (s *ServiceSuite) TestService_Cansel() {
 			Status: lo.ToPtr(model.Cancelled),
 		}
 		s.orderRepository.
+			On("Get", s.ctx, "any_uuid").
+			Return(test.order, test.getErr).
+			Once()
+		s.orderRepository.
 			On("Update", s.ctx, "any_uuid", updateInfo).
 			Return(test.err).
+			Once()
+		err := s.service.Cansel(s.ctx, "any_uuid")
+		s.Assert().True(errors.Is(err, test.err))
+	}
+}
+
+func (s *ServiceSuite) TestService_Cansel_Not() {
+	tests := []struct {
+		name   string
+		order  model.Order
+		getErr error
+		err    error
+	}{
+		{
+			name:   "cancel_order_not_found_error",
+			order:  model.Order{},
+			getErr: model.ErrOrderNotFound,
+			err:    model.ErrOrderNotFound,
+		},
+		{
+			name:   "cancel_order_not_found_error",
+			order:  model.Order{Status: model.Paid},
+			getErr: nil,
+			err:    model.ErrCancelPaidOrder,
+		},
+	}
+
+	for _, test := range tests {
+		log.Println(test.name)
+		s.orderRepository.
+			On("Get", s.ctx, "any_uuid").
+			Return(test.order, test.getErr).
 			Once()
 		err := s.service.Cansel(s.ctx, "any_uuid")
 		s.Assert().True(errors.Is(err, test.err))
