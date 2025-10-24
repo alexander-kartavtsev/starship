@@ -9,7 +9,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
 )
 
-func (s *ServiceSuite) TestService_Cansel() {
+func (s *ServiceSuite) TestService_Cancel() {
 	tests := []struct {
 		name   string
 		order  model.Order
@@ -43,7 +43,7 @@ func (s *ServiceSuite) TestService_Cansel() {
 			On("Update", s.ctx, "any_uuid", updateInfo).
 			Return(test.err).
 			Once()
-		err := s.service.Cansel(s.ctx, "any_uuid")
+		err := s.service.Cancel(s.ctx, "any_uuid")
 		s.Assert().True(errors.Is(err, test.err))
 	}
 }
@@ -75,7 +75,7 @@ func (s *ServiceSuite) TestService_Cansel_Not() {
 			On("Get", s.ctx, "any_uuid").
 			Return(test.order, test.getErr).
 			Once()
-		err := s.service.Cansel(s.ctx, "any_uuid")
+		err := s.service.Cancel(s.ctx, "any_uuid")
 		s.Assert().True(errors.Is(err, test.err))
 	}
 }

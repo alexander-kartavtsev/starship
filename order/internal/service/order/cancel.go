@@ -8,7 +8,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
 )
 
-func (s *service) Cansel(ctx context.Context, uuid string) error {
+func (s *service) Cancel(ctx context.Context, uuid string) error {
 	order, err := s.orderRepository.Get(ctx, uuid)
 	if err != nil {
 		return err

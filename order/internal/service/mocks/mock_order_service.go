@@ -25,12 +25,12 @@ func (_m *OrderService) EXPECT() *OrderService_Expecter {
 	return &OrderService_Expecter{mock: &_m.Mock}
 }
 
-// Cansel provides a mock function with given fields: ctx, uuid
-func (_m *OrderService) Cansel(ctx context.Context, uuid string) error {
+// Cancel provides a mock function with given fields: ctx, uuid
+func (_m *OrderService) Cancel(ctx context.Context, uuid string) error {
 	ret := _m.Called(ctx, uuid)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Cansel")
+		panic("no return value specified for Cancel")
 	}
 
 	var r0 error
@@ -43,31 +43,31 @@ func (_m *OrderService) Cansel(ctx context.Context, uuid string) error {
 	return r0
 }
 
-// OrderService_Cansel_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Cansel'
-type OrderService_Cansel_Call struct {
+// OrderService_Cancel_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Cancel'
+type OrderService_Cancel_Call struct {
 	*mock.Call
 }
 
-// Cansel is a helper method to define mock.On call
+// Cancel is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid string
-func (_e *OrderService_Expecter) Cansel(ctx interface{}, uuid interface{}) *OrderService_Cansel_Call {
-	return &OrderService_Cansel_Call{Call: _e.mock.On("Cansel", ctx, uuid)}
+func (_e *OrderService_Expecter) Cancel(ctx interface{}, uuid interface{}) *OrderService_Cancel_Call {
+	return &OrderService_Cancel_Call{Call: _e.mock.On("Cancel", ctx, uuid)}
 }
 
-func (_c *OrderService_Cansel_Call) Run(run func(ctx context.Context, uuid string)) *OrderService_Cansel_Call {
+func (_c *OrderService_Cancel_Call) Run(run func(ctx context.Context, uuid string)) *OrderService_Cancel_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(string))
 	})
 	return _c
 }
 
-func (_c *OrderService_Cansel_Call) Return(_a0 error) *OrderService_Cansel_Call {
+func (_c *OrderService_Cancel_Call) Return(_a0 error) *OrderService_Cancel_Call {
 	_c.Call.Return(_a0)
 	return _c
 }
 
-func (_c *OrderService_Cansel_Call) RunAndReturn(run func(context.Context, string) error) *OrderService_Cansel_Call {
+func (_c *OrderService_Cancel_Call) RunAndReturn(run func(context.Context, string) error) *OrderService_Cancel_Call {
 	_c.Call.Return(run)
 	return _c
 }

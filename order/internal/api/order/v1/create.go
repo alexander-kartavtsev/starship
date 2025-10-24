@@ -16,12 +16,8 @@ func (a *api) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) 
 		},
 	)
 	if err != nil {
-		// log.Printf("order.api.CreateOrder res: %v\n", res)
-
 		return nil, err
 	}
-
-	// log.Printf("order.api.CreateOrder res: %v\n", res)
 
 	return &orderV1.CreateOrderResponse{
 		OrderUUID:  res.OrderUuid,
