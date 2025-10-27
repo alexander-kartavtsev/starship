@@ -95,9 +95,9 @@ tasks:
   down-all:
     desc: Остановить и удалить все сервисы по очереди вместе с зависимостями
     cmds:
-      - task down-core
       - task down-inventory
       - task down-order
+      - task down-core
 
   install-formatters:
     desc: "Устанавливает форматтеры gci и gofumpt в ./bin"
