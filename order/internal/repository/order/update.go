@@ -24,11 +24,16 @@ func (r *repository) Update(ctx context.Context, uuid string, updateInfo model.O
 	log.Println("Генерим запрос...")
 	builderUpdate := sq.Update("orders").
 		PlaceholderFormat(sq.Dollar).
-		Set("transaction_uuid", updateInfo.TransactionUuid).
-		Set("payment_method", updateInfo.PaymentMethod).
 		Set("status", updateInfo.Status).
 		Set("updated_at", time.Now()).
 		Where(sq.Eq{"order_uuid": uuid})
+
+	if updateInfo.TransactionUuid != nil {
+		builderUpdate = builderUpdate.Set("transaction_uuid", updateInfo.TransactionUuid)
+	}
+	if updateInfo.PaymentMethod != nil {
+		builderUpdate = builderUpdate.Set("payment_method", updateInfo.PaymentMethod)
+	}
 
 	query, args, err := builderUpdate.ToSql()
 	if err != nil {

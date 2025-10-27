@@ -61,7 +61,7 @@ func getOrder(ctx context.Context, r *repository, uuid string) (model.Order, err
 
 	query, args, err := builderQuery.ToSql()
 	if err != nil {
-		log.Printf("failed to build query: %v\n", err)
+		log.Printf("Ошибка генерации запроса SELECT (Get): %v\n", err)
 		return model.Order{}, model.ErrOrderNotFound
 	}
 
@@ -81,7 +81,7 @@ func getOrder(ctx context.Context, r *repository, uuid string) (model.Order, err
 			&paymentMethod,
 		)
 	if err != nil {
-		log.Printf("failed to select notes: %v\n", err)
+		log.Printf("Ошибка получения данных из таблицы orders: %v\n", err)
 		return model.Order{}, model.ErrOrderNotFound
 	}
 
