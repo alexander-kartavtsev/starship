@@ -3,6 +3,7 @@ package order
 import (
 	"context"
 	"fmt"
+	sq "github.com/Masterminds/squirrel"
 	"log"
 
 	"github.com/jackc/pgx/v5"
@@ -45,31 +46,45 @@ func (r *repository) Get(ctx context.Context, orderUuid string) (model.Order, er
 }
 
 func getOrder(ctx context.Context, r *repository, uuid string) (model.Order, error) {
-	sqlSelect := "order_uuid, user_uuid, total_price, status, transaction_uuid, payment_method"
-	tblOrders := "orders"
-	sql := fmt.Sprintf("select %s from %s where order_uuid = $1", sqlSelect, tblOrders)
+	builderQuery := sq.Select(
+		"order_uuid",
+		"user_uuid",
+		"total_price",
+		"status",
+		"transaction_uuid",
+		"payment_method",
+	).
+		From("orders").
+		PlaceholderFormat(sq.Dollar).
+		Where(sq.Eq{"order_uuid": uuid}).
+		Limit(1)
 
-	rows, err := r.connDb.Query(ctx, sql, uuid)
+	query, args, err := builderQuery.ToSql()
 	if err != nil {
-		log.Printf("Ошибка получения данных из б/д: %v\n", err)
-		return model.Order{}, err
-	}
-	defer rows.Close()
-
-	if !rows.Next() {
-		return model.Order{}, model.ErrOrderNotFound
+		log.Printf("failed to build query: %v\n", err)
+		panic(err)
 	}
 
 	var orderUuid, userUuid, transactionUuid string
 	var totalPrice float64
 	var paymentMethod model.PaymentMethod
 	var status model.OrderStatus
-	log.Println("Scaning...")
-	err = rows.Scan(&orderUuid, &userUuid, &totalPrice, &status, &transactionUuid, &paymentMethod)
+
+	err = r.poolDb.
+		QueryRow(ctx, query, args...).
+		Scan(
+			&orderUuid,
+			&userUuid,
+			&totalPrice,
+			&status,
+			&transactionUuid,
+			&paymentMethod,
+		)
 	if err != nil {
-		log.Printf("Ошибка сканирования данных строки order: %v\n", err)
+		log.Printf("failed to select notes: %v\n", err)
+		panic(err)
 	}
-	log.Println("...done")
+
 	return model.Order{
 		OrderUuid:       orderUuid,
 		UserUuid:        userUuid,
