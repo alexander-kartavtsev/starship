@@ -3,9 +3,9 @@ package order
 import (
 	"context"
 	"fmt"
-	sq "github.com/Masterminds/squirrel"
 	"log"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
@@ -62,7 +62,7 @@ func getOrder(ctx context.Context, r *repository, uuid string) (model.Order, err
 	query, args, err := builderQuery.ToSql()
 	if err != nil {
 		log.Printf("failed to build query: %v\n", err)
-		panic(err)
+		return model.Order{}, model.ErrOrderNotFound
 	}
 
 	var orderUuid, userUuid, transactionUuid string
@@ -82,7 +82,7 @@ func getOrder(ctx context.Context, r *repository, uuid string) (model.Order, err
 		)
 	if err != nil {
 		log.Printf("failed to select notes: %v\n", err)
-		panic(err)
+		return model.Order{}, model.ErrOrderNotFound
 	}
 
 	return model.Order{
