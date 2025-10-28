@@ -58,6 +58,7 @@ tasks:
 
 
 
+
   env:generate:
     desc: "Генерирует .env файлы для всех сервисов из шаблонов и единого файла конфигурации"
     deps: [ env:install-envsubst ]
@@ -82,6 +83,7 @@ tasks:
         # Передаем список сервисов в виде строки с разделителями-запятыми
         export SERVICES="{{.SERVICES}}"
         ENV_SUBST={{.ENVSUBST}} "$SCRIPT"
+
 
 
 
@@ -185,6 +187,7 @@ tasks:
         find . -type d \( -name mocks -o -name deploy \) -prune -o -type f -name '*.go' -readable -exec {{.GCI}} write -s standard -s default -s "prefix(github.com/alexander-kartavtsev/starship/)" {} +
 
 
+
   install-golangci-lint:
     desc: "Устанавливает golangci-lint в каталог bin"
     summary: |
@@ -230,6 +233,7 @@ tasks:
         exit $ERR
 
 
+
   mockery:install:
     desc: "Устанавливает mockery в ./bin"
     cmds:
@@ -248,6 +252,7 @@ tasks:
       - |
         echo '🧪 Генерация моков...'
         {{.MOCKERY}}
+
 
 
   test-coverage:
@@ -307,6 +312,7 @@ tasks:
         go tool cover -func={{.COVERAGE_DIR}}/{{.COVERAGE_FILE}} | tail -n1
 
 
+
   coverage:html:
     desc: "Генерирует HTML-отчёт покрытия и открывает его в браузере"
     deps: [ test-coverage ]
@@ -326,6 +332,7 @@ tasks:
         fi
 
 
+
   test:
     desc: "Запускает юнит-тесты для всех модулей"
     summary: |
@@ -341,6 +348,7 @@ tasks:
           fi
         done
         exit $ERR
+
 
 
   install-buf:
@@ -369,6 +377,7 @@ tasks:
         }
 
 
+
   proto:update-deps:
     deps: [ install-buf ]
     desc: Обновляет зависимости protobuf из удаленных репозиториев (googleapis и т.д.)
@@ -377,6 +386,7 @@ tasks:
       - |
         echo "🔄 Обновляем зависимости buf..."
         {{.BUF}} dep update
+
 
 
   proto:lint:
@@ -402,6 +412,7 @@ tasks:
         }
 
 
+
   redocly-cli:order-v1-bundle:
     desc: Собрать OpenAPI в один файл через локальный redocly
     deps: [ redocly-cli:install ]
@@ -422,6 +433,7 @@ tasks:
           mkdir -p {{.BIN_DIR}}
           GOBIN={{.BIN_DIR}} go install github.com/ogen-go/ogen/cmd/ogen@{{.OGEN_VERSION}}
         }
+
 
 
   ogen:gen:
@@ -446,6 +458,7 @@ tasks:
         done
 
 
+
   gen:
     desc: "Генерация всех proto и OpenAPI деклараций"
     cmds:
@@ -466,6 +479,7 @@ tasks:
         done
 
 
+
   yq:install:
     desc: "Устанавливает yq в bin/ при необходимости"
     cmds:
@@ -474,6 +488,7 @@ tasks:
           echo '📦 Installing yq...'
           GOBIN={{.BIN_DIR}} go install github.com/mikefarah/yq/v4@{{.YQ_VERSION}}
         }
+
 
 
   grpcurl:install:

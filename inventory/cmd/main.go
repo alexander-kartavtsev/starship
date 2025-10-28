@@ -18,6 +18,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/inventory/internal/config"
 	partRepo "github.com/alexander-kartavtsev/starship/inventory/internal/repository/part"
 	partService "github.com/alexander-kartavtsev/starship/inventory/internal/service/part"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/grpc/health"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 )
 
@@ -66,6 +67,8 @@ func main() {
 	}()
 
 	s := grpc.NewServer()
+
+	health.RegisterService(s)
 
 	repo := partRepo.NewRepository(db)
 	service := partService.NewService(repo)

@@ -3,7 +3,9 @@ module github.com/alexander-kartavtsev/starship/inventory
 go 1.24.6
 
 require (
+	github.com/alexander-kartavtsev/starship/platform v0.0.0-00010101000000-000000000000
 	github.com/alexander-kartavtsev/starship/shared v0.0.0-20251010025859-18c65edb0b36
+	github.com/caarlos0/env/v11 v11.3.1
 	github.com/go-faster/errors v0.7.1
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.11.1
@@ -12,6 +14,8 @@ require (
 )
 
 replace github.com/alexander-kartavtsev/starship/shared => ../shared
+
+replace github.com/alexander-kartavtsev/starship/platform => ../platform
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -25,7 +29,7 @@ require (
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
-	go.opentelemetry.io/otel/sdk/metric v1.38.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.38.0 // indirect
 	golang.org/x/crypto v0.43.0 // indirect
 	golang.org/x/net v0.46.1-0.20251009175946-9f2f0b95b65d // indirect
 	golang.org/x/sync v0.17.0 // indirect
@@ -36,7 +40,3 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/alexander-kartavtsev/starship/payment => ../payment
-
-replace github.com/alexander-kartavtsev/starship/order => ../order

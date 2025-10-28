@@ -14,6 +14,7 @@ import (
 	paymentApiV1 "github.com/alexander-kartavtsev/starship/payment/internal/api/payment/v1"
 	"github.com/alexander-kartavtsev/starship/payment/internal/config"
 	paymentService "github.com/alexander-kartavtsev/starship/payment/internal/service/payment"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/grpc/health"
 	paymentV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/payment/v1"
 )
 
@@ -38,6 +39,8 @@ func main() {
 	}()
 
 	s := grpc.NewServer()
+
+	health.RegisterService(s)
 
 	service := paymentService.NewService()
 	api := paymentApiV1.NewApi(service)

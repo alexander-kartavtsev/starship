@@ -20,6 +20,12 @@ require (
 
 replace github.com/alexander-kartavtsev/starship/shared => ../shared
 
+replace github.com/alexander-kartavtsev/starship/platform => ../platform
+
+replace github.com/alexander-kartavtsev/starship/inventory => ../inventory
+
+replace github.com/alexander-kartavtsev/starship/payment => ../payment
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.11.5 // indirect
@@ -59,7 +65,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/alexander-kartavtsev/starship/inventory => ../inventory
-
-replace github.com/alexander-kartavtsev/starship/payment => ../payment
