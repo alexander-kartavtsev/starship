@@ -22,6 +22,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/order/internal/config"
 	orderRepo "github.com/alexander-kartavtsev/starship/order/internal/repository/order"
 	orderService "github.com/alexander-kartavtsev/starship/order/internal/service/order"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
 	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
@@ -36,6 +37,11 @@ func main() {
 		panic(fmt.Errorf("failed to load config: %w", err))
 	}
 	conf := config.AppConfig()
+
+	err = logger.Init(conf.Logger.Level(), conf.Logger.AsJson())
+	if err != nil {
+		panic(err)
+	}
 
 	dbConn := orderRepo.GetDbConn()
 	dbPool := orderRepo.GetDbPool()

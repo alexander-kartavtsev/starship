@@ -19,6 +19,7 @@ import (
 	partRepo "github.com/alexander-kartavtsev/starship/inventory/internal/repository/part"
 	partService "github.com/alexander-kartavtsev/starship/inventory/internal/service/part"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/grpc/health"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 )
 
@@ -30,6 +31,11 @@ func main() {
 		panic(fmt.Errorf("failed to load config: %w", err))
 	}
 	conf := config.AppConfig()
+
+	err = logger.Init(conf.Logger.Level(), conf.Logger.AsJson())
+	if err != nil {
+		panic(err)
+	}
 
 	ctx := context.Background()
 

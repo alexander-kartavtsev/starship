@@ -15,6 +15,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/payment/internal/config"
 	paymentService "github.com/alexander-kartavtsev/starship/payment/internal/service/payment"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/grpc/health"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
 	paymentV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/payment/v1"
 )
 
@@ -26,6 +27,11 @@ func main() {
 		panic(fmt.Errorf("failed to load config: %w", err))
 	}
 	conf := config.AppConfig()
+
+	err = logger.Init(conf.Logger.Level(), conf.Logger.AsJson())
+	if err != nil {
+		panic(err)
+	}
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", conf.GRPC.Port()))
 	if err != nil {
