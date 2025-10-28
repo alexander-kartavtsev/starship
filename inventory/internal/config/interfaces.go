@@ -5,11 +5,13 @@ type LoggerConfig interface {
 	AsJson() bool
 }
 
-type InventoryGRPCConfig interface {
+type GRPCConfig interface {
 	Address() string
+	Port() string
 }
 
 type MongoConfig interface {
 	Uri() string
 	DatabaseName() string
+	Port() string
 }

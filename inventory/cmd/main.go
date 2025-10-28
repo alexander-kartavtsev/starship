@@ -9,36 +9,30 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
 	v1 "github.com/alexander-kartavtsev/starship/inventory/internal/api/inventory/v1"
+	"github.com/alexander-kartavtsev/starship/inventory/internal/config"
 	partRepo "github.com/alexander-kartavtsev/starship/inventory/internal/repository/part"
 	partService "github.com/alexander-kartavtsev/starship/inventory/internal/service/part"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 )
 
-const (
-	grpcPort = 50051
-	// envPath  = "../deploy/compose/inventory/.env"
-	envPath = "../info/.env.inventory"
-)
+const envPath = "../deploy/compose/inventory/.env"
 
 func main() {
+	err := config.Load(envPath)
+	if err != nil {
+		panic(fmt.Errorf("failed to load config: %w", err))
+	}
+	conf := config.AppConfig()
+
 	ctx := context.Background()
 
-	err := godotenv.Load(envPath)
-	if err != nil {
-		log.Printf("failed to load .env file: %v\n", err)
-		return
-	}
-
-	dbURI := os.Getenv("MONGO_DB_URI")
-
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dbURI))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(conf.Mongo.Uri()))
 	if err != nil {
 		log.Printf("failed to connect to database: %v\n", err)
 		return
@@ -58,9 +52,9 @@ func main() {
 	}
 
 	// Получаем базу данных
-	db := client.Database("inventory")
+	db := client.Database(conf.Mongo.DatabaseName())
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", conf.GRPC.Port()))
 	if err != nil {
 		log.Printf("failed to listen: %v\n", err)
 		return
@@ -83,7 +77,7 @@ func main() {
 	reflection.Register(s)
 
 	go func() {
-		log.Printf("\"🚀 gRPC server listening on %d\n", grpcPort)
+		log.Printf("\"🚀 gRPC server listening on %s\n", conf.GRPC.Port())
 		err := s.Serve(lis)
 		if err != nil {
 			log.Printf("failed to serve %v\n", err)
