@@ -2,8 +2,8 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -19,6 +19,7 @@ import (
 	v1 "github.com/alexander-kartavtsev/starship/order/internal/api/order/v1"
 	gRPCinventoryV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/inventory/v1"
 	gRPCpaymentV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/payment/v1"
+	"github.com/alexander-kartavtsev/starship/order/internal/config"
 	orderRepo "github.com/alexander-kartavtsev/starship/order/internal/repository/order"
 	orderService "github.com/alexander-kartavtsev/starship/order/internal/service/order"
 	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
@@ -27,24 +28,22 @@ import (
 	paymentV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/payment/v1"
 )
 
-const (
-	httpPort = "8080"
-	// Таймауты для HTTP-сервера
-	readHeaderTimeout      = 5 * time.Second
-	shutdownTimeout        = 10 * time.Second
-	inventoryServerAddress = "localhost:50051"
-	paymentServerAddress   = "localhost:50052"
-	envPath                = "../deploy/compose/order/.env"
-)
+const envPath = "../deploy/compose/order/.env"
 
 func main() {
+	err := config.Load(envPath)
+	if err != nil {
+		panic(fmt.Errorf("failed to load config: %w", err))
+	}
+	conf := config.AppConfig()
+
 	dbConn := orderRepo.GetDbConn()
 	dbPool := orderRepo.GetDbPool()
 	repo := orderRepo.NewRepository(dbConn, dbPool)
 
-	connInv := gRPCconn(inventoryServerAddress)
+	connInv := gRPCconn(conf.InventoryGRPC.Address())
 	invClient := gRPCinventoryV1.NewClient(inventoryV1.NewInventoryServiceClient(connInv))
-	connPay := gRPCconn(paymentServerAddress)
+	connPay := gRPCconn(conf.PaymentGRPC.Address())
 	payClient := gRPCpaymentV1.NewClient(paymentV1.NewPaymentServiceClient(connPay))
 
 	service := orderService.NewService(repo, invClient, payClient)
@@ -79,9 +78,9 @@ func main() {
 	r.Mount("/", orderServer)
 
 	server := &http.Server{
-		Addr:              net.JoinHostPort("localhost", httpPort),
+		Addr:              conf.Server.Address(),
 		Handler:           r,
-		ReadHeaderTimeout: readHeaderTimeout, // Защита от Slowloris атак - тип DDoS-атаки, при которой
+		ReadHeaderTimeout: conf.Server.TimeoutRead(), // Защита от Slowloris атак - тип DDoS-атаки, при которой
 		// атакующий умышленно медленно отправляет HTTP-заголовки, удерживая соединения открытыми и истощая
 		// пул доступных соединений на сервере. ReadHeaderTimeout принудительно закрывает соединение,
 		// если клиент не успел отправить все заголовки за отведенное время.
@@ -89,7 +88,7 @@ func main() {
 
 	// Запускаем сервер в отдельной горутине
 	go func() {
-		log.Printf("🚀 HTTP-сервер запущен на порту %s\n", httpPort)
+		log.Printf("🚀 HTTP-сервер запущен на порту %s\n", conf.Server.Port())
 		err = server.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Printf("❌ Ошибка запуска сервера: %v\n", err)
@@ -104,7 +103,7 @@ func main() {
 	log.Println("🛑 Завершение работы сервера...")
 
 	// Создаем контекст с таймаутом для остановки сервера
-	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), conf.Server.TimeoutShutdown())
 	defer cancel()
 
 	err = server.Shutdown(ctx)

@@ -5,6 +5,7 @@ go 1.24.6
 require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/alexander-kartavtsev/starship/shared v0.0.0-20251019204919-90779785b6f2
+	github.com/caarlos0/env/v11 v11.3.1
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-faster/errors v0.7.1
 	github.com/google/uuid v1.6.0

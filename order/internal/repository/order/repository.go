@@ -2,13 +2,13 @@ package order
 
 import (
 	"log"
-	"os"
 	"sync"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 
+	"github.com/alexander-kartavtsev/starship/order/internal/config"
 	"github.com/alexander-kartavtsev/starship/order/internal/migrator"
 )
 
@@ -19,8 +19,10 @@ type repository struct {
 }
 
 func NewRepository(con *pgx.Conn, pool *pgxpool.Pool) *repository {
-	migrationsDir := os.Getenv("MIGRATIONS_DIR")
-	migratorRunner := migrator.NewMigrator(stdlib.OpenDB(*con.Config().Copy()), migrationsDir)
+	migratorRunner := migrator.NewMigrator(
+		stdlib.OpenDB(*con.Config().Copy()),
+		config.AppConfig().Postgres.MigrationsDir(),
+	)
 	err := migratorRunner.Up()
 	// err := migratorRunner.Down()
 	// err = migratorRunner.Down()

@@ -23,7 +23,8 @@ import (
 
 const (
 	grpcPort = 50051
-	envPath  = "../deploy/compose/inventory/.env"
+	// envPath  = "../deploy/compose/inventory/.env"
+	envPath = "../info/.env.inventory"
 )
 
 func main() {

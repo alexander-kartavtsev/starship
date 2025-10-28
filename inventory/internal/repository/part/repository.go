@@ -17,8 +17,7 @@ import (
 var _ def.InventoryRepository = (*repository)(nil)
 
 type repository struct {
-	mu sync.RWMutex
-	// data       map[string]repoModel.Part
+	mu         sync.RWMutex
 	collection *mongo.Collection
 }
 
@@ -63,7 +62,6 @@ func NewRepository(db *mongo.Database) *repository {
 	}
 
 	return &repository{
-		// data:       GetAllParts(),
 		collection: collection,
 	}
 }
