@@ -4,12 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
-	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"sync"
 	"time"
+
+	"go.uber.org/zap"
+
+	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
 )
 
 const shutdownTimeout = 5 * time.Second

@@ -1,32 +1,18 @@
 package main
 
 import (
-	"errors"
+	"context"
 	"fmt"
-	"log"
-	"net/http"
-	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"golang.org/x/net/context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"go.uber.org/zap"
 
-	v1 "github.com/alexander-kartavtsev/starship/order/internal/api/order/v1"
-	gRPCinventoryV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/inventory/v1"
-	gRPCpaymentV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/payment/v1"
+	"github.com/alexander-kartavtsev/starship/order/internal/app"
 	"github.com/alexander-kartavtsev/starship/order/internal/config"
-	orderRepo "github.com/alexander-kartavtsev/starship/order/internal/repository/order"
-	orderService "github.com/alexander-kartavtsev/starship/order/internal/service/order"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/closer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
-	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
-	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
-	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
-	paymentV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/payment/v1"
 )
 
 const envPath = "../deploy/compose/order/.env"
@@ -36,97 +22,31 @@ func main() {
 	if err != nil {
 		panic(fmt.Errorf("failed to load config: %w", err))
 	}
-	conf := config.AppConfig()
 
-	err = logger.Init(conf.Logger.Level(), conf.Logger.AsJson())
+	appCtx, appCancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer appCancel()
+	defer gracefulShutdown()
+
+	closer.Configure(syscall.SIGINT, syscall.SIGTERM)
+
+	a, err := app.New(appCtx)
 	if err != nil {
-		panic(err)
+		logger.Error(appCtx, "❌ Не удалось создать приложение", zap.Error(err))
+		return
 	}
 
-	dbConn := orderRepo.GetDbConn()
-	dbPool := orderRepo.GetDbPool()
-	repo := orderRepo.NewRepository(dbConn, dbPool)
-
-	connInv := gRPCconn(conf.InventoryGRPC.Address())
-	invClient := gRPCinventoryV1.NewClient(inventoryV1.NewInventoryServiceClient(connInv))
-	connPay := gRPCconn(conf.PaymentGRPC.Address())
-	payClient := gRPCpaymentV1.NewClient(paymentV1.NewPaymentServiceClient(connPay))
-
-	service := orderService.NewService(repo, invClient, payClient)
-	api := v1.NewApi(service)
-	orderServer, err := orderV1.NewServer(api)
+	err = a.Run(appCtx)
 	if err != nil {
-		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
+		logger.Error(appCtx, "❌ Ошибка при работе приложения", zap.Error(err))
+		return
 	}
-
-	defer func() {
-		if cerr := connInv.Close(); cerr != nil {
-			log.Printf("failed to close connect connInv: %v", cerr)
-		}
-		if cerr := connPay.Close(); cerr != nil {
-			log.Printf("failed to close connect connPay: %v", cerr)
-		}
-		if cerr := dbConn.Close(context.Background()); cerr != nil {
-			log.Printf("failed to close connect dbConn: %v", cerr)
-		}
-		dbPool.Close()
-	}()
-
-	// Инициализируем роутер Chi
-	r := chi.NewRouter()
-
-	// Добавляем middleware
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(10 * time.Second))
-	r.Use(customMiddleware.RequestLogger)
-
-	r.Mount("/", orderServer)
-
-	server := &http.Server{
-		Addr:              conf.Server.Address(),
-		Handler:           r,
-		ReadHeaderTimeout: conf.Server.TimeoutRead(), // Защита от Slowloris атак - тип DDoS-атаки, при которой
-		// атакующий умышленно медленно отправляет HTTP-заголовки, удерживая соединения открытыми и истощая
-		// пул доступных соединений на сервере. ReadHeaderTimeout принудительно закрывает соединение,
-		// если клиент не успел отправить все заголовки за отведенное время.
-	}
-
-	// Запускаем сервер в отдельной горутине
-	go func() {
-		log.Printf("🚀 HTTP-сервер запущен на порту %s\n", conf.Server.Port())
-		err = server.ListenAndServe()
-		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Printf("❌ Ошибка запуска сервера: %v\n", err)
-		}
-	}()
-
-	// Graceful shutdown
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-
-	log.Println("🛑 Завершение работы сервера...")
-
-	// Создаем контекст с таймаутом для остановки сервера
-	ctx, cancel := context.WithTimeout(context.Background(), conf.Server.TimeoutShutdown())
-	defer cancel()
-
-	err = server.Shutdown(ctx)
-	if err != nil {
-		log.Printf("❌ Ошибка при остановке сервера: %v\n", err)
-	}
-
-	log.Println("✅ Сервер остановлен")
 }
 
-func gRPCconn(address string) *grpc.ClientConn {
-	conn, err := grpc.NewClient(
-		address,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		log.Printf("failed to connect: %v\n", err)
+func gracefulShutdown() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := closer.CloseAll(ctx); err != nil {
+		logger.Error(ctx, "❌ Ошибка при завершении работы", zap.Error(err))
 	}
-	return conn
 }
