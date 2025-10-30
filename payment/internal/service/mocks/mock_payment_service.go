@@ -61,7 +61,7 @@ type PaymentService_Pay_Call struct {
 // Pay is a helper method to define mock.On call
 //   - _a0 context.Context
 //   - _a1 model.PayOrderRequest
-func (_e *PaymentService_Expecter) Pay(_a0, _a1 interface{}) *PaymentService_Pay_Call {
+func (_e *PaymentService_Expecter) Pay(_a0 interface{}, _a1 interface{}) *PaymentService_Pay_Call {
 	return &PaymentService_Pay_Call{Call: _e.mock.On("Pay", _a0, _a1)}
 }
 
@@ -87,8 +87,7 @@ func (_c *PaymentService_Pay_Call) RunAndReturn(run func(context.Context, model.
 func NewPaymentService(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *PaymentService {
+}) *PaymentService {
 	mock := &PaymentService{}
 	mock.Mock.Test(t)
 

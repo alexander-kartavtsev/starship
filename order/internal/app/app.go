@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"go.uber.org/zap"
 
 	"github.com/alexander-kartavtsev/starship/order/internal/config"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/closer"
@@ -43,6 +44,7 @@ func (a *App) initDeps(ctx context.Context) error {
 		a.initCloser,
 		a.initRouter,
 		a.initServer,
+		a.runMigrations,
 	}
 
 	for _, f := range inits {
@@ -100,6 +102,17 @@ func (a *App) initServer(ctx context.Context) error {
 		return nil
 	})
 
+	return nil
+}
+
+func (a *App) runMigrations(ctx context.Context) error {
+	err := a.diContainer.Migrator(ctx).Up()
+	// err := a.diContainer.migrator.Down()
+	// err = a.diContainer.migrator.Down()
+	if err != nil {
+		logger.Error(ctx, "Ошибка миграции базы данных", zap.Error(err))
+		return err
+	}
 	return nil
 }
 

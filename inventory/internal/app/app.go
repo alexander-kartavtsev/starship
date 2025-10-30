@@ -46,6 +46,7 @@ func (a *App) initDeps(ctx context.Context) error {
 		a.initCloser,
 		a.initListener,
 		a.initGrpcServer,
+		a.initData,
 	}
 
 	for _, f := range inits {
@@ -106,6 +107,14 @@ func (a *App) initGrpcServer(ctx context.Context) error {
 	health.RegisterService(a.grpcServer)
 	inventoryV1.RegisterInventoryServiceServer(a.grpcServer, a.diContainer.InventoryApi(ctx))
 
+	return nil
+}
+
+func (a *App) initData(ctx context.Context) error {
+	err := a.diContainer.InventoryRepository(ctx).InitFull(ctx)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

@@ -2,17 +2,17 @@ package part
 
 import (
 	"context"
-	"log"
 	"sync"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 
 	def "github.com/alexander-kartavtsev/starship/inventory/internal/repository"
-	repoModel "github.com/alexander-kartavtsev/starship/inventory/internal/repository/model"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
 )
+
+const collectionName = "parts"
 
 var _ def.InventoryRepository = (*repository)(nil)
 
@@ -21,47 +21,27 @@ type repository struct {
 	collection *mongo.Collection
 }
 
-func NewRepository(ctx context.Context, db *mongo.Database) *repository {
-	collection := db.Collection("parts")
-
-	indexModels := []mongo.IndexModel{
-		{
-			Keys:    bson.D{{Key: "uuid", Value: 1}},
-			Options: options.Index().SetUnique(true),
-		},
-	}
-
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-
-	_, err := collection.Indexes().CreateMany(ctx, indexModels)
-	if err != nil {
-		panic(err)
-	}
-
-	cursor, err := collection.Find(ctx, bson.M{})
-	if err != nil {
-		log.Printf("Ошибка получения данных из mongoDb: %v\n", err)
-	}
-	defer func() {
-		if cerr := cursor.Close(ctx); cerr != nil {
-			log.Printf("Ошибка при закрытии курсора: %v\n", cerr)
-		}
-	}()
-
-	var val []repoModel.Part
-	err = cursor.All(ctx, &val)
-	if err != nil {
-		log.Printf("Ошибка получения данных из mongoDb: %v\n", err)
-	}
-	if val == nil {
-		_, err = collection.InsertMany(ctx, GetCollectionParts())
-		if err != nil {
-			log.Printf("Ошибка заполнения mongoDb: %v\n", err)
-		}
-	}
-
+func NewRepository(_ context.Context, db *mongo.Database) *repository {
 	return &repository{
-		collection: collection,
+		collection: db.Collection(collectionName),
 	}
+}
+
+func (r *repository) InitFull(ctx context.Context) error {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	res := r.collection.FindOne(ctx, bson.M{})
+	if res.Err() != nil {
+		logger.Info(ctx, "Кажется, тут пусто")
+		_, err := r.collection.InsertMany(ctx, GetCollectionParts())
+		if err != nil {
+			logger.Error(ctx, "Ошибка заполнения mongoDb", zap.Error(err))
+			return err
+		}
+		logger.Info(ctx, "Заполнили тестовыми данными")
+		return nil
+	}
+	logger.Info(ctx, "В коллекции есть данные", zap.Error(res.Err()))
+	return nil
 }

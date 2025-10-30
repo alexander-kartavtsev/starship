@@ -62,7 +62,7 @@ type PaymentClient_PayOrder_Call struct {
 // PayOrder is a helper method to define mock.On call
 //   - ctx context.Context
 //   - req model.PayOrderRequest
-func (_e *PaymentClient_Expecter) PayOrder(ctx, req interface{}) *PaymentClient_PayOrder_Call {
+func (_e *PaymentClient_Expecter) PayOrder(ctx interface{}, req interface{}) *PaymentClient_PayOrder_Call {
 	return &PaymentClient_PayOrder_Call{Call: _e.mock.On("PayOrder", ctx, req)}
 }
 
@@ -88,8 +88,7 @@ func (_c *PaymentClient_PayOrder_Call) RunAndReturn(run func(context.Context, mo
 func NewPaymentClient(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *PaymentClient {
+}) *PaymentClient {
 	mock := &PaymentClient{}
 	mock.Mock.Test(t)
 

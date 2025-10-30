@@ -61,7 +61,7 @@ type InventoryService_Get_Call struct {
 // Get is a helper method to define mock.On call
 //   - _a0 context.Context
 //   - _a1 string
-func (_e *InventoryService_Expecter) Get(_a0, _a1 interface{}) *InventoryService_Get_Call {
+func (_e *InventoryService_Expecter) Get(_a0 interface{}, _a1 interface{}) *InventoryService_Get_Call {
 	return &InventoryService_Get_Call{Call: _e.mock.On("Get", _a0, _a1)}
 }
 
@@ -120,7 +120,7 @@ type InventoryService_List_Call struct {
 // List is a helper method to define mock.On call
 //   - _a0 context.Context
 //   - _a1 model.PartsFilter
-func (_e *InventoryService_Expecter) List(_a0, _a1 interface{}) *InventoryService_List_Call {
+func (_e *InventoryService_Expecter) List(_a0 interface{}, _a1 interface{}) *InventoryService_List_Call {
 	return &InventoryService_List_Call{Call: _e.mock.On("List", _a0, _a1)}
 }
 
@@ -146,8 +146,7 @@ func (_c *InventoryService_List_Call) RunAndReturn(run func(context.Context, mod
 func NewInventoryService(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *InventoryService {
+}) *InventoryService {
 	mock := &InventoryService{}
 	mock.Mock.Test(t)
 

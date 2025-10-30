@@ -6,6 +6,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -15,6 +16,7 @@ import (
 	gRPCinventoryV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/inventory/v1"
 	gRPCpaymentV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/payment/v1"
 	"github.com/alexander-kartavtsev/starship/order/internal/config"
+	"github.com/alexander-kartavtsev/starship/order/internal/migrator"
 	"github.com/alexander-kartavtsev/starship/order/internal/repository"
 	orderRepo "github.com/alexander-kartavtsev/starship/order/internal/repository/order"
 	"github.com/alexander-kartavtsev/starship/order/internal/service"
@@ -35,6 +37,7 @@ type diContainer struct {
 	orderRepository repository.OrderRepository
 	dbConn          *pgx.Conn
 	dbPool          *pgxpool.Pool
+	migrator        *migrator.Migrator
 }
 
 func NewDiContainer() *diContainer {
@@ -161,4 +164,14 @@ func (d *diContainer) DbPool(ctx context.Context) *pgxpool.Pool {
 		d.dbPool = pool
 	}
 	return d.dbPool
+}
+
+func (d *diContainer) Migrator(ctx context.Context) *migrator.Migrator {
+	if d.migrator == nil {
+		d.migrator = migrator.NewMigrator(
+			stdlib.OpenDB(*d.DbConn(ctx).Config().Copy()),
+			config.AppConfig().Postgres.MigrationsDir(),
+		)
+	}
+	return d.migrator
 }
