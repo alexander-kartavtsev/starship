@@ -47,7 +47,7 @@ func (d *diContainer) OrderServer(ctx context.Context) *orderV1.Server {
 		if err != nil {
 			logger.Error(ctx, "Ошибка инициализации сервера", zap.Error(err))
 		}
-		logger.Info(ctx, "Инициализация сервера")
+		logger.Info(ctx, "Инициализация Http Server")
 		d.orderServer = orderServer
 	}
 	return d.orderServer
@@ -64,7 +64,7 @@ func (d *diContainer) OrderApi(ctx context.Context) orderV1.Handler {
 func (d *diContainer) OrderService(ctx context.Context) service.OrderService {
 	if d.orderService == nil {
 		d.orderService = order.NewService(d.OrderRepository(ctx), d.InventoryClient(ctx), d.PaymentClient(ctx))
-		logger.Info(ctx, "Инициализация сервиса")
+		logger.Info(ctx, "Инициализация Service")
 	}
 	return d.orderService
 }
@@ -78,7 +78,7 @@ func (d *diContainer) InventoryClient(ctx context.Context) orderGRPC.InventoryCl
 		if err != nil {
 			log.Printf("failed to connect: %v\n", err)
 		}
-		logger.Info(ctx, "Инициализация Inventory")
+		logger.Info(ctx, "Инициализация Inventory gRPC Client")
 
 		closer.AddNamed("Inventory gRPC client", func(ctx context.Context) error {
 			return conn.Close()
@@ -99,7 +99,7 @@ func (d *diContainer) PaymentClient(ctx context.Context) orderGRPC.PaymentClient
 			log.Printf("failed to connect: %v\n", err)
 		}
 
-		logger.Info(ctx, "Инициализация Payment")
+		logger.Info(ctx, "Инициализация Payment gRPC Client")
 
 		closer.AddNamed("Payment gRPC client", func(ctx context.Context) error {
 			return conn.Close()
@@ -113,7 +113,7 @@ func (d *diContainer) PaymentClient(ctx context.Context) orderGRPC.PaymentClient
 func (d *diContainer) OrderRepository(ctx context.Context) repository.OrderRepository {
 	if d.orderRepository == nil {
 		d.orderRepository = orderRepo.NewRepository(d.DbConn(ctx), d.DbPool(ctx))
-		logger.Info(ctx, "Инициализация репозитория")
+		logger.Info(ctx, "Инициализация Repository")
 	}
 	return d.orderRepository
 }

@@ -104,7 +104,7 @@ func (a *App) initServer(ctx context.Context) error {
 }
 
 func (a *App) runHttpServer(ctx context.Context) error {
-	logger.Info(ctx, fmt.Sprintf("🚀 HTTP-сервер запущен на порту %s\n", config.AppConfig().Server.Port()))
+	logger.Info(ctx, fmt.Sprintf("🚀 HTTP-сервер запущен на порту %s", config.AppConfig().Server.Port()))
 
 	err := a.httpServer.ListenAndServe()
 	if err != nil {

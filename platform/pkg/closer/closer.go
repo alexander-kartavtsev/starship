@@ -92,7 +92,7 @@ func (c *Closer) handleSignals(signals ...os.Signal) {
 	}
 }
 
-func (c *Closer) AddNamed(name string, f func(context.Context) error) {
+func (c *Closer) AddNamed(name string, f func(ctx context.Context) error) {
 	c.Add(func(ctx context.Context) error {
 		start := time.Now()
 		c.logger.Info(ctx, fmt.Sprintf("🧩 Закрываем %s...", name))
