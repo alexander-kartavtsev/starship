@@ -115,6 +115,10 @@ func Error(ctx context.Context, msg string, fields ...zap.Field) {
 	globalLogger.Error(ctx, msg, fields...)
 }
 
+func Fatal(ctx context.Context, msg string, fields ...zap.Field) {
+	globalLogger.Fatal(ctx, msg, fields...)
+}
+
 func (l *logger) Debug(ctx context.Context, msg string, fields ...zap.Field) {
 	allFields := append(fieldsFromContext(ctx), fields...)
 	l.zapLogger.Debug(msg, allFields...)

@@ -4,6 +4,7 @@ go 1.24.6
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
+	github.com/alexander-kartavtsev/starship/platform v0.0.0-00010101000000-000000000000
 	github.com/alexander-kartavtsev/starship/shared v0.0.0-20251019204919-90779785b6f2
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/go-chi/chi/v5 v5.2.1
@@ -14,7 +15,7 @@ require (
 	github.com/pressly/goose/v3 v3.26.0
 	github.com/samber/lo v1.52.0
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/net v0.46.1-0.20251009175946-9f2f0b95b65d
+	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.76.0
 )
 
@@ -54,13 +55,13 @@ require (
 	go.opentelemetry.io/otel/metric v1.38.0 // indirect
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.43.0 // indirect
 	golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect
+	golang.org/x/net v0.46.1-0.20251009175946-9f2f0b95b65d // indirect
 	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/text v0.30.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250804133106-a7a43d27e69b // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250929231259-57b25ae835d4 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

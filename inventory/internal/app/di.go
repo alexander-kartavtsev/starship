@@ -7,7 +7,6 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"go.uber.org/zap"
 
 	apiV1 "github.com/alexander-kartavtsev/starship/inventory/internal/api/inventory/v1"
@@ -77,7 +76,7 @@ func (d *diContainer) MongoClient(ctx context.Context) *mongo.Client {
 			panic(fmt.Sprintf("failed to create MongoClient: %s\n", err.Error()))
 		}
 
-		err = client.Ping(ctx, readpref.Primary())
+		err = client.Ping(ctx, nil)
 		if err != nil {
 			logger.Error(ctx, "Ошибка при проверке ping", zap.Error(err))
 			panic(fmt.Sprintf("failed to ping MongoClient: %v\n", err))
