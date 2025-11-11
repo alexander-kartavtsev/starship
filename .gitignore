@@ -35,3 +35,4 @@ info/
 .DS_Store
 .env
 .env.*
+!.env.template
