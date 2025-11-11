@@ -33,7 +33,7 @@ jobs:
 
   test:
     uses: ./.github/workflows/test-reusable.yml
-    needs: lint
+#    needs: lint
     with:
       modules: ${{ needs.extract-vars.outputs.modules }}
       go-version: ${{ needs.extract-vars.outputs.go-version }}
@@ -49,7 +49,7 @@ jobs:
     if: github.event_name == 'push'
 #    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     uses: ./.github/workflows/test-coverage-reusable.yml
-    needs: test
+    needs: integration-test
     with:
       modules: ${{ needs.extract-vars.outputs.modules }}
       go-version: ${{ needs.extract-vars.outputs.go-version }}
