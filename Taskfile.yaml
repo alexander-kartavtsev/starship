@@ -43,7 +43,7 @@ vars:
   POSTGRES_DSN: 'postgres://order-service-user:order-service-password@localhost:5432/order-service?sslmode=disable'
 
   MODULES: assembly inventory order payment platform iam notification
-  SERVICES: inventory,order,payment
+  SERVICES: core,assembly,inventory,order,payment,iam,notification
 
 tasks:
   test-integration:
