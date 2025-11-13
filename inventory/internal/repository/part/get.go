@@ -2,18 +2,22 @@ package part
 
 import (
 	"context"
+	"log"
+
+	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
-	"github.com/alexander-kartavtsev/starship/inventory/internal/repository/converter"
 )
 
-func (r *repository) Get(_ context.Context, uuid string) (model.Part, error) {
+func (r *repository) Get(ctx context.Context, uuid string) (model.Part, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	part, ok := r.data[uuid]
-	if !ok {
+	var part model.Part
+	err := r.collection.FindOne(ctx, bson.M{"uuid": uuid}).Decode(&part)
+	if err != nil {
+		log.Printf("Ошибка получения part из коллекции: %v\n", err)
 		return model.Part{}, model.ErrPartNotFound
 	}
-	return converter.PartToModel(part), nil
+	return part, nil
 }

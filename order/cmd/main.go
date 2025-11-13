@@ -34,10 +34,13 @@ const (
 	shutdownTimeout        = 10 * time.Second
 	inventoryServerAddress = "localhost:50051"
 	paymentServerAddress   = "localhost:50052"
+	envPath                = "../deploy/compose/order/.env"
 )
 
 func main() {
-	repo := orderRepo.NewRepository()
+	dbConn := orderRepo.GetDbConn()
+	dbPool := orderRepo.GetDbPool()
+	repo := orderRepo.NewRepository(dbConn, dbPool)
 
 	connInv := gRPCconn(inventoryServerAddress)
 	invClient := gRPCinventoryV1.NewClient(inventoryV1.NewInventoryServiceClient(connInv))
@@ -53,11 +56,15 @@ func main() {
 
 	defer func() {
 		if cerr := connInv.Close(); cerr != nil {
-			log.Printf("failed to close connect: %v", cerr)
+			log.Printf("failed to close connect connInv: %v", cerr)
 		}
 		if cerr := connPay.Close(); cerr != nil {
-			log.Printf("failed to close connect: %v", cerr)
+			log.Printf("failed to close connect connPay: %v", cerr)
 		}
+		if cerr := dbConn.Close(context.Background()); cerr != nil {
+			log.Printf("failed to close connect dbConn: %v", cerr)
+		}
+		dbPool.Close()
 	}()
 
 	// Инициализируем роутер Chi

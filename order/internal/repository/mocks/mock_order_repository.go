@@ -61,7 +61,7 @@ type OrderRepository_Create_Call struct {
 // Create is a helper method to define mock.On call
 //   - ctx context.Context
 //   - order model.Order
-func (_e *OrderRepository_Expecter) Create(ctx interface{}, order interface{}) *OrderRepository_Create_Call {
+func (_e *OrderRepository_Expecter) Create(ctx, order interface{}) *OrderRepository_Create_Call {
 	return &OrderRepository_Create_Call{Call: _e.mock.On("Create", ctx, order)}
 }
 
@@ -118,7 +118,7 @@ type OrderRepository_Get_Call struct {
 // Get is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid string
-func (_e *OrderRepository_Expecter) Get(ctx interface{}, uuid interface{}) *OrderRepository_Get_Call {
+func (_e *OrderRepository_Expecter) Get(ctx, uuid interface{}) *OrderRepository_Get_Call {
 	return &OrderRepository_Get_Call{Call: _e.mock.On("Get", ctx, uuid)}
 }
 
@@ -166,7 +166,7 @@ type OrderRepository_Update_Call struct {
 //   - ctx context.Context
 //   - uuid string
 //   - updateInfo model.OrderUpdateInfo
-func (_e *OrderRepository_Expecter) Update(ctx interface{}, uuid interface{}, updateInfo interface{}) *OrderRepository_Update_Call {
+func (_e *OrderRepository_Expecter) Update(ctx, uuid, updateInfo interface{}) *OrderRepository_Update_Call {
 	return &OrderRepository_Update_Call{Call: _e.mock.On("Update", ctx, uuid, updateInfo)}
 }
 
@@ -192,7 +192,8 @@ func (_c *OrderRepository_Update_Call) RunAndReturn(run func(context.Context, st
 func NewOrderRepository(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *OrderRepository {
+},
+) *OrderRepository {
 	mock := &OrderRepository{}
 	mock.Mock.Test(t)
 

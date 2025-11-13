@@ -8,7 +8,7 @@ import (
 )
 
 func (a *api) CancelOrderById(ctx context.Context, params orderV1.CancelOrderByIdParams) (orderV1.CancelOrderByIdRes, error) {
-	err := a.orderService.Cansel(ctx, params.OrderUUID.String())
+	err := a.orderService.Cancel(ctx, params.OrderUUID.String())
 	if err != nil {
 		return nil, a.NewError(ctx, err)
 	}

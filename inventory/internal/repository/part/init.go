@@ -4,6 +4,17 @@ import (
 	repoModel "github.com/alexander-kartavtsev/starship/inventory/internal/repository/model"
 )
 
+// GetCollectionParts
+// Функция для заполнения б/д тестовыми данными
+func GetCollectionParts() []interface{} {
+	parts := GetAllParts()
+	var res []interface{}
+	for _, part := range parts {
+		res = append(res, part)
+	}
+	return res
+}
+
 func GetAllParts() map[string]repoModel.Part {
 	parts := make(map[string]repoModel.Part)
 

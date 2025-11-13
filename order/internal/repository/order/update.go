@@ -2,41 +2,55 @@ package order
 
 import (
 	"context"
+	"log"
+	"time"
+
+	sq "github.com/Masterminds/squirrel"
 
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
-	repoModel "github.com/alexander-kartavtsev/starship/order/internal/repository/model"
 )
 
 func (r *repository) Update(ctx context.Context, uuid string, updateInfo model.OrderUpdateInfo) error {
+	log.Println("Проверяем наличие заказа...")
+	_, err := r.Get(ctx, uuid)
+	if err != nil {
+		return model.ErrOrderNotFound
+	}
+	log.Println("...заказ найден")
+
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	order, ok := r.data[uuid]
-	if !ok {
-		return model.ErrOrderNotFound
-	}
-
-	if updateInfo.PaymentMethod != nil && *updateInfo.PaymentMethod != model.Unknown {
-		order.PaymentMethod = repoModel.PaymentMethod(*updateInfo.PaymentMethod)
-	}
+	log.Println("Генерим запрос...")
+	builderUpdate := sq.Update("orders").
+		PlaceholderFormat(sq.Dollar).
+		Set("status", updateInfo.Status).
+		Set("updated_at", time.Now()).
+		Where(sq.Eq{"order_uuid": uuid})
 
 	if updateInfo.TransactionUuid != nil {
-		order.TransactionUuid = *updateInfo.TransactionUuid
+		builderUpdate = builderUpdate.Set("transaction_uuid", updateInfo.TransactionUuid)
+	}
+	if updateInfo.PaymentMethod != nil {
+		builderUpdate = builderUpdate.Set("payment_method", updateInfo.PaymentMethod)
 	}
 
-	if updateInfo.PartUuids != nil {
-		order.PartUuids = append(order.PartUuids, []string(*updateInfo.PartUuids)...)
+	query, args, err := builderUpdate.ToSql()
+	if err != nil {
+		log.Printf("Ошибка генерации запроса update: %v\n", err)
+		return err
 	}
+	log.Println("...готово")
 
-	if updateInfo.Status != nil {
-		newStatus := repoModel.OrderStatus(*updateInfo.Status)
-		if newStatus == repoModel.Cancelled && order.Status == repoModel.Paid {
-			return model.ErrCancelPaidOrder
-		}
-		order.Status = repoModel.OrderStatus(*updateInfo.Status)
+	log.Println("Выполняем запрос...")
+	res, err := r.poolDb.Exec(ctx, query, args...)
+	if err != nil {
+		log.Printf("Ошибка обновления данных в таблице orders: %v\n", err)
+		return err
 	}
+	log.Println("...готово")
 
-	r.data[uuid] = order
+	log.Printf("Обновлено количество строк: %d", res.RowsAffected())
 
 	return nil
 }
