@@ -115,10 +115,6 @@ tasks:
         export SERVICES="{{.SERVICES}}"
         ENV_SUBST={{.ENVSUBST}} "$SCRIPT"
 
-
-
-
-
   up-core:
     desc: Поднять core контейнеры
     dir: deploy/compose/core

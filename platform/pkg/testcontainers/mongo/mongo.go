@@ -15,6 +15,8 @@ const (
 
 	mongoEnvUsernameKey = "MONGO_INITDB_ROOT_USERNAME"
 	mongoEnvPasswordKey = "MONGO_INITDB_ROOT_PASSWORD" //nolint:gosec
+	mongoEnvPortKey     = "EXTERNAL_MONGO_PORT"
+	mongoPortKey        = "MONGO_PORT"
 )
 
 type Container struct {

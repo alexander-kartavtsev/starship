@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	defaultAppName        = "app"
+	defaultAppName        = "inventory-app"
 	defaultAppPort        = "50051"
 	defaultStartupTimeout = 1 * time.Minute
 )

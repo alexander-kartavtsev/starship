@@ -33,12 +33,6 @@ func WithAuth(username, password string) Option {
 	}
 }
 
-func WithAuthDB(authDB string) Option {
-	return func(c *Config) {
-		c.AuthDB = authDB
-	}
-}
-
 func WithLogger(logger Logger) Option {
 	return func(c *Config) {
 		c.Logger = logger

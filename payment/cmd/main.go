@@ -15,7 +15,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
 )
 
-const envPath = "../deploy/compose/payment/.env"
+const envPath = "deploy/compose/payment/.env"
 
 func main() {
 	err := config.Load(envPath)

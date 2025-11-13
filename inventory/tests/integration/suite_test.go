@@ -48,7 +48,6 @@ var _ = BeforeSuite(func() {
 
 	// Устанавливаем переменные в окружение процесса
 	for key, value := range envVars {
-		logger.Info(suiteCtx, fmt.Sprintf("%s: %s", key, value))
 		_ = os.Setenv(key, value)
 	}
 

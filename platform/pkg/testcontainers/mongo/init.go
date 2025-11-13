@@ -17,6 +17,8 @@ func startMongoContainer(ctx context.Context, cfg *Config) (testcontainers.Conta
 		Env: map[string]string{
 			mongoEnvUsernameKey: cfg.Username,
 			mongoEnvPasswordKey: cfg.Password,
+			mongoEnvPortKey:     cfg.Port,
+			mongoPortKey:        cfg.Port,
 		},
 		WaitingFor:         wait.ForListeningPort(mongoPort + "/tcp").WithStartupTimeout(mongoStartupTimeout),
 		HostConfigModifier: defaultHostConfig(),

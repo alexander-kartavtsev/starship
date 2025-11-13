@@ -34,7 +34,7 @@ func (cfg *mongoConfig) Uri() string {
 		cfg.raw.User,
 		cfg.raw.Password,
 		cfg.raw.Host,
-		cfg.raw.PortExt,
+		cfg.raw.Port,
 		cfg.raw.Db,
 		cfg.raw.AuthDb,
 	)
