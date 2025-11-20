@@ -21,6 +21,7 @@ COPY shared/go.mod shared/go.sum ./shared/
 COPY inventory/go.mod inventory/go.sum ./inventory/
 COPY order/go.mod order/go.sum ./order/
 COPY payment/go.mod payment/go.sum ./payment/
+COPY assembly/go.mod assembly/go.sum ./assembly/
 
 # Загружаем все зависимости, указанные в модульных файлах
 RUN go mod download
