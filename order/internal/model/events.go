@@ -8,3 +8,10 @@ type OrderKafkaEvent struct {
 	TransactionUuid string
 	Type            string
 }
+
+type ShipAssembledKafkaEvent struct {
+	EventUuid    string
+	OrderUuid    string
+	UserUuid     string
+	BuildTimeSec int64
+}

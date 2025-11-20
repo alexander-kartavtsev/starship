@@ -51,6 +51,7 @@ const (
 	PendingPayment OrderStatus = "PENDING_PAYMENT"
 	Paid           OrderStatus = "PAID"
 	Cancelled      OrderStatus = "CANCELLED"
+	Assembled      OrderStatus = "ASSEMBLED"
 )
 
 type PartsFilter struct {

@@ -3,13 +3,13 @@ package decoder
 import (
 	"google.golang.org/protobuf/proto"
 
-	"github.com/alexander-kartavtsev/starship/order/internal/model"
+	"github.com/alexander-kartavtsev/starship/assembly/internal/model"
 	eventsV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/events/v1"
 )
 
 type decoder struct{}
 
-func NewOrderDecoder() *decoder {
+func NewAssemblyDecoder() *decoder {
 	return &decoder{}
 }
 

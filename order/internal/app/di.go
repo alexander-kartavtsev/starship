@@ -103,7 +103,7 @@ func (d *diContainer) OrderProducerService(ctx context.Context) service.OrderPro
 
 func (d *diContainer) OrderConsumerService(ctx context.Context) service.ConsumerService {
 	if d.orderConsumerService == nil {
-		d.orderConsumerService = orderConsumer.NewService(d.OrderConsumer(ctx), d.OrderDecoder())
+		d.orderConsumerService = orderConsumer.NewService(d.OrderConsumer(ctx), d.OrderDecoder(), d.OrderRepository(ctx))
 	}
 
 	return d.orderConsumerService
@@ -253,7 +253,7 @@ func (d *diContainer) OrderConsumer(ctx context.Context) wrappedKafka.Consumer {
 
 func (d *diContainer) OrderDecoder() kafkaConverter.OrderDecoder {
 	if d.orderDecoder == nil {
-		d.orderDecoder = decoder.NewOrderDecoder()
+		d.orderDecoder = decoder.NewAssemblyDecoder()
 	}
 
 	return d.orderDecoder
