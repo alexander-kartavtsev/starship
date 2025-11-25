@@ -41,13 +41,6 @@ func (a *App) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	// Консьюмер
-	go func() {
-		if err := a.runConsumer(ctx); err != nil {
-			errChan <- errors.Errorf("consumer crashed: %v", err)
-		}
-	}()
-
 	// HTTP сервер
 	go func() {
 		if err := a.runHttpServer(ctx); err != nil {
@@ -157,16 +150,5 @@ func (a *App) runHttpServer(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-func (a *App) runConsumer(ctx context.Context) error {
-	logger.Info(ctx, "Order Kafka consumer запущен")
-
-	err := a.diContainer.OrderConsumerService(ctx).RunConsumer(ctx)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
