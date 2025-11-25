@@ -9,6 +9,9 @@ import (
 
 func (a *api) ListParts(ctx context.Context, req *inventoryV1.ListPartsRequest) (*inventoryV1.ListPartsResponse, error) {
 	reqFilter := req.GetFilter()
+	if reqFilter == nil {
+		reqFilter = &inventoryV1.PartsFilter{}
+	}
 
 	parts, err := a.inventoryService.List(ctx, converter.PartsFilterToModel(reqFilter))
 	if err != nil {

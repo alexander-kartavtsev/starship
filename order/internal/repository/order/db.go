@@ -3,28 +3,18 @@ package order
 import (
 	"context"
 	"log"
-	"os"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
-)
 
-const envPath = "../deploy/compose/order/.env"
+	"github.com/alexander-kartavtsev/starship/order/internal/config"
+)
 
 func GetDbConn() *pgx.Conn {
 	ctx := context.Background()
 
-	err := godotenv.Load(envPath)
-	if err != nil {
-		log.Printf("failed to load .env file: %v\n", err)
-		panic(err)
-	}
-
-	dbURI := os.Getenv("DB_URI")
-
 	// Создаем соединение с базой данных
-	con, err := pgx.Connect(ctx, dbURI)
+	con, err := pgx.Connect(ctx, config.AppConfig().Postgres.Uri())
 	if err != nil {
 		log.Printf("failed to connect to database: %v\n", err)
 		panic(err)
@@ -43,9 +33,7 @@ func GetDbConn() *pgx.Conn {
 func GetDbPool() *pgxpool.Pool {
 	ctx := context.Background()
 
-	dbURI := os.Getenv("DB_URI")
-
-	pool, err := pgxpool.New(ctx, dbURI)
+	pool, err := pgxpool.New(ctx, config.AppConfig().Postgres.Uri())
 	if err != nil {
 		log.Printf("Ошибка подключения к б/д: %v\n", err)
 	}

@@ -51,7 +51,7 @@ type OrderService_Cancel_Call struct {
 // Cancel is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid string
-func (_e *OrderService_Expecter) Cancel(ctx, uuid interface{}) *OrderService_Cancel_Call {
+func (_e *OrderService_Expecter) Cancel(ctx interface{}, uuid interface{}) *OrderService_Cancel_Call {
 	return &OrderService_Cancel_Call{Call: _e.mock.On("Cancel", ctx, uuid)}
 }
 
@@ -110,7 +110,7 @@ type OrderService_Create_Call struct {
 // Create is a helper method to define mock.On call
 //   - ctx context.Context
 //   - info model.OrderInfo
-func (_e *OrderService_Expecter) Create(ctx, info interface{}) *OrderService_Create_Call {
+func (_e *OrderService_Expecter) Create(ctx interface{}, info interface{}) *OrderService_Create_Call {
 	return &OrderService_Create_Call{Call: _e.mock.On("Create", ctx, info)}
 }
 
@@ -167,7 +167,7 @@ type OrderService_Get_Call struct {
 // Get is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid string
-func (_e *OrderService_Expecter) Get(ctx, uuid interface{}) *OrderService_Get_Call {
+func (_e *OrderService_Expecter) Get(ctx interface{}, uuid interface{}) *OrderService_Get_Call {
 	return &OrderService_Get_Call{Call: _e.mock.On("Get", ctx, uuid)}
 }
 
@@ -225,7 +225,7 @@ type OrderService_Pay_Call struct {
 //   - ctx context.Context
 //   - uuid string
 //   - payMethod model.PaymentMethod
-func (_e *OrderService_Expecter) Pay(ctx, uuid, payMethod interface{}) *OrderService_Pay_Call {
+func (_e *OrderService_Expecter) Pay(ctx interface{}, uuid interface{}, payMethod interface{}) *OrderService_Pay_Call {
 	return &OrderService_Pay_Call{Call: _e.mock.On("Pay", ctx, uuid, payMethod)}
 }
 
@@ -251,8 +251,7 @@ func (_c *OrderService_Pay_Call) RunAndReturn(run func(context.Context, string, 
 func NewOrderService(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *OrderService {
+}) *OrderService {
 	mock := &OrderService{}
 	mock.Mock.Test(t)
 

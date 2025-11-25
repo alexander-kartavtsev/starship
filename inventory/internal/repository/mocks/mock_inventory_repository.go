@@ -61,7 +61,7 @@ type InventoryRepository_Get_Call struct {
 // Get is a helper method to define mock.On call
 //   - _a0 context.Context
 //   - _a1 string
-func (_e *InventoryRepository_Expecter) Get(_a0, _a1 interface{}) *InventoryRepository_Get_Call {
+func (_e *InventoryRepository_Expecter) Get(_a0 interface{}, _a1 interface{}) *InventoryRepository_Get_Call {
 	return &InventoryRepository_Get_Call{Call: _e.mock.On("Get", _a0, _a1)}
 }
 
@@ -78,6 +78,52 @@ func (_c *InventoryRepository_Get_Call) Return(_a0 model.Part, _a1 error) *Inven
 }
 
 func (_c *InventoryRepository_Get_Call) RunAndReturn(run func(context.Context, string) (model.Part, error)) *InventoryRepository_Get_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// InitFull provides a mock function with given fields: ctx
+func (_m *InventoryRepository) InitFull(ctx context.Context) error {
+	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for InitFull")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context) error); ok {
+		r0 = rf(ctx)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// InventoryRepository_InitFull_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'InitFull'
+type InventoryRepository_InitFull_Call struct {
+	*mock.Call
+}
+
+// InitFull is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *InventoryRepository_Expecter) InitFull(ctx interface{}) *InventoryRepository_InitFull_Call {
+	return &InventoryRepository_InitFull_Call{Call: _e.mock.On("InitFull", ctx)}
+}
+
+func (_c *InventoryRepository_InitFull_Call) Run(run func(ctx context.Context)) *InventoryRepository_InitFull_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *InventoryRepository_InitFull_Call) Return(_a0 error) *InventoryRepository_InitFull_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *InventoryRepository_InitFull_Call) RunAndReturn(run func(context.Context) error) *InventoryRepository_InitFull_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -120,7 +166,7 @@ type InventoryRepository_List_Call struct {
 // List is a helper method to define mock.On call
 //   - _a0 context.Context
 //   - _a1 model.PartsFilter
-func (_e *InventoryRepository_Expecter) List(_a0, _a1 interface{}) *InventoryRepository_List_Call {
+func (_e *InventoryRepository_Expecter) List(_a0 interface{}, _a1 interface{}) *InventoryRepository_List_Call {
 	return &InventoryRepository_List_Call{Call: _e.mock.On("List", _a0, _a1)}
 }
 
@@ -146,8 +192,7 @@ func (_c *InventoryRepository_List_Call) RunAndReturn(run func(context.Context, 
 func NewInventoryRepository(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *InventoryRepository {
+}) *InventoryRepository {
 	mock := &InventoryRepository{}
 	mock.Mock.Test(t)
 
