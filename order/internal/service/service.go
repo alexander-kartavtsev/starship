@@ -12,3 +12,11 @@ type OrderService interface {
 	Get(ctx context.Context, uuid string) (model.Order, error)
 	Pay(ctx context.Context, uuid string, payMethod model.PaymentMethod) (string, error)
 }
+
+type ConsumerService interface {
+	RunConsumer(ctx context.Context) error
+}
+
+type OrderProducerService interface {
+	ProduceOrder(ctx context.Context, event model.OrderKafkaEvent) error
+}

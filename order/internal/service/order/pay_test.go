@@ -89,6 +89,58 @@ func (s *ServiceSuite) TestService_Pay_UpdateError() {
 	s.Assert().True(errors.Is(err, testErr))
 }
 
+func (s *ServiceSuite) TestService_Pay_Ok_Kafka_Fail() {
+	orderUuid := "any_order_uuid"
+	userUuid := "any_user_uuid"
+	paymentMethod := model.Card
+	order := model.Order{
+		OrderUuid:     orderUuid,
+		UserUuid:      userUuid,
+		PaymentMethod: paymentMethod,
+	}
+	payOrderReq := model.PayOrderRequest{
+		OrderUuid:     orderUuid,
+		UserUuid:      userUuid,
+		PaymentMethod: paymentMethod,
+	}
+	transactionUuid := "any_transaction_uuid"
+	paidStatus := model.Paid
+	orderUpdateInfo := model.OrderUpdateInfo{
+		Status:          &paidStatus,
+		TransactionUuid: &transactionUuid,
+		PaymentMethod:   &paymentMethod,
+	}
+	orderKafkaEvent := model.OrderKafkaEvent{
+		Uuid:            orderUuid,
+		OrderUuid:       orderUuid,
+		UserUuid:        userUuid,
+		PaymentMethod:   paymentMethod,
+		TransactionUuid: transactionUuid,
+		Type:            "pay",
+	}
+
+	s.orderRepository.
+		On("Get", s.ctx, orderUuid).
+		Return(order, nil).
+		Once()
+	s.paymentClient.
+		On("PayOrder", s.ctx, payOrderReq).
+		Return(transactionUuid, nil).
+		Once()
+	s.orderRepository.
+		On("Update", s.ctx, orderUuid, orderUpdateInfo).
+		Return(nil).
+		Once()
+	s.orderProducerService.
+		On("ProduceOrder", s.ctx, orderKafkaEvent).
+		Return(errors.New("any error")).
+		Once()
+
+	res, err := s.service.Pay(s.ctx, orderUuid, paymentMethod)
+	s.Assert().Equal(res, "")
+	s.Assert().Equal(errors.New("any error"), err)
+}
+
 func (s *ServiceSuite) TestService_Pay_Ok() {
 	orderUuid := "any_order_uuid"
 	userUuid := "any_user_uuid"
@@ -110,6 +162,14 @@ func (s *ServiceSuite) TestService_Pay_Ok() {
 		TransactionUuid: &transactionUuid,
 		PaymentMethod:   &paymentMethod,
 	}
+	orderKafkaEvent := model.OrderKafkaEvent{
+		Uuid:            orderUuid,
+		OrderUuid:       orderUuid,
+		UserUuid:        userUuid,
+		PaymentMethod:   paymentMethod,
+		TransactionUuid: transactionUuid,
+		Type:            "pay",
+	}
 
 	s.orderRepository.
 		On("Get", s.ctx, orderUuid).
@@ -121,6 +181,10 @@ func (s *ServiceSuite) TestService_Pay_Ok() {
 		Once()
 	s.orderRepository.
 		On("Update", s.ctx, orderUuid, orderUpdateInfo).
+		Return(nil).
+		Once()
+	s.orderProducerService.
+		On("ProduceOrder", s.ctx, orderKafkaEvent).
 		Return(nil).
 		Once()
 

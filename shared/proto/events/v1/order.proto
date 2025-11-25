@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package events.v1;
+
+option go_package = "github.com/alexander-kartavtsev/starship/shared/pkg/proto/events/v1;eventsV1";
+
+// Исходящее событие: Order (Kafka)
+message Order {
+  string event_uuid = 1; // Уникальный идентификатор события (для идемпотентности)
+  string order_uuid = 2; // Идентификатор оплаченного заказа
+  string user_uuid = 3; // Идентификатор пользователя
+  string payment_method = 4; // Способ оплаты (строкой, значение из PaymentMethod)
+  string transaction_uuid = 5; // Идентификатор транзакции, сгенерированный в результате оплаты
+  string type = 6; // Тип сообщения
+}

@@ -8,8 +8,8 @@ import (
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
 )
 
-func (s *service) Cancel(ctx context.Context, uuid string) error {
-	order, err := s.orderRepository.Get(ctx, uuid)
+func (s *service) Cancel(ctx context.Context, orderUuid string) error {
+	order, err := s.orderRepository.Get(ctx, orderUuid)
 	if err != nil {
 		return err
 	}
@@ -21,7 +21,7 @@ func (s *service) Cancel(ctx context.Context, uuid string) error {
 
 	err = s.orderRepository.Update(
 		ctx,
-		uuid,
+		orderUuid,
 		model.OrderUpdateInfo{
 			Status: lo.ToPtr(model.Cancelled),
 		},

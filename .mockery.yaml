@@ -8,6 +8,14 @@ resolve-type-alias: False
 issue-845-fix: True
 
 packages:
+  github.com/alexander-kartavtsev/starship/assembly/internal/config:
+    config:
+      include-regex: ".*Config"
+
+  github.com/alexander-kartavtsev/starship/assembly/internal/service:
+    config:
+      include-regex: ".*Service"
+
   github.com/alexander-kartavtsev/starship/inventory/internal/service:
     config:
       include-regex: ".*Service"
@@ -31,3 +39,12 @@ packages:
   github.com/alexander-kartavtsev/starship/payment/internal/service:
     config:
       include-regex: ".*Service"
+
+  github.com/alexander-kartavtsev/starship/notification/internal/config:
+    config:
+      include-regex: ".*Config"
+
+  github.com/alexander-kartavtsev/starship/notification/internal/service:
+    config:
+      include-regex: ".*Service"
+

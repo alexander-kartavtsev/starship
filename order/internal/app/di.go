@@ -2,8 +2,10 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"log"
 
+	"github.com/IBM/sarama"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
@@ -16,28 +18,47 @@ import (
 	gRPCinventoryV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/inventory/v1"
 	gRPCpaymentV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/payment/v1"
 	"github.com/alexander-kartavtsev/starship/order/internal/config"
+	kafkaConverter "github.com/alexander-kartavtsev/starship/order/internal/converter/kafka"
+	"github.com/alexander-kartavtsev/starship/order/internal/converter/kafka/decoder"
 	"github.com/alexander-kartavtsev/starship/order/internal/migrator"
 	"github.com/alexander-kartavtsev/starship/order/internal/repository"
 	orderRepo "github.com/alexander-kartavtsev/starship/order/internal/repository/order"
 	"github.com/alexander-kartavtsev/starship/order/internal/service"
+	orderConsumer "github.com/alexander-kartavtsev/starship/order/internal/service/consumer/order_consumer"
 	"github.com/alexander-kartavtsev/starship/order/internal/service/order"
+	orderProducer "github.com/alexander-kartavtsev/starship/order/internal/service/producer/order_producer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/closer"
+	wrappedKafka "github.com/alexander-kartavtsev/starship/platform/pkg/kafka"
+	wrappedKafkaConsumer "github.com/alexander-kartavtsev/starship/platform/pkg/kafka/consumer"
+	wrappedKafkaProducer "github.com/alexander-kartavtsev/starship/platform/pkg/kafka/producer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
+	kafkaMiddleware "github.com/alexander-kartavtsev/starship/platform/pkg/middleware/kafka"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/payment/v1"
 )
 
 type diContainer struct {
-	orderServer     *orderV1.Server
-	orderApi        orderV1.Handler
-	orderService    service.OrderService
+	orderServer  *orderV1.Server
+	orderApi     orderV1.Handler
+	orderService service.OrderService
+
+	orderProducerService service.OrderProducerService
+	orderConsumerService service.ConsumerService
+
 	invClient       orderGRPC.InventoryClient
 	payClient       orderGRPC.PaymentClient
 	orderRepository repository.OrderRepository
-	dbConn          *pgx.Conn
-	dbPool          *pgxpool.Pool
-	migrator        *migrator.Migrator
+
+	consumerGroup sarama.ConsumerGroup
+	orderConsumer wrappedKafka.Consumer
+	orderDecoder  kafkaConverter.OrderDecoder
+	syncProducer  sarama.SyncProducer
+	orderProducer wrappedKafka.Producer
+
+	dbConn   *pgx.Conn
+	dbPool   *pgxpool.Pool
+	migrator *migrator.Migrator
 }
 
 func NewDiContainer() *diContainer {
@@ -66,10 +87,26 @@ func (d *diContainer) OrderApi(ctx context.Context) orderV1.Handler {
 
 func (d *diContainer) OrderService(ctx context.Context) service.OrderService {
 	if d.orderService == nil {
-		d.orderService = order.NewService(d.OrderRepository(ctx), d.InventoryClient(ctx), d.PaymentClient(ctx))
+		d.orderService = order.NewService(d.OrderRepository(ctx), d.InventoryClient(ctx), d.PaymentClient(ctx), d.OrderProducerService(ctx))
 		logger.Info(ctx, "Инициализация Service")
 	}
 	return d.orderService
+}
+
+func (d *diContainer) OrderProducerService(ctx context.Context) service.OrderProducerService {
+	if d.orderProducerService == nil {
+		d.orderProducerService = orderProducer.NewService(d.OrderProducer(ctx))
+	}
+
+	return d.orderProducerService
+}
+
+func (d *diContainer) OrderConsumerService(ctx context.Context) service.ConsumerService {
+	if d.orderConsumerService == nil {
+		d.orderConsumerService = orderConsumer.NewService(d.OrderConsumer(ctx), d.OrderDecoder(), d.OrderRepository(ctx))
+	}
+
+	return d.orderConsumerService
 }
 
 func (d *diContainer) InventoryClient(ctx context.Context) orderGRPC.InventoryClient {
@@ -174,4 +211,82 @@ func (d *diContainer) Migrator(ctx context.Context) *migrator.Migrator {
 		)
 	}
 	return d.migrator
+}
+
+func (d *diContainer) ConsumerGroup(ctx context.Context) sarama.ConsumerGroup {
+	if d.consumerGroup == nil {
+		consumerGroup, err := sarama.NewConsumerGroup(
+			config.AppConfig().Kafka.Brokers(),
+			config.AppConfig().OrderConsumer.GroupID(),
+			config.AppConfig().OrderConsumer.Config(),
+		)
+		if err != nil {
+			panic(fmt.Sprintf("failed to create consumer group: %s\n", err.Error()))
+		}
+
+		logger.Info(ctx, "Инициализация ConsumerGroup")
+
+		closer.AddNamed("Kafka consumer group", func(ctx context.Context) error {
+			return d.consumerGroup.Close()
+		})
+
+		d.consumerGroup = consumerGroup
+	}
+
+	return d.consumerGroup
+}
+
+func (d *diContainer) OrderConsumer(ctx context.Context) wrappedKafka.Consumer {
+	if d.orderConsumer == nil {
+		d.orderConsumer = wrappedKafkaConsumer.NewConsumer(
+			d.ConsumerGroup(ctx),
+			[]string{
+				config.AppConfig().OrderConsumer.Topic(),
+			},
+			logger.Logger(),
+			kafkaMiddleware.Logging(logger.Logger()),
+		)
+	}
+
+	return d.orderConsumer
+}
+
+func (d *diContainer) OrderDecoder() kafkaConverter.OrderDecoder {
+	if d.orderDecoder == nil {
+		d.orderDecoder = decoder.NewAssemblyDecoder()
+	}
+
+	return d.orderDecoder
+}
+
+func (d *diContainer) SyncProducer(ctx context.Context) sarama.SyncProducer {
+	if d.syncProducer == nil {
+		p, err := sarama.NewSyncProducer(
+			config.AppConfig().Kafka.Brokers(),
+			config.AppConfig().OrderProducer.Config(),
+		)
+		if err != nil {
+			panic(fmt.Sprintf("Ошибка инициализации sync producer: %s\n", err.Error()))
+		}
+
+		logger.Info(ctx, "Инициализация SyncProducer")
+
+		closer.AddNamed("Kafka sync producer", func(ctx context.Context) error {
+			return p.Close()
+		})
+
+		d.syncProducer = p
+	}
+	return d.syncProducer
+}
+
+func (d *diContainer) OrderProducer(ctx context.Context) wrappedKafka.Producer {
+	if d.orderProducer == nil {
+		d.orderProducer = wrappedKafkaProducer.NewProducer(
+			d.SyncProducer(ctx),
+			config.AppConfig().OrderProducer.Topic(),
+			logger.Logger(),
+		)
+	}
+	return d.orderProducer
 }

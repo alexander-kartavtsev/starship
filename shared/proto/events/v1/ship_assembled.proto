@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package events.v1;
+
+option go_package = "github.com/alexander-kartavtsev/starship/shared/pkg/proto/events/v1;eventsV1";
+
+// Исходящее событие: ShipAssembled (Kafka)
+message ShipAssembled {
+  string event_uuid = 1; // Уникальный идентификатор события (для идемпотентности)
+  string order_uuid = 2; // Идентификатор оплаченного заказа
+  string user_uuid = 3; // Идентификатор пользователя
+  int64 build_time_sec = 4; // Время (в секундах), потраченное на сборку корабля
+}

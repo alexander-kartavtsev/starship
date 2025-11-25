@@ -38,5 +38,18 @@ func (s *service) Pay(ctx context.Context, orderUuid string, payMethod model.Pay
 		return transactionUuid, err
 	}
 	log.Println("...готово")
+
+	err = s.orderProducerService.ProduceOrder(ctx, model.OrderKafkaEvent{
+		Uuid:            orderUuid,
+		OrderUuid:       order.OrderUuid,
+		UserUuid:        order.UserUuid,
+		PaymentMethod:   order.PaymentMethod,
+		TransactionUuid: transactionUuid,
+		Type:            "pay",
+	})
+	if err != nil {
+		return "", err
+	}
+
 	return transactionUuid, nil
 }
