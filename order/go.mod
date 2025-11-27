@@ -27,6 +27,12 @@ replace github.com/alexander-kartavtsev/starship/inventory => ../inventory
 
 replace github.com/alexander-kartavtsev/starship/payment => ../payment
 
+replace github.com/alexander-kartavtsev/starship/assembly => ../assembly
+
+replace github.com/alexander-kartavtsev/starship/notification => ../notification
+
+replace github.com/alexander-kartavtsev/starship/iam => ../iam
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.11.5 // indirect

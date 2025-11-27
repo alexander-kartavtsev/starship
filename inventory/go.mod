@@ -23,6 +23,14 @@ replace github.com/alexander-kartavtsev/starship/shared => ../shared
 
 replace github.com/alexander-kartavtsev/starship/platform => ../platform
 
+replace github.com/alexander-kartavtsev/starship/payment => ../payment
+
+replace github.com/alexander-kartavtsev/starship/assembly => ../assembly
+
+replace github.com/alexander-kartavtsev/starship/notification => ../notification
+
+replace github.com/alexander-kartavtsev/starship/iam => ../iam
+
 require (
 	dario.cat/mergo v1.0.2 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
