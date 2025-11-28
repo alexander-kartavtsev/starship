@@ -7,12 +7,13 @@
 package commonV1
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -117,11 +118,14 @@ func file_common_v1_session_proto_rawDescGZIP() []byte {
 	return file_common_v1_session_proto_rawDescData
 }
 
-var file_common_v1_session_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_common_v1_session_proto_goTypes = []any{
-	(*Session)(nil),               // 0: common.v1.Session
-	(*timestamppb.Timestamp)(nil), // 1: google.protobuf.Timestamp
-}
+var (
+	file_common_v1_session_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+	file_common_v1_session_proto_goTypes  = []any{
+		(*Session)(nil),               // 0: common.v1.Session
+		(*timestamppb.Timestamp)(nil), // 1: google.protobuf.Timestamp
+	}
+)
+
 var file_common_v1_session_proto_depIdxs = []int32{
 	1, // 0: common.v1.Session.created_at:type_name -> google.protobuf.Timestamp
 	1, // 1: common.v1.Session.updated_at:type_name -> google.protobuf.Timestamp

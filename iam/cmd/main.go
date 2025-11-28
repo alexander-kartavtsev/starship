@@ -3,14 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"go.uber.org/zap"
+
 	"github.com/alexander-kartavtsev/starship/iam/internal/app"
 	"github.com/alexander-kartavtsev/starship/iam/internal/config"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/closer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
-	"go.uber.org/zap"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 const envPath = "deploy/compose/iam/.env"

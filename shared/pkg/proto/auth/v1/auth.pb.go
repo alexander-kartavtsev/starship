@@ -7,12 +7,14 @@
 package authV1
 
 import (
-	v1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/common/v1"
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+
+	v1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/common/v1"
 )
 
 const (
@@ -255,15 +257,18 @@ func file_auth_v1_auth_proto_rawDescGZIP() []byte {
 	return file_auth_v1_auth_proto_rawDescData
 }
 
-var file_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_auth_v1_auth_proto_goTypes = []any{
-	(*LoginRequest)(nil),   // 0: auth.v1.LoginRequest
-	(*LoginResponse)(nil),  // 1: auth.v1.LoginResponse
-	(*WhoamiRequest)(nil),  // 2: auth.v1.WhoamiRequest
-	(*WhoamiResponse)(nil), // 3: auth.v1.WhoamiResponse
-	(*v1.Session)(nil),     // 4: common.v1.Session
-	(*v1.User)(nil),        // 5: common.v1.User
-}
+var (
+	file_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+	file_auth_v1_auth_proto_goTypes  = []any{
+		(*LoginRequest)(nil),   // 0: auth.v1.LoginRequest
+		(*LoginResponse)(nil),  // 1: auth.v1.LoginResponse
+		(*WhoamiRequest)(nil),  // 2: auth.v1.WhoamiRequest
+		(*WhoamiResponse)(nil), // 3: auth.v1.WhoamiResponse
+		(*v1.Session)(nil),     // 4: common.v1.Session
+		(*v1.User)(nil),        // 5: common.v1.User
+	}
+)
+
 var file_auth_v1_auth_proto_depIdxs = []int32{
 	4, // 0: auth.v1.WhoamiResponse.session:type_name -> common.v1.Session
 	5, // 1: auth.v1.WhoamiResponse.user:type_name -> common.v1.User

@@ -1,9 +1,11 @@
 package config
 
 import (
-	"github.com/alexander-kartavtsev/starship/iam/internal/config/env"
-	"github.com/joho/godotenv"
 	"os"
+
+	"github.com/joho/godotenv"
+
+	"github.com/alexander-kartavtsev/starship/iam/internal/config/env"
 )
 
 var appConfig *config

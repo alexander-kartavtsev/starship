@@ -7,12 +7,14 @@
 package userV1
 
 import (
-	v1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/common/v1"
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+
+	v1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/common/v1"
 )
 
 const (
@@ -287,16 +289,19 @@ func file_user_v1_user_proto_rawDescGZIP() []byte {
 	return file_user_v1_user_proto_rawDescData
 }
 
-var file_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
-var file_user_v1_user_proto_goTypes = []any{
-	(*UserRegistrationInfo)(nil), // 0: user.v1.UserRegistrationInfo
-	(*RegisterRequest)(nil),      // 1: user.v1.RegisterRequest
-	(*RegisterResponse)(nil),     // 2: user.v1.RegisterResponse
-	(*GetUserRequest)(nil),       // 3: user.v1.GetUserRequest
-	(*GetUserResponse)(nil),      // 4: user.v1.GetUserResponse
-	(*v1.UserInfo)(nil),          // 5: common.v1.UserInfo
-	(*v1.User)(nil),              // 6: common.v1.User
-}
+var (
+	file_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+	file_user_v1_user_proto_goTypes  = []any{
+		(*UserRegistrationInfo)(nil), // 0: user.v1.UserRegistrationInfo
+		(*RegisterRequest)(nil),      // 1: user.v1.RegisterRequest
+		(*RegisterResponse)(nil),     // 2: user.v1.RegisterResponse
+		(*GetUserRequest)(nil),       // 3: user.v1.GetUserRequest
+		(*GetUserResponse)(nil),      // 4: user.v1.GetUserResponse
+		(*v1.UserInfo)(nil),          // 5: common.v1.UserInfo
+		(*v1.User)(nil),              // 6: common.v1.User
+	}
+)
+
 var file_user_v1_user_proto_depIdxs = []int32{
 	5, // 0: user.v1.UserRegistrationInfo.info:type_name -> common.v1.UserInfo
 	0, // 1: user.v1.RegisterRequest.info:type_name -> user.v1.UserRegistrationInfo

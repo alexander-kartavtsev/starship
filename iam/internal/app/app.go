@@ -4,17 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
+
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/reflection"
+
 	"github.com/alexander-kartavtsev/starship/iam/internal/config"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/closer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/grpc/health"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
 	authV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/auth/v1"
 	userV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/user/v1"
-	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/reflection"
-	"net"
 )
 
 type App struct {
@@ -122,7 +124,7 @@ func (a *App) runMigrations(ctx context.Context) error {
 }
 
 func (a *App) runGrpcServer(ctx context.Context) error {
-	logger.Info(ctx, fmt.Sprintf("🚀 gRPC server listening on port %s", config.AppConfig().GRPC.Port()))
+	logger.Info(ctx, fmt.Sprintf("🚀 gRPC server listening on port %s", config.AppConfig().Grpc.Port()))
 
 	err := a.grpcServer.Serve(a.listener)
 	if err != nil {
