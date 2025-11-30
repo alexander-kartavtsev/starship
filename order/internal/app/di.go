@@ -90,7 +90,7 @@ func (d *diContainer) OrderApi(ctx context.Context) orderV1.Handler {
 
 func (d *diContainer) OrderService(ctx context.Context) service.OrderService {
 	if d.orderService == nil {
-		d.orderService = order.NewService(d.OrderRepository(ctx), d.InventoryClient(ctx), d.PaymentClient(ctx), d.OrderProducerService(ctx))
+		d.orderService = order.NewService(d.OrderRepository(ctx), d.InventoryClient(ctx), d.PaymentClient(ctx), d.OrderProducerService(ctx), d.OrderConsumerService(ctx))
 		logger.Info(ctx, "Инициализация Service")
 	}
 	return d.orderService

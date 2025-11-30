@@ -49,6 +49,13 @@ func (a *App) Run(ctx context.Context) error {
 		}
 	}()
 
+	// Консьюмер
+	go func() {
+		if err := a.runOrderConsumer(ctx); err != nil {
+			errChan <- errors.Errorf("OrderConsumer crashed: %v", err)
+		}
+	}()
+
 	// Ожидание либо ошибки, либо завершения контекста (например, сигнал SIGINT/SIGTERM)
 	select {
 	case <-ctx.Done():
@@ -152,5 +159,16 @@ func (a *App) runHttpServer(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (a *App) runOrderConsumer(ctx context.Context) error {
+	logger.Info(ctx, "Order Kafka consumer запущен")
+
+	err := a.diContainer.OrderConsumerService(ctx).RunConsumer(ctx)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
