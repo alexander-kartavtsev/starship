@@ -8,6 +8,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	authApiV1 "github.com/alexander-kartavtsev/starship/iam/internal/api/auth/v1"
 	userApiV1 "github.com/alexander-kartavtsev/starship/iam/internal/api/user/v1"
@@ -33,6 +35,8 @@ type diContainer struct {
 
 	authService service.AuthService
 	userService service.UserService
+
+	authServiceClient authV1.AuthServiceClient
 
 	sessionRepository repository.SessionRepository
 	userRepository    repository.UserRepository
@@ -71,6 +75,27 @@ func (d *diContainer) AuthService(ctx context.Context) service.AuthService {
 		logger.Info(ctx, "Инициализация AuthService")
 	}
 	return d.authService
+}
+
+func (d *diContainer) AuthClient(ctx context.Context) authV1.AuthServiceClient {
+	if d.authServiceClient == nil {
+		conn, err := grpc.NewClient(
+			config.AppConfig().Grpc.Address(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
+		if err != nil {
+			log.Printf("failed to connect: %v\n", err)
+		}
+
+		logger.Info(ctx, "Инициализация AuthService gRPC Client")
+
+		closer.AddNamed("AuthService gRPC client", func(ctx context.Context) error {
+			return conn.Close()
+		})
+
+		d.authServiceClient = authV1.NewAuthServiceClient(conn)
+	}
+	return d.authServiceClient
 }
 
 func (d *diContainer) UserService(ctx context.Context) service.UserService {

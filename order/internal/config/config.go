@@ -12,6 +12,7 @@ var appConfig *config
 
 type config struct {
 	Logger        LoggerConfig
+	IamGRPC       IamGRPCConfig
 	InventoryGRPC InventoryGRPCConfig
 	PaymentGRPC   PaymentGRPCConfig
 	Postgres      PostgresConfig
@@ -28,6 +29,11 @@ func Load(path ...string) error {
 	}
 
 	loggerConfig, err := env.NewLoggerConfig()
+	if err != nil {
+		return err
+	}
+
+	iamGRPCConfig, err := env.NewIamGRPCConfig()
 	if err != nil {
 		return err
 	}
@@ -70,6 +76,7 @@ func Load(path ...string) error {
 	appConfig = &config{
 		Logger:        loggerConfig,
 		InventoryGRPC: inventoryGRPCConfig,
+		IamGRPC:       iamGRPCConfig,
 		PaymentGRPC:   paymentGRPCConfig,
 		Postgres:      postgresConfig,
 		Server:        serverHttpConfig,

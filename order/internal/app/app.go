@@ -14,6 +14,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/order/internal/config"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/closer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
+	httpMiddleware "github.com/alexander-kartavtsev/starship/platform/pkg/middleware/http"
 	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
 )
 
@@ -104,6 +105,7 @@ func (a *App) initRouter(ctx context.Context) error {
 	router := chi.NewRouter()
 
 	router.Use(middleware.Logger)
+	router.Use(httpMiddleware.NewAuthMiddleware(a.diContainer.IamClient(ctx)).Handle)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Timeout(10 * time.Second))
 	router.Use(customMiddleware.RequestLogger)
