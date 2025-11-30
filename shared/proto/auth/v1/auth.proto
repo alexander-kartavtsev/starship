@@ -43,7 +43,7 @@ message WhoamiRequest {
 
 /*
 Информация об авторизации
-session: Информация о текущей сесси
+session: Информация о текущей сессии
 user: Владелец текущей сессии
  */
 message WhoamiResponse {

@@ -13,5 +13,5 @@ type AuthService interface {
 
 type UserService interface {
 	Get(context.Context, string) (*model.User, error)
-	Register(context.Context, *model.UserInfo) (string, error)
+	Register(context.Context, *model.UserInfo, string) (string, error)
 }

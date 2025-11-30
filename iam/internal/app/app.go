@@ -114,8 +114,8 @@ func (a *App) initGrpcServer(ctx context.Context) error {
 
 func (a *App) runMigrations(ctx context.Context) error {
 	err := a.diContainer.Migrator(ctx).Up()
-	// err := a.diContainer.migrator.Down()
-	// err = a.diContainer.migrator.Down()
+	// err := a.diContainer.Migrator(ctx).Down()
+	// err = a.diContainer.Migrator(ctx).Down()
 	if err != nil {
 		logger.Error(ctx, "Ошибка миграции базы данных", zap.Error(err))
 		return err

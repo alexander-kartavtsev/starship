@@ -16,6 +16,11 @@ type UserInfo struct {
 }
 
 type NotificationMethod struct {
-	ProviderName string
-	Target       string
+	ProviderName string `json:"provider_name"`
+	Target       string `json:"target"`
+}
+
+type UserRegistrationInfo struct {
+	User     User
+	Password string
 }

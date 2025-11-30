@@ -1,0 +1,12 @@
+Есть структура (go)
+type NotificationMethod struct {
+	ProviderName string
+	Target       string
+}
+В таблице users есть поле notifications, в которой должен храниться список этих структур в виде json
+То-есть надо поместить эти структуры в массив (slice) и преобразовать в json
+Этот json должен иметь вид
+[{"provider_name":"provider1", "target":"any_string_1"},{"provider_name":"provider2", "target":"any_string_2"}]
+
+Как в go преобразовать указанную структуру в json и обратно?
+Правильно ли делать для этого поля в таблице users тип json, или достаточно тип text?

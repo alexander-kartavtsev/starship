@@ -9,7 +9,10 @@ import "google/protobuf/timestamp.proto";
 // Сессия
 message Session {
   string session_uuid = 1;
-  google.protobuf.Timestamp created_at = 2;
-  google.protobuf.Timestamp updated_at = 3;
-  google.protobuf.Timestamp expires_at = 4;
+  string user_uuid = 2;
+  string login = 3;
+  string email = 4;
+  google.protobuf.Timestamp created_at = 21;
+  google.protobuf.Timestamp updated_at = 22;
+  google.protobuf.Timestamp expires_at = 23;
 }

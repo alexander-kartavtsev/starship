@@ -14,7 +14,8 @@ type Whoami struct {
 
 type Session struct {
 	SessionUuid string
-	CreatedAt   *time.Time
+	UserUuid    string
+	CreatedAt   time.Time
 	UpdatedAt   *time.Time
 	ExpiresAt   *time.Time
 }

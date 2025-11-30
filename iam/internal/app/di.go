@@ -83,7 +83,7 @@ func (d *diContainer) UserService(ctx context.Context) service.UserService {
 
 func (d *diContainer) SessionRepository(ctx context.Context) repository.SessionRepository {
 	if d.sessionRepository == nil {
-		d.sessionRepository = session.NewRepository(d.RedisClient(ctx))
+		d.sessionRepository = session.NewRepository(d.RedisClient(ctx), d.DbPool(ctx))
 		logger.Info(ctx, "Инициализация SessionRepository")
 	}
 	return d.sessionRepository

@@ -27,9 +27,12 @@ const (
 type Session struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	SessionUuid   string                 `protobuf:"bytes,1,opt,name=session_uuid,json=sessionUuid,proto3" json:"session_uuid,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	UserUuid      string                 `protobuf:"bytes,2,opt,name=user_uuid,json=userUuid,proto3" json:"user_uuid,omitempty"`
+	Login         string                 `protobuf:"bytes,3,opt,name=login,proto3" json:"login,omitempty"`
+	Email         string                 `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,21,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,22,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,23,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -71,6 +74,27 @@ func (x *Session) GetSessionUuid() string {
 	return ""
 }
 
+func (x *Session) GetUserUuid() string {
+	if x != nil {
+		return x.UserUuid
+	}
+	return ""
+}
+
+func (x *Session) GetLogin() string {
+	if x != nil {
+		return x.Login
+	}
+	return ""
+}
+
+func (x *Session) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
 func (x *Session) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
@@ -96,15 +120,18 @@ var File_common_v1_session_proto protoreflect.FileDescriptor
 
 const file_common_v1_session_proto_rawDesc = "" +
 	"\n" +
-	"\x17common/v1/session.proto\x12\tcommon.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdd\x01\n" +
+	"\x17common/v1/session.proto\x12\tcommon.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa6\x02\n" +
 	"\aSession\x12!\n" +
-	"\fsession_uuid\x18\x01 \x01(\tR\vsessionUuid\x129\n" +
+	"\fsession_uuid\x18\x01 \x01(\tR\vsessionUuid\x12\x1b\n" +
+	"\tuser_uuid\x18\x02 \x01(\tR\buserUuid\x12\x14\n" +
+	"\x05login\x18\x03 \x01(\tR\x05login\x12\x14\n" +
+	"\x05email\x18\x04 \x01(\tR\x05email\x129\n" +
 	"\n" +
-	"created_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\x15 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x129\n" +
+	"updated_at\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x129\n" +
 	"\n" +
-	"expires_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAtBNZLgithub.com/alexander-kartavtsev/starship/shared/pkg/proto/common/v1;commonV1b\x06proto3"
+	"expires_at\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAtBNZLgithub.com/alexander-kartavtsev/starship/shared/pkg/proto/common/v1;commonV1b\x06proto3"
 
 var (
 	file_common_v1_session_proto_rawDescOnce sync.Once

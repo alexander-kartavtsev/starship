@@ -172,7 +172,7 @@ func (x *WhoamiRequest) GetSessionUuid() string {
 }
 
 // Информация об авторизации
-// session: Информация о текущей сесси
+// session: Информация о текущей сессии
 // user: Владелец текущей сессии
 type WhoamiResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
