@@ -8,6 +8,7 @@ import (
 
 	grpcMocks "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/mocks"
 	"github.com/alexander-kartavtsev/starship/order/internal/repository/mocks"
+	orderServiceMocks "github.com/alexander-kartavtsev/starship/order/internal/service/mocks"
 )
 
 type ServiceSuite struct {
@@ -15,9 +16,10 @@ type ServiceSuite struct {
 
 	ctx context.Context
 
-	orderRepository *mocks.OrderRepository
-	inventoryClient *grpcMocks.InventoryClient
-	paymentClient   *grpcMocks.PaymentClient
+	orderRepository      *mocks.OrderRepository
+	inventoryClient      *grpcMocks.InventoryClient
+	paymentClient        *grpcMocks.PaymentClient
+	orderProducerService *orderServiceMocks.OrderProducerService
 
 	service *service
 }
@@ -28,11 +30,13 @@ func (s *ServiceSuite) SetupTest() {
 	s.orderRepository = mocks.NewOrderRepository(s.T())
 	s.inventoryClient = grpcMocks.NewInventoryClient(s.T())
 	s.paymentClient = grpcMocks.NewPaymentClient(s.T())
+	s.orderProducerService = orderServiceMocks.NewOrderProducerService(s.T())
 
 	s.service = NewService(
 		s.orderRepository,
 		s.inventoryClient,
 		s.paymentClient,
+		s.orderProducerService,
 	)
 }
 
