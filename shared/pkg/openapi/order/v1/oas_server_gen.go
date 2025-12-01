@@ -20,7 +20,7 @@ type Handler interface {
 	// пользователем деталей.
 	//
 	// POST /api/v1/orders
-	CreateOrder(ctx context.Context, req *CreateOrderRequest) (CreateOrderRes, error)
+	CreateOrder(ctx context.Context, req *CreateOrderRequest, params CreateOrderParams) (CreateOrderRes, error)
 	// GetOrderByUuid implements getOrderByUuid operation.
 	//
 	// Получение заказа по его идентификатору.

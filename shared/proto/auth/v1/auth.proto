@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package auth.v1;
+
+option go_package = "github.com/alexander-kartavtsev/starship/shared/pkg/proto/auth/v1;authV1";
+
+import "common/v1/session.proto";
+import "common/v1/user.proto";
+
+service AuthService {
+  // Авторизация
+  rpc Login(LoginRequest) returns (LoginResponse);
+
+  // Проверка авторизации
+  rpc Whoami(WhoamiRequest) returns (WhoamiResponse);
+}
+
+/*
+Запрос авторизации
+login: Логин пользователя
+password: Пароль пользователя
+ */
+message LoginRequest {
+  string login = 1;
+  string password = 2;
+}
+
+/*
+Результат авторизации
+session_uuid: UUID активной сессии
+ */
+message LoginResponse {
+  string session_uuid = 1;
+}
+
+/*
+Запрос активной сессии
+session_uuid: UUID активной сессии
+ */
+message WhoamiRequest {
+  string session_uuid = 1;
+}
+
+/*
+Информация об авторизации
+session: Информация о текущей сессии
+user: Владелец текущей сессии
+ */
+message WhoamiResponse {
+  common.v1.Session session = 1;
+  common.v1.User user = 2;
+}

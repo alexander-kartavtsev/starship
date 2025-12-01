@@ -3,6 +3,8 @@ package v1
 import (
 	"errors"
 
+	"github.com/google/uuid"
+
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
 )
@@ -33,7 +35,10 @@ func (a *ApiSuite) TestApi_CreateOrder_Ok() {
 		OrderUUID:  orderUuid,
 		TotalPrice: totalPrice,
 	}
-	res, err := a.api.CreateOrder(a.ctx, &request)
+	params := orderV1.CreateOrderParams{
+		XSessionUUID: uuid.New(),
+	}
+	res, err := a.api.CreateOrder(a.ctx, &request, params)
 	a.Assert().Equal(&response, res)
 	a.Assert().Nil(err)
 }
@@ -50,12 +55,15 @@ func (a *ApiSuite) TestApi_CreateOrder_Err() {
 		UserUUID:  userUuid,
 		PartUuids: partUuids,
 	}
+	params := orderV1.CreateOrderParams{
+		XSessionUUID: uuid.New(),
+	}
 
 	a.orderService.
 		On("Create", a.ctx, modelOrderInfo).
 		Return(nil, model.ErrOrderNotFound).
 		Once()
-	res, err := a.api.CreateOrder(a.ctx, &request)
+	res, err := a.api.CreateOrder(a.ctx, &request, params)
 	a.Assert().Nil(res)
 	a.Assert().True(errors.Is(err, model.ErrOrderNotFound))
 }

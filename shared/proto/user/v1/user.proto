@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package user.v1;
+
+option go_package = "github.com/alexander-kartavtsev/starship/shared/pkg/proto/user/v1;userV1";
+
+import "common/v1/user.proto";
+
+service UserService {
+  // Регистрация пользователя
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+
+  // Получение пользователя
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+}
+
+// Регистрационная информация
+message UserRegistrationInfo {
+  common.v1.UserInfo info = 1;
+  string password = 2;
+}
+
+// Запрос регистрации
+message RegisterRequest {
+  UserRegistrationInfo info = 1;
+}
+
+// Ответ на запрос регистрации
+message RegisterResponse {
+  string user_uuid = 1;
+}
+
+// Запрос на получение пользователя
+message GetUserRequest {
+  string user_uuid = 1;
+}
+
+// Ответ на запрос на получение пользователя
+message GetUserResponse {
+  common.v1.User user = 1;
+}

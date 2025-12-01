@@ -20,6 +20,7 @@ type ServiceSuite struct {
 	inventoryClient      *grpcMocks.InventoryClient
 	paymentClient        *grpcMocks.PaymentClient
 	orderProducerService *orderServiceMocks.OrderProducerService
+	orderConsumerService *orderServiceMocks.ConsumerService
 
 	service *service
 }
@@ -31,12 +32,14 @@ func (s *ServiceSuite) SetupTest() {
 	s.inventoryClient = grpcMocks.NewInventoryClient(s.T())
 	s.paymentClient = grpcMocks.NewPaymentClient(s.T())
 	s.orderProducerService = orderServiceMocks.NewOrderProducerService(s.T())
+	s.orderConsumerService = orderServiceMocks.NewConsumerService(s.T())
 
 	s.service = NewService(
 		s.orderRepository,
 		s.inventoryClient,
 		s.paymentClient,
 		s.orderProducerService,
+		s.orderConsumerService,
 	)
 }
 

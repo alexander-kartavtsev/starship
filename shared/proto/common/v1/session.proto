@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package common.v1;
+
+option go_package = "github.com/alexander-kartavtsev/starship/shared/pkg/proto/common/v1;commonV1";
+
+import "google/protobuf/timestamp.proto";
+
+// Сессия
+message Session {
+  string session_uuid = 1;
+  string user_uuid = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp updated_at = 4;
+  google.protobuf.Timestamp expires_at = 5;
+}

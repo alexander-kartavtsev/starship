@@ -14,6 +14,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/order/internal/config"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/closer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
+	httpMiddleware "github.com/alexander-kartavtsev/starship/platform/pkg/middleware/http"
 	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
 )
 
@@ -45,6 +46,13 @@ func (a *App) Run(ctx context.Context) error {
 	go func() {
 		if err := a.runHttpServer(ctx); err != nil {
 			errChan <- errors.Errorf("grpc server crashed: %v", err)
+		}
+	}()
+
+	// Консьюмер
+	go func() {
+		if err := a.runOrderConsumer(ctx); err != nil {
+			errChan <- errors.Errorf("OrderConsumer crashed: %v", err)
 		}
 	}()
 
@@ -104,6 +112,7 @@ func (a *App) initRouter(ctx context.Context) error {
 	router := chi.NewRouter()
 
 	router.Use(middleware.Logger)
+	router.Use(httpMiddleware.NewAuthMiddleware(a.diContainer.IamClient(ctx)).Handle)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Timeout(10 * time.Second))
 	router.Use(customMiddleware.RequestLogger)
@@ -150,5 +159,16 @@ func (a *App) runHttpServer(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (a *App) runOrderConsumer(ctx context.Context) error {
+	logger.Info(ctx, "Order Kafka consumer запущен")
+
+	err := a.diContainer.OrderConsumerService(ctx).RunConsumer(ctx)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

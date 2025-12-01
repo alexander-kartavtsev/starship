@@ -15,12 +15,12 @@ import (
 
 	v1 "github.com/alexander-kartavtsev/starship/order/internal/api/order/v1"
 	orderGRPC "github.com/alexander-kartavtsev/starship/order/internal/client/grpc"
+	gRPCiamV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/iam/v1"
 	gRPCinventoryV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/inventory/v1"
 	gRPCpaymentV1 "github.com/alexander-kartavtsev/starship/order/internal/client/grpc/payment/v1"
 	"github.com/alexander-kartavtsev/starship/order/internal/config"
 	kafkaConverter "github.com/alexander-kartavtsev/starship/order/internal/converter/kafka"
 	"github.com/alexander-kartavtsev/starship/order/internal/converter/kafka/decoder"
-	"github.com/alexander-kartavtsev/starship/order/internal/migrator"
 	"github.com/alexander-kartavtsev/starship/order/internal/repository"
 	orderRepo "github.com/alexander-kartavtsev/starship/order/internal/repository/order"
 	"github.com/alexander-kartavtsev/starship/order/internal/service"
@@ -33,7 +33,9 @@ import (
 	wrappedKafkaProducer "github.com/alexander-kartavtsev/starship/platform/pkg/kafka/producer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
 	kafkaMiddleware "github.com/alexander-kartavtsev/starship/platform/pkg/middleware/kafka"
+	migrator "github.com/alexander-kartavtsev/starship/platform/pkg/migrator/pg"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
+	authV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/auth/v1"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/payment/v1"
 )
@@ -48,6 +50,7 @@ type diContainer struct {
 
 	invClient       orderGRPC.InventoryClient
 	payClient       orderGRPC.PaymentClient
+	iamClient       authV1.AuthServiceClient
 	orderRepository repository.OrderRepository
 
 	consumerGroup sarama.ConsumerGroup
@@ -87,7 +90,7 @@ func (d *diContainer) OrderApi(ctx context.Context) orderV1.Handler {
 
 func (d *diContainer) OrderService(ctx context.Context) service.OrderService {
 	if d.orderService == nil {
-		d.orderService = order.NewService(d.OrderRepository(ctx), d.InventoryClient(ctx), d.PaymentClient(ctx), d.OrderProducerService(ctx))
+		d.orderService = order.NewService(d.OrderRepository(ctx), d.InventoryClient(ctx), d.PaymentClient(ctx), d.OrderProducerService(ctx), d.OrderConsumerService(ctx))
 		logger.Info(ctx, "Инициализация Service")
 	}
 	return d.orderService
@@ -148,6 +151,27 @@ func (d *diContainer) PaymentClient(ctx context.Context) orderGRPC.PaymentClient
 		d.payClient = gRPCpaymentV1.NewClient(paymentV1.NewPaymentServiceClient(conn))
 	}
 	return d.payClient
+}
+
+func (d *diContainer) IamClient(ctx context.Context) authV1.AuthServiceClient {
+	if d.iamClient == nil {
+		conn, err := grpc.NewClient(
+			config.AppConfig().IamGRPC.Address(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
+		if err != nil {
+			log.Printf("failed to connect: %v\n", err)
+		}
+
+		logger.Info(ctx, "Инициализация Iam gRPC Client")
+
+		closer.AddNamed("Iam gRPC client", func(ctx context.Context) error {
+			return conn.Close()
+		})
+
+		d.iamClient = gRPCiamV1.NewClient(authV1.NewAuthServiceClient(conn))
+	}
+	return d.iamClient
 }
 
 func (d *diContainer) OrderRepository(ctx context.Context) repository.OrderRepository {

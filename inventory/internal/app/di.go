@@ -3,11 +3,14 @@ package app
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	apiV1 "github.com/alexander-kartavtsev/starship/inventory/internal/api/inventory/v1"
 	"github.com/alexander-kartavtsev/starship/inventory/internal/config"
@@ -17,6 +20,7 @@ import (
 	partService "github.com/alexander-kartavtsev/starship/inventory/internal/service/part"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/closer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
+	authV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/auth/v1"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 )
 
@@ -26,6 +30,7 @@ type diContainer struct {
 	inventoryRepository repository.InventoryRepository
 	mongoDb             *mongo.Database
 	mongoClient         *mongo.Client
+	authServiceClient   authV1.AuthServiceClient
 }
 
 func NewDiContainer() *diContainer {
@@ -90,4 +95,25 @@ func (d *diContainer) MongoClient(ctx context.Context) *mongo.Client {
 		d.mongoClient = client
 	}
 	return d.mongoClient
+}
+
+func (d *diContainer) AuthClient(ctx context.Context) authV1.AuthServiceClient {
+	if d.authServiceClient == nil {
+		conn, err := grpc.NewClient(
+			config.AppConfig().IamClient.Address(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
+		if err != nil {
+			log.Printf("failed to connect: %v\n", err)
+		}
+
+		logger.Info(ctx, "Инициализация AuthService gRPC Client")
+
+		closer.AddNamed("AuthService gRPC client", func(ctx context.Context) error {
+			return conn.Close()
+		})
+
+		d.authServiceClient = authV1.NewAuthServiceClient(conn)
+	}
+	return d.authServiceClient
 }

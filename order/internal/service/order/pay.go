@@ -19,6 +19,7 @@ func (s *service) Pay(ctx context.Context, orderUuid string, payMethod model.Pay
 		PaymentMethod: payMethod,
 	})
 	if errPay != nil {
+		log.Printf("Ошибка paymentClient.PayOrder: %v\n", errPay)
 		return "", model.ErrPayment
 	}
 	log.Println("...готово")
@@ -48,8 +49,10 @@ func (s *service) Pay(ctx context.Context, orderUuid string, payMethod model.Pay
 		Type:            "pay",
 	})
 	if err != nil {
+		log.Printf("Ошибка orderProducerService.ProduceOrder: %v\n", err)
 		return "", err
 	}
+	log.Printf("Опубликовали: %v\n", s.orderProducerService)
 
 	return transactionUuid, nil
 }
