@@ -20,3 +20,10 @@ type ConsumerConfig interface {
 type TelegramBotConfig interface {
 	Token() string
 }
+
+type TracingConfig interface {
+	CollectorEndpoint() string
+	ServiceName() string
+	Environment() string
+	ServiceVersion() string
+}

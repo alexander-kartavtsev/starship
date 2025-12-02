@@ -15,3 +15,10 @@ type MongoConfig interface {
 	DatabaseName() string
 	Port() string
 }
+
+type TracingConfig interface {
+	CollectorEndpoint() string
+	ServiceName() string
+	Environment() string
+	ServiceVersion() string
+}

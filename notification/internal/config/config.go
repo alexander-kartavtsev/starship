@@ -16,6 +16,7 @@ type config struct {
 	OrderAssembledConsumer ConsumerConfig
 	OrderPaidConsumer      ConsumerConfig
 	TelegramBot            TelegramBotConfig
+	Tracing                TracingConfig
 }
 
 func Load(path ...string) error {
@@ -49,12 +50,18 @@ func Load(path ...string) error {
 		return err
 	}
 
+	tracingConfig, err := env.NewTracingConfig()
+	if err != nil {
+		return err
+	}
+
 	appConfig = &config{
 		Logger:                 loggerConfig,
 		Kafka:                  kafkaConfig,
 		OrderAssembledConsumer: orderAssembledConsumer,
 		OrderPaidConsumer:      orderPaidConsumer,
 		TelegramBot:            telegramBot,
+		Tracing:                tracingConfig,
 	}
 
 	return nil

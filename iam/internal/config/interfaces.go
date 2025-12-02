@@ -28,3 +28,10 @@ type RedisConfig interface {
 type SessionConfig interface {
 	SessionTTL() time.Duration
 }
+
+type TracingConfig interface {
+	CollectorEndpoint() string
+	ServiceName() string
+	Environment() string
+	ServiceVersion() string
+}

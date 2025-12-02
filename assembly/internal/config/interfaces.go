@@ -23,3 +23,10 @@ type AssemblyConsumerConfig interface {
 	GroupID() string
 	Config() *sarama.Config
 }
+
+type TracingConfig interface {
+	CollectorEndpoint() string
+	ServiceName() string
+	Environment() string
+	ServiceVersion() string
+}
