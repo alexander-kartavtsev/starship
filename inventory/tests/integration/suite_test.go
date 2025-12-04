@@ -5,7 +5,6 @@ package integration
 import (
 	"context"
 	"fmt"
-	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -41,14 +40,9 @@ var _ = BeforeSuite(func() {
 	suiteCtx, suiteCancel = context.WithTimeout(context.Background(), testsTimeout)
 
 	// Загружаем .env файл и устанавливаем переменные в окружение
-	envVars, err := godotenv.Read(filepath.Join("..", "..", "..", "deploy", "compose", "inventory", ".env"))
+	err = godotenv.Load(filepath.Join("..", "..", "..", "deploy", "compose", "inventory", ".env"))
 	if err != nil {
 		logger.Fatal(suiteCtx, "Не удалось загрузить .env файл", zap.Error(err))
-	}
-
-	// Устанавливаем переменные в окружение процесса
-	for key, value := range envVars {
-		_ = os.Setenv(key, value)
 	}
 
 	logger.Info(suiteCtx, "Запуск тестового окружения...")

@@ -34,6 +34,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
 	kafkaMiddleware "github.com/alexander-kartavtsev/starship/platform/pkg/middleware/kafka"
 	migrator "github.com/alexander-kartavtsev/starship/platform/pkg/migrator/pg"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/tracing"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
 	authV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/auth/v1"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
@@ -117,6 +118,7 @@ func (d *diContainer) InventoryClient(ctx context.Context) orderGRPC.InventoryCl
 		conn, err := grpc.NewClient(
 			config.AppConfig().InventoryGRPC.Address(),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithUnaryInterceptor(tracing.UnaryClientInterceptor("inventory-service")),
 		)
 		if err != nil {
 			log.Printf("failed to connect: %v\n", err)
@@ -137,6 +139,7 @@ func (d *diContainer) PaymentClient(ctx context.Context) orderGRPC.PaymentClient
 		conn, err := grpc.NewClient(
 			config.AppConfig().PaymentGRPC.Address(),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithUnaryInterceptor(tracing.UnaryClientInterceptor("payment-service")),
 		)
 		if err != nil {
 			log.Printf("failed to connect: %v\n", err)
@@ -158,6 +161,7 @@ func (d *diContainer) IamClient(ctx context.Context) authV1.AuthServiceClient {
 		conn, err := grpc.NewClient(
 			config.AppConfig().IamGRPC.Address(),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithUnaryInterceptor(tracing.UnaryClientInterceptor("order-service")),
 		)
 		if err != nil {
 			log.Printf("failed to connect: %v\n", err)

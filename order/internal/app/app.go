@@ -15,6 +15,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/platform/pkg/closer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
 	httpMiddleware "github.com/alexander-kartavtsev/starship/platform/pkg/middleware/http"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/tracing"
 	customMiddleware "github.com/alexander-kartavtsev/starship/shared/pkg/middleware"
 )
 
@@ -76,6 +77,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initDi,
 		a.initLogger,
+		a.initTracing,
 		a.initCloser,
 		a.initRouter,
 		a.initServer,
@@ -169,6 +171,17 @@ func (a *App) runOrderConsumer(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (a *App) initTracing(ctx context.Context) error {
+	err := tracing.InitTracer(ctx, config.AppConfig().Tracing)
+	if err != nil {
+		return err
+	}
+
+	closer.AddNamed("tracer", tracing.ShutdownTracer)
 
 	return nil
 }

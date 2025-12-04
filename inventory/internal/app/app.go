@@ -16,6 +16,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/platform/pkg/grpc/health"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
 	interceptor "github.com/alexander-kartavtsev/starship/platform/pkg/middleware/grpc"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/tracing"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 )
 
@@ -44,6 +45,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initDi,
 		a.initLogger,
+		a.initTracing,
 		a.initCloser,
 		a.initListener,
 		a.initGrpcServer,
@@ -98,9 +100,11 @@ func (a *App) initListener(ctx context.Context) error {
 }
 
 func (a *App) initGrpcServer(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.ChainUnaryInterceptor(
-		grpc.UnaryServerInterceptor(interceptor.NewAuthInterceptor(a.diContainer.AuthClient(ctx)).Unary()),
-	),
+	a.grpcServer = grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			grpc.UnaryServerInterceptor(interceptor.NewAuthInterceptor(a.diContainer.AuthClient(ctx)).Unary()),
+		),
+		grpc.UnaryInterceptor(tracing.UnaryServerInterceptor(config.AppConfig().Tracing.ServiceName())),
 		grpc.Creds(insecure.NewCredentials()),
 	)
 	closer.AddNamed("gRPC server", func(_ context.Context) error {
@@ -130,6 +134,17 @@ func (a *App) runGrpcServer(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (a *App) initTracing(ctx context.Context) error {
+	err := tracing.InitTracer(ctx, config.AppConfig().Tracing)
+	if err != nil {
+		return err
+	}
+
+	closer.AddNamed("tracer", tracing.ShutdownTracer)
 
 	return nil
 }

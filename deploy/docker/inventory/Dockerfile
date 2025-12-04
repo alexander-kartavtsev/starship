@@ -32,8 +32,11 @@ RUN go mod download
 COPY platform ./platform
 COPY shared ./shared
 COPY inventory ./inventory
-#COPY order ./order
-#COPY payment ./payment
+COPY order ./order
+COPY payment ./payment
+COPY assembly ./assembly
+COPY notification ./notification
+COPY iam ./iam
 
 # Скачиваем grpc-health-probe — это утилита для проверки состояния gRPC-сервиса
 ADD https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.37/grpc_health_probe-linux-amd64 ./grpc-health-probe

@@ -15,6 +15,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/platform/pkg/closer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/grpc/health"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/tracing"
 	paymentV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/payment/v1"
 )
 
@@ -42,6 +43,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initDi,
 		a.initLogger,
+		a.initTracing,
 		a.initCloser,
 		a.initListener,
 		a.initGrpcServer,
@@ -95,7 +97,10 @@ func (a *App) initListener(ctx context.Context) error {
 }
 
 func (a *App) initGrpcServer(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+	a.grpcServer = grpc.NewServer(
+		grpc.Creds(insecure.NewCredentials()),
+		grpc.UnaryInterceptor(tracing.UnaryServerInterceptor(config.AppConfig().Tracing.ServiceName())),
+	)
 	closer.AddNamed("gRPC server", func(context.Context) error {
 		a.grpcServer.GracefulStop()
 		return nil
@@ -115,5 +120,16 @@ func (a *App) runGrpcServer(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (a *App) initTracing(ctx context.Context) error {
+	err := tracing.InitTracer(ctx, config.AppConfig().Tracing)
+	if err != nil {
+		return err
+	}
+
+	closer.AddNamed("tracer", tracing.ShutdownTracer)
+
 	return nil
 }

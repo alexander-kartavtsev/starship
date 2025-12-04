@@ -9,6 +9,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/assembly/internal/config"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/closer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/tracing"
 )
 
 type App struct {
@@ -60,6 +61,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initDi,
 		a.initLogger,
+		a.initTracing,
 		a.initCloser,
 	}
 
@@ -96,6 +98,17 @@ func (a *App) runConsumer(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (a *App) initTracing(ctx context.Context) error {
+	err := tracing.InitTracer(ctx, config.AppConfig().Tracing)
+	if err != nil {
+		return err
+	}
+
+	closer.AddNamed("tracer", tracing.ShutdownTracer)
 
 	return nil
 }

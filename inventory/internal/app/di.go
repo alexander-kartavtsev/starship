@@ -20,6 +20,7 @@ import (
 	partService "github.com/alexander-kartavtsev/starship/inventory/internal/service/part"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/closer"
 	"github.com/alexander-kartavtsev/starship/platform/pkg/logger"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/tracing"
 	authV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/auth/v1"
 	inventoryV1 "github.com/alexander-kartavtsev/starship/shared/pkg/proto/inventory/v1"
 )
@@ -102,6 +103,7 @@ func (d *diContainer) AuthClient(ctx context.Context) authV1.AuthServiceClient {
 		conn, err := grpc.NewClient(
 			config.AppConfig().IamClient.Address(),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithUnaryInterceptor(tracing.UnaryClientInterceptor("iam-service")),
 		)
 		if err != nil {
 			log.Printf("failed to connect: %v\n", err)
