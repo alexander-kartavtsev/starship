@@ -4,6 +4,8 @@ import (
 	"errors"
 
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/middleware/grpc"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/tracing"
 )
 
 func (s *ServiceSuite) TestService_CreateOk() {
@@ -31,13 +33,19 @@ func (s *ServiceSuite) TestService_CreateOk() {
 		TotalPrice: price,
 	}
 
+	ctx := grpc.ForwardSessionUUIDToGRPC(s.ctx)
+	ctx1, span := tracing.StartSpan(ctx, "inventory.list_parts")
+	span.End()
+	ctx2, span := tracing.StartSpan(ctx1, "order.repository.Create")
+	span.End()
+
 	s.inventoryClient.
-		On("ListParts", s.ctx, model.PartsFilter{Uuids: partUuids}).
+		On("ListParts", ctx1, model.PartsFilter{Uuids: partUuids}).
 		Return(testParts, nil).
 		Once()
 
 	s.orderRepository.
-		On("Create", s.ctx, testOrder).
+		On("Create", ctx2, testOrder).
 		Return("any_order_uuid", nil).
 		Once()
 
@@ -77,13 +85,19 @@ func (s *ServiceSuite) TestService_CreateSemiOk() {
 		TotalPrice: price1 + price2,
 	}
 
+	ctx := grpc.ForwardSessionUUIDToGRPC(s.ctx)
+	ctx1, span := tracing.StartSpan(ctx, "inventory.list_parts")
+	span.End()
+	ctx2, span := tracing.StartSpan(ctx1, "order.repository.Create")
+	span.End()
+
 	s.inventoryClient.
-		On("ListParts", s.ctx, model.PartsFilter{Uuids: partUuids}).
+		On("ListParts", ctx1, model.PartsFilter{Uuids: partUuids}).
 		Return(testParts, nil).
 		Once()
 
 	s.orderRepository.
-		On("Create", s.ctx, testOrder).
+		On("Create", ctx2, testOrder).
 		Return("any_order_uuid", nil).
 		Once()
 
@@ -99,6 +113,10 @@ func (s *ServiceSuite) TestService_CreatePartsNotAvailability() {
 		UserUuid:  userUuid,
 		PartUuids: partUuids,
 	}
+
+	ctx := grpc.ForwardSessionUUIDToGRPC(s.ctx)
+	ctx, span := tracing.StartSpan(ctx, "inventory.list_parts")
+	span.End()
 
 	tests := []struct {
 		parts map[string]model.Part
@@ -124,7 +142,7 @@ func (s *ServiceSuite) TestService_CreatePartsNotAvailability() {
 
 	for _, test := range tests {
 		s.inventoryClient.
-			On("ListParts", s.ctx, model.PartsFilter{Uuids: partUuids}).
+			On("ListParts", ctx, model.PartsFilter{Uuids: partUuids}).
 			Return(test.parts, nil).
 			Once()
 
@@ -143,8 +161,12 @@ func (s *ServiceSuite) TestService_CreateErrClient() {
 
 	testError := errors.New("any test error")
 
+	ctx := grpc.ForwardSessionUUIDToGRPC(s.ctx)
+	ctx, span := tracing.StartSpan(ctx, "inventory.list_parts")
+	span.End()
+
 	s.inventoryClient.
-		On("ListParts", s.ctx, model.PartsFilter{Uuids: partUuids}).
+		On("ListParts", ctx, model.PartsFilter{Uuids: partUuids}).
 		Return(nil, testError).
 		Once()
 
@@ -175,12 +197,18 @@ func (s *ServiceSuite) TestService_CreateErrRepository() {
 	}
 	testError := errors.New("any test error")
 
+	ctx := grpc.ForwardSessionUUIDToGRPC(s.ctx)
+	ctx1, span := tracing.StartSpan(ctx, "inventory.list_parts")
+	span.End()
+	ctx2, span := tracing.StartSpan(ctx1, "order.repository.Create")
+	span.End()
+
 	s.inventoryClient.
-		On("ListParts", s.ctx, model.PartsFilter{Uuids: partUuids}).
+		On("ListParts", ctx1, model.PartsFilter{Uuids: partUuids}).
 		Return(testParts, nil).
 		Once()
 	s.orderRepository.
-		On("Create", s.ctx, testOrder).
+		On("Create", ctx2, testOrder).
 		Return("", testError).
 		Once()
 

@@ -7,6 +7,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/tracing"
 )
 
 func (s *ServiceSuite) TestService_Cancel() {
@@ -30,17 +31,20 @@ func (s *ServiceSuite) TestService_Cancel() {
 		},
 	}
 
+	ctx, span := tracing.StartSpan(s.ctx, "order.service.Cancle")
+	span.End()
+
 	for _, test := range tests {
 		log.Println(test.name)
 		updateInfo := model.OrderUpdateInfo{
 			Status: lo.ToPtr(model.Cancelled),
 		}
 		s.orderRepository.
-			On("Get", s.ctx, "any_uuid").
+			On("Get", ctx, "any_uuid").
 			Return(test.order, test.getErr).
 			Once()
 		s.orderRepository.
-			On("Update", s.ctx, "any_uuid", updateInfo).
+			On("Update", ctx, "any_uuid", updateInfo).
 			Return(test.err).
 			Once()
 		err := s.service.Cancel(s.ctx, "any_uuid")
@@ -69,10 +73,13 @@ func (s *ServiceSuite) TestService_Cansel_Not() {
 		},
 	}
 
+	ctx, span := tracing.StartSpan(s.ctx, "")
+	span.End()
+
 	for _, test := range tests {
 		log.Println(test.name)
 		s.orderRepository.
-			On("Get", s.ctx, "any_uuid").
+			On("Get", ctx, "any_uuid").
 			Return(test.order, test.getErr).
 			Once()
 		err := s.service.Cancel(s.ctx, "any_uuid")

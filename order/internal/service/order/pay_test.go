@@ -4,12 +4,17 @@ import (
 	"errors"
 
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/tracing"
 )
 
 func (s *ServiceSuite) TestService_Pay_OrderNotFound() {
 	orderUuid := "any_order_uuid"
+
+	ctx, spanOrderGet := tracing.StartSpan(s.ctx, "")
+	spanOrderGet.End()
+
 	s.orderRepository.
-		On("Get", s.ctx, orderUuid).
+		On("Get", ctx, orderUuid).
 		Return(model.Order{}, model.ErrOrderNotFound).
 		Once()
 
@@ -34,12 +39,19 @@ func (s *ServiceSuite) TestService_Pay_PaymentError() {
 	}
 	testErr := errors.New("testErr")
 
+	ctx, spanOrderGet := tracing.StartSpan(s.ctx, "")
+	spanOrderGet.End()
+
 	s.orderRepository.
-		On("Get", s.ctx, orderUuid).
+		On("Get", ctx, orderUuid).
 		Return(order, nil).
 		Once()
+
+	ctx, spanPayOrder := tracing.StartSpan(ctx, "")
+	spanPayOrder.End()
+
 	s.paymentClient.
-		On("PayOrder", s.ctx, payOrderReq).
+		On("PayOrder", ctx, payOrderReq).
 		Return("", testErr).
 		Once()
 
@@ -71,16 +83,27 @@ func (s *ServiceSuite) TestService_Pay_UpdateError() {
 	}
 	testErr := errors.New("testErr")
 
+	ctx, spanOrderGet := tracing.StartSpan(s.ctx, "")
+	spanOrderGet.End()
+
 	s.orderRepository.
-		On("Get", s.ctx, orderUuid).
+		On("Get", ctx, orderUuid).
 		Return(order, nil).
 		Once()
+
+	ctx, spanPayOrder := tracing.StartSpan(ctx, "")
+	spanPayOrder.End()
+
 	s.paymentClient.
-		On("PayOrder", s.ctx, payOrderReq).
+		On("PayOrder", ctx, payOrderReq).
 		Return(transactionUuid, nil).
 		Once()
+
+	ctx, spanUpdateOrder := tracing.StartSpan(ctx, "")
+	spanUpdateOrder.End()
+
 	s.orderRepository.
-		On("Update", s.ctx, orderUuid, orderUpdateInfo).
+		On("Update", ctx, orderUuid, orderUpdateInfo).
 		Return(testErr).
 		Once()
 
@@ -119,20 +142,35 @@ func (s *ServiceSuite) TestService_Pay_Ok_Kafka_Fail() {
 		Type:            "pay",
 	}
 
+	ctx, spanOrderGet := tracing.StartSpan(s.ctx, "")
+	spanOrderGet.End()
+
 	s.orderRepository.
-		On("Get", s.ctx, orderUuid).
+		On("Get", ctx, orderUuid).
 		Return(order, nil).
 		Once()
+
+	ctx, spanPayOrder := tracing.StartSpan(ctx, "")
+	spanPayOrder.End()
+
 	s.paymentClient.
-		On("PayOrder", s.ctx, payOrderReq).
+		On("PayOrder", ctx, payOrderReq).
 		Return(transactionUuid, nil).
 		Once()
+
+	ctx, spanUpdateOrder := tracing.StartSpan(ctx, "")
+	spanUpdateOrder.End()
+
 	s.orderRepository.
-		On("Update", s.ctx, orderUuid, orderUpdateInfo).
+		On("Update", ctx, orderUuid, orderUpdateInfo).
 		Return(nil).
 		Once()
+
+	ctx, spanProduceToKafka := tracing.StartSpan(ctx, "")
+	spanProduceToKafka.End()
+
 	s.orderProducerService.
-		On("ProduceOrder", s.ctx, orderKafkaEvent).
+		On("ProduceOrder", ctx, orderKafkaEvent).
 		Return(errors.New("any error")).
 		Once()
 
@@ -171,20 +209,35 @@ func (s *ServiceSuite) TestService_Pay_Ok() {
 		Type:            "pay",
 	}
 
+	ctx, spanOrderGet := tracing.StartSpan(s.ctx, "")
+	spanOrderGet.End()
+
 	s.orderRepository.
-		On("Get", s.ctx, orderUuid).
+		On("Get", ctx, orderUuid).
 		Return(order, nil).
 		Once()
+
+	ctx, spanPayOrder := tracing.StartSpan(ctx, "")
+	spanPayOrder.End()
+
 	s.paymentClient.
-		On("PayOrder", s.ctx, payOrderReq).
+		On("PayOrder", ctx, payOrderReq).
 		Return(transactionUuid, nil).
 		Once()
+
+	ctx, spanUpdateOrder := tracing.StartSpan(ctx, "")
+	spanUpdateOrder.End()
+
 	s.orderRepository.
-		On("Update", s.ctx, orderUuid, orderUpdateInfo).
+		On("Update", ctx, orderUuid, orderUpdateInfo).
 		Return(nil).
 		Once()
+
+	ctx, spanProduceToKafka := tracing.StartSpan(ctx, "")
+	spanProduceToKafka.End()
+
 	s.orderProducerService.
-		On("ProduceOrder", s.ctx, orderKafkaEvent).
+		On("ProduceOrder", ctx, orderKafkaEvent).
 		Return(nil).
 		Once()
 

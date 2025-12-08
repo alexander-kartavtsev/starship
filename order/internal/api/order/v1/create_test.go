@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/tracing"
 	orderV1 "github.com/alexander-kartavtsev/starship/shared/pkg/openapi/order/v1"
 )
 
@@ -23,8 +24,11 @@ func (a *ApiSuite) TestApi_CreateOrder_Ok() {
 		OrderUuid:  orderUuid,
 		TotalPrice: totalPrice,
 	}
+	ctx, span := tracing.StartSpan(a.ctx, "order.v1.CreateOrder")
+	span.End()
+
 	a.orderService.
-		On("Create", a.ctx, modelOrderInfo).
+		On("Create", ctx, modelOrderInfo).
 		Return(&orderCreateRes, nil).
 		Once()
 	request := orderV1.CreateOrderRequest{
@@ -59,8 +63,11 @@ func (a *ApiSuite) TestApi_CreateOrder_Err() {
 		XSessionUUID: uuid.New(),
 	}
 
+	ctx, span := tracing.StartSpan(a.ctx, "")
+	span.End()
+
 	a.orderService.
-		On("Create", a.ctx, modelOrderInfo).
+		On("Create", ctx, modelOrderInfo).
 		Return(nil, model.ErrOrderNotFound).
 		Once()
 	res, err := a.api.CreateOrder(a.ctx, &request, params)

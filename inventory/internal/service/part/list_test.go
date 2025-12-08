@@ -6,6 +6,7 @@ import (
 	"github.com/alexander-kartavtsev/starship/inventory/internal/model"
 	"github.com/alexander-kartavtsev/starship/inventory/internal/repository/converter"
 	repoModel "github.com/alexander-kartavtsev/starship/inventory/internal/repository/model"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/tracing"
 )
 
 func (s *ServiceSuite) TestService_List_correct() {
@@ -17,8 +18,11 @@ func (s *ServiceSuite) TestService_List_correct() {
 	filter := model.PartsFilter{
 		Uuids: []string{"any_uuid"},
 	}
+	ctx, span := tracing.StartSpan(s.ctx, "inventory.repository.List")
+	span.End()
+
 	s.inventoryRepository.
-		On("List", s.ctx, filter).
+		On("List", ctx, filter).
 		Return(parts, nil).
 		Once()
 	res, err := s.service.List(s.ctx, filter)
@@ -35,8 +39,11 @@ func (s *ServiceSuite) TestService_List_err() {
 	filter := model.PartsFilter{
 		Uuids: []string{"any_uuid"},
 	}
+	ctx, span := tracing.StartSpan(s.ctx, "inventory.repository.List")
+	span.End()
+
 	s.inventoryRepository.
-		On("List", s.ctx, filter).
+		On("List", ctx, filter).
 		Return(parts, model.ErrPartListEmpty).
 		Once()
 	res, err := s.service.List(s.ctx, filter)

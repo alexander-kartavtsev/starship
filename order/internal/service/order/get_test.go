@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/alexander-kartavtsev/starship/order/internal/model"
+	"github.com/alexander-kartavtsev/starship/platform/pkg/tracing"
 )
 
 func (s *ServiceSuite) TestService_Get() {
@@ -28,10 +29,13 @@ func (s *ServiceSuite) TestService_Get() {
 		},
 	}
 
+	ctx, span := tracing.StartSpan(s.ctx, "order.service.Get")
+	span.End()
+
 	for _, test := range tests {
 		log.Println(test.name)
 		s.orderRepository.
-			On("Get", s.ctx, "anu_order_uuid").
+			On("Get", ctx, "anu_order_uuid").
 			Return(test.orderRepo, test.err).
 			Once()
 		res, err := s.service.Get(s.ctx, "anu_order_uuid")
